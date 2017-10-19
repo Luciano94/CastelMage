@@ -1,4 +1,4 @@
-package;
+package source.states;
 
 import flixel.FlxState;
 

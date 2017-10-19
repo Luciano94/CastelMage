@@ -4,10 +4,6 @@ import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 
-/**
- * ...
- * @author ...
- */
 enum States
 {
 	MOVE;

@@ -1,9 +1,5 @@
 package;
 
-/**
- * ...
- * @author ...
- */
 class Reg 
 {	
 	// Player

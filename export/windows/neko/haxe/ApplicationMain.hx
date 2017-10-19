@@ -515,7 +515,7 @@ class ApplicationMain {
 		
 		config = {
 			
-			build: "2",
+			build: "21",
 			company: "Luciano",
 			file: "CastelMage",
 			fps: 60,
