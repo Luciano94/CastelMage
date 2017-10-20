@@ -8,7 +8,7 @@ import flixel.FlxObject;
 enum States
 {
 	IDLE;
-	MOVE;
+	MOVING;
 	JUMPING;
 	DEAD;
 	DOORTRIGGER;
@@ -59,11 +59,11 @@ class Player extends FlxSprite
 				jump(false);
 				
 				if (velocity.x != 0)
-					currentState = States.MOVE;
+					currentState = States.MOVING;
 				if (velocity.y != 0)
 					currentState = States.JUMPING;
 					
-			case States.MOVE:
+			case States.MOVING:
 				animation.play("move");
 				moveHor();
 				jump(true);
@@ -81,7 +81,7 @@ class Player extends FlxSprite
 					if (velocity.x == 0)
 						currentState = States.IDLE;
 					else
-						currentState = States.MOVE;
+						currentState = States.MOVING;
 					speedXJump = 0;
 				}
 			case States.DEAD:
