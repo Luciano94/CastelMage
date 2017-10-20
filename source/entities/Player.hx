@@ -5,10 +5,6 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 import flixel.FlxObject;
 
-/**
- * ...
- * @author ...
- */
 enum States
 {
 	IDLE;
@@ -17,40 +13,34 @@ enum States
 	DEAD;
 	DOORTRIGGER;
 }
+
 class Player extends FlxSprite 
 {
 	private var currentState:States;
-	private var speedX:Int;
-	private var speedXBoosted:Int;
-	private var speedYJump:Int;
+	private var speed:Int;
+	private var jumpSpeed:Int;
 	private var speedXJump:Int;
 	private var gravity:Int;
 	
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
 		super(X, Y);
-		currentState = States.MOVE;
-		speedX = Reg.speedXPlayer;
-		speedXBoosted = Reg.speedXPlayerBoosted;
-		speedYJump = Reg.speedJumpPlayer;
+		currentState = States.IDLE;
+		speed = Reg.playerNormalSpeed;
+		jumpSpeed = Reg.playerJumpSpeed;
 		speedXJump = 0;
-		gravity = Reg.gravity;
+		acceleration.y = Reg.gravity;
 		setFacingFlip(FlxObject.RIGHT, false, false);
 		setFacingFlip(FlxObject.LEFT, true, false);
 		
-		loadGraphic(AssetPaths.bichi__png, true, 16, 16);
-		animation.add("idle", [0, 1, 2, 1], 6, true);
-		animation.add("move", [6, 7, 8, 9, 10, 11], 8, true);
-		animation.add("jump", [13], false);
-		animation.add("death", [3]);
-		animation.add("attack", [3]);
-		
-		scale.set(2, 2); // Temporary
-		updateHitbox();  //
-		
-		acceleration.y = gravity;
-		currentState = States.IDLE;
+		loadGraphic(AssetPaths.player__png, true, 40, 48);
+		animation.add("idle", [0]);	// Temporary Animations (WORK IN PROGRESS)
+		animation.add("move", [1, 2, 3], 6, true);
+		animation.add("jump", [4, 5], 6, false);
+		//animation.add("death", [3]);
+		//animation.add("attack", [3]);
 	}
+	
 	override public function update(elapsed:Float):Void
 	{
 		stateMachine();
@@ -59,7 +49,7 @@ class Player extends FlxSprite
 		
 	}
 	
-	function stateMachine() 
+	private function stateMachine():Void
 	{
 		switch (currentState) 
 		{
@@ -70,6 +60,9 @@ class Player extends FlxSprite
 				
 				if (velocity.x != 0)
 					currentState = States.MOVE;
+				if (velocity.y != 0)
+					currentState = States.JUMPING;
+					
 			case States.MOVE:
 				animation.play("move");
 				moveHor();
@@ -77,6 +70,9 @@ class Player extends FlxSprite
 				
 				if (velocity.x == 0)
 					currentState = States.IDLE;
+				if (velocity.y != 0)
+					currentState = States.JUMPING;
+					
 			case States.JUMPING:
 				animation.play("jump");
 				velocity.x = speedXJump;
@@ -95,27 +91,17 @@ class Player extends FlxSprite
 		}
 	}
 
-	function moveHor() 
+	private function moveHor():Void
 	{
 		velocity.x = 0;
 		
 		if (FlxG.keys.pressed.RIGHT)
 		{
-			//if(!pUpBoost)
-				velocity.x += speedX;
-			//else
-			//	velocity.x += speedXBoosted;
+			velocity.x += speed;
 		}
 		if (FlxG.keys.pressed.LEFT)
 		{
-			//if(!pUpBoost)
-				velocity.x += -speedX;
-			//else
-			//	velocity.x += -speedXBoosted;
-		}
-		if (FlxG.keys.justPressed.S)
-		{
-			velocity.y += speedYJump;
+			velocity.x += -speed;
 		}
 		
 		if (velocity.x < 0)
@@ -125,19 +111,19 @@ class Player extends FlxSprite
 		
 	}
 	
-	function jump(moving:Bool) // This variable tells if the Player is moving or not
+	private function jump(moving:Bool):Void // This variable tells if the Player is moving or not
 	{
-		if (FlxG.keys.justPressed.S){
+		if (FlxG.keys.justPressed.S)
+		{
+			velocity.y += jumpSpeed;
+			
 			if (moving)
 			{
-				if(velocity.x > 0)
-					speedXJump = speedX;
+				if (velocity.x > 0)
+					speedXJump = speed;
 				else
-					speedXJump = -speedX;
-				currentState = States.JUMPING;
-			}
-			else
-				currentState = States.JUMPING;
+					speedXJump = -speed;
+			}		
 		}
 	}
 	
