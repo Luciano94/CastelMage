@@ -5,20 +5,17 @@ import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 import flixel.FlxObject;
-/**
- * ...
- * @author ...
- */
+
 enum States
 {
-  IDLE;
-  MOVE;
-  JUMPING;
-  ATTACK;
-  DEAD;
-  DOORTRIGGER;
+	IDLE;
+	MOVING;
+	JUMPING;
+	ATTACK;
+	DEAD;
+	DOORTRIGGER;
 }
-class Player extends FlxSprite 
+class Player extends FlxSprite
 {
   private var currentState:States;
   private var speedX:Int;
@@ -70,21 +67,76 @@ class Player extends FlxSprite
 			currentState = States.MOVE;
 		if (velocity.y != 0)
 		{
-			animation.play("jump");
-			currentState = States.JUMPING;
+			case States.IDLE:
+				animation.play("idle");
+				moveHor();
+				jump();
+				attack();
+				if (velocity.x != 0)
+					currentState = States.MOVING;
+				if (velocity.y != 0)
+				{
+					animation.play("jump");
+					currentState = States.JUMPING;
+				}
+
+			case States.MOVING:
+				animation.play("move");
+				moveHor();
+				jump();
+				attack();
+
+				if (velocity.x == 0)
+					currentState = States.IDLE;
+				if (velocity.y != 0)
+				{
+					animation.play("jump");
+					currentState = States.JUMPING;
+				}
+
+			case States.JUMPING:
+				velocity.x = speed;
+				attack();
+
+				if (velocity.y == 0 && isTouching(FlxObject.FLOOR))
+				{
+					if (velocity.x == 0)
+						currentState = States.IDLE;
+					else
+						currentState = States.MOVING;
+				}
+
+			case States.ATTACK:
+				if (isTouching(FlxObject.FLOOR))
+					velocity.x = 0;
+				if (animation.name == "attack" && animation.finished)
+				{
+					if (!isTouching(FlxObject.FLOOR))
+					{
+						animation.play("jump");
+						currentState = States.JUMPING;
+					}
+					else if (velocity.x != 0)
+						currentState = States.MOVING;
+					else
+						currentState = States.IDLE;
+				}
+
+			case States.DEAD:
+
+			case States.DOORTRIGGER:
+
 		}
-      case States.MOVE:
-        animation.play("move");
-        moveHor();
-        jump();
-        attack();
-        
-        if (velocity.x == 0)
-			currentState = States.IDLE;
-		if (velocity.y != 0)
+	}
+
+	private function moveHor():Void
+	{
+		speed = 0;
+
+		if (FlxG.keys.pressed.RIGHT)
 		{
-			animation.play("jump");
-			currentState = States.JUMPING;
+			speed = Reg.playerNormalSpeed;
+			facing = FlxObject.RIGHT;
 		}
       case States.JUMPING:
 		velocity.x = speedX;
@@ -154,10 +206,12 @@ class Player extends FlxSprite
   {
     if (FlxG.keys.justPressed.A)
 	{
-		animation.play("attack");
-		currentState = States.ATTACK;
-		if(!isTouching(FlxObject.FLOOR) && speedX != 0)
-			velocity.x = speedX;
+		if (FlxG.keys.justPressed.A)
+		{
+			animation.play("attack");
+			currentState = States.ATTACK;
+			if (!isTouching(FlxObject.FLOOR) && speed != 0)
+				velocity.x = speed;
+		}
 	}
-  }
 }

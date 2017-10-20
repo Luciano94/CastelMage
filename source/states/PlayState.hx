@@ -1,4 +1,4 @@
-package source.states;
+package states;
 
 import entities.Player;
 import entities.PowerUp;
@@ -6,66 +6,47 @@ import entities.Box;
 import flixel.FlxState;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.math.FlxRandom;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.addons.editors.ogmo.FlxOgmoLoader;
+import flixel.tile.FlxTilemap;
 
 class PlayState extends FlxState
 {
 	// Player
 	private var player:Player;
-	// PowerUp
-	private var whichPUp:Int;
-	private var r:FlxRandom;
-	private var pUp:PowerUp;
-	private var pUps:FlxTypedGroup<PowerUp>;
-  
-	private var floor:FlxSprite; // Temporary
-	private var floor2:FlxSprite; // Temporary
+	private var loader:FlxOgmoLoader;
+	private var tilemap:FlxTilemap;
 	
 	override public function create():Void
 	{
 		super.create();
-		FlxG.worldBounds.set(0, 0, 512, 480);
-		// Player
-		player = new Player(100, 15);
-		// PowerUp
-		pUps = new FlxTypedGroup();
 		
-		floor = new FlxSprite(100, camera.height - 30);
-		floor.makeGraphic(400, 32);
-		floor.immovable = true;
-		floor2 = new FlxSprite(100, 60);
-		floor2.makeGraphic(200, 32);
-		floor2.immovable = true;
-		
-		camera.follow(player);
-		
-		add(player);
-		add(floor);
-		add(floor2);
+		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
+		tilemap = loader.loadTilemap(AssetPaths.tileset__png, 16, 16, "Tiles");
+		tilemap.setTileProperties(0, FlxObject.NONE);
+		tilemap.setTileProperties(1, FlxObject.NONE);
+		tilemap.setTileProperties(2, FlxObject.ANY);
+		add(tilemap);
+		loader.loadEntities(entityCreator, "Entities");
+		FlxG.worldBounds.set(0, 0, 5120, 480);
+		camera.follow(player);		
 	}
 
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
-		checkCollisions();
-		if (FlxG.keys.justPressed.R)
-			FlxG.resetState();
+		FlxG.collide(player, tilemap);
 	}
-	public function checkCollisions() 
+	
+	private function entityCreator(entityName:String, entityData:Xml):Void
 	{
-		FlxG.overlap(player, pUps, powered);
-		FlxG.collide(player, floor);
-		FlxG.collide(player, floor2);
-	}
-	public function powered(p:Player, pU:PowerUp):Void // In process
-	{
-		whichPUp = pU.get_whichPowerUp();
-		switch (whichPUp) 
+		var x:Int = Std.parseInt(entityData.get("x"));
+		var y:Int = Std.parseInt(entityData.get("y"));
+		
+		switch (entityName)
 		{
-		  default:
-			trace("I do nothing :D");
+			case "Player":
+				player = new Player(x, y);
+				add(player);
 		}
-		pU.kill();
 	}
 }
