@@ -23,7 +23,7 @@ class Player extends FlxSprite
   private var currentState:States;
   private var speedX:Int;
   private var speedYJump:Int;
-  private var attackShape:FlxObject;
+  private var attackBox:Box;
   
   public function new(?X:Float=0, ?Y:Float=0) 
   {
@@ -31,7 +31,11 @@ class Player extends FlxSprite
     currentState = States.MOVE;  // Current State of Player
     speedX = Reg.playerNormalSpeed;  // The speed that will be given to velocity.x of the player
     speedYJump = Reg.playerJumpSpeed; // Speed when Player jumps
-    attackShape = new FlxObject(x + width, y + height, 10, 5); // The renctangle that makes Attack()
+	
+	attackBox = new Box(x + width, y + height / 3, 30, 12);
+	attackBox.kill();
+	FlxG.state.add(attackBox);
+	
     setFacingFlip(FlxObject.RIGHT, false, false);
     setFacingFlip(FlxObject.LEFT, true, false);
     
@@ -39,15 +43,16 @@ class Player extends FlxSprite
 	animation.add("idle", [0]);	// Temporary Animations (WORK IN PROGRESS)
 	animation.add("move", [1, 2, 3], 6, true);
 	animation.add("jump", [4, 5], 7, false);
-	animation.add("attack", [2, 2, 2], 9, false);
+	animation.add("attack", [2, 2, 3], 9, false);
 	//animation.add("death", [3]);
-
+	
     acceleration.y = Reg.gravity;
     currentState = States.IDLE;
   }
   override public function update(elapsed:Float):Void
   {
     stateMachine();
+	
     super.update(elapsed);
   }
   
@@ -97,7 +102,7 @@ class Player extends FlxSprite
 			velocity.x = 0;
         if (animation.name == "attack" && animation.finished)
         {
-          attackShape.kill();
+          attackBox.kill();
           if (!isTouching(FlxObject.FLOOR))
 		  {
 			animation.play("jump");
@@ -108,8 +113,11 @@ class Player extends FlxSprite
           else
             currentState = States.IDLE;
         }
-        
-        FlxG.state.add(attackShape); // Ask to teacher Cid
+		if (animation.curAnim.name == "attack" && animation.curAnim.curFrame == 2 && !animation.finished)
+			if(facing == FlxObject.RIGHT)
+				attackBox.reset(x + width, y + height / 3);
+			else
+				attackBox.reset(x - 30, y + height / 3);
       case States.DEAD:
         
       case States.DOORTRIGGER:

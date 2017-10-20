@@ -15,11 +15,14 @@ class PowerUp extends FlxSprite
   {
     super(X, Y);
     whichPowerUp = WhichPowerUp;
-    loadGraphic(AssetPaths.bichi__png, true, 11, 9);
-    animation.add("health1", [0]); // When the Health appears on the air
-    animation.add("health2", [1]); // When the Health appears on the floor
-    animation.add("weapon", [2]); // the mount of weapon will be defined later
-    animation.add("ammu", [3]); // Ammunition
+    loadGraphic(AssetPaths.player__png, true, 11, 9);
+    animation.add("health1", [0]);
+    animation.add("weapon1", [2]);
+	animation.add("weapon2", [3]);
+	animation.add("weapon3", [4]);
+    animation.add("ammu1", [5]);
+	animation.add("ammu2", [6]);
+	animation.add("ammu3", [7]);
     switch (whichPowerUp) 
     {
       case 0:

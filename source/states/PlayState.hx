@@ -2,6 +2,7 @@ package source.states;
 
 import entities.Player;
 import entities.PowerUp;
+import entities.Box;
 import flixel.FlxState;
 import flixel.FlxG;
 import flixel.FlxSprite;
