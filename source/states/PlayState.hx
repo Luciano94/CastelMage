@@ -10,6 +10,7 @@ import flixel.tile.FlxTilemap;
 
 class PlayState extends FlxState
 {
+	// Player
 	private var player:Player;
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
