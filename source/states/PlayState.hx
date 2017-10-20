@@ -27,14 +27,7 @@ class PlayState extends FlxState
 		add(tilemap);
 		loader.loadEntities(entityCreator, "Entities");
 		FlxG.worldBounds.set(0, 0, 5120, 480);
-		camera.follow(player);
-		
-		
-		//floor = new FlxSprite(100, camera.height - 30);
-		//floor.makeGraphic(400, 32);
-		//floor.immovable = true;
-		
-		
+		camera.follow(player);		
 	}
 
 	override public function update(elapsed:Float):Void
