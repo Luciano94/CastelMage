@@ -3,6 +3,7 @@ package states;
 import entities.Player;
 import entities.PowerUp;
 import entities.Box;
+import flixel.FlxCamera;
 import flixel.FlxState;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -29,7 +30,8 @@ class PlayState extends FlxState
 		add(tilemap);
 		loader.loadEntities(entityCreator, "Entities");
 		FlxG.worldBounds.set(0, 0, 5120, 480);
-		camera.follow(player);		
+		camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 2);
+		camera.setScrollBounds(0, 5120, 0, 480);
 	}
 
 	override public function update(elapsed:Float):Void
