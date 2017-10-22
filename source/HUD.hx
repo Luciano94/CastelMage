@@ -24,7 +24,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		lives = new FlxText(0, 250, 0, "x 3", 12, true);
 		lives.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
 		lives.alignment = FlxTextAlign.RIGHT;
-		//lives.scrollFactor.set(0, 0);
+		lives.scrollFactor.set(0, 0);
 		add(lives);
 		
 	}

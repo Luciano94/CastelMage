@@ -12,15 +12,16 @@ enum States
 	MOVING;
 	JUMPING;
 	ATTACKING;
+	CROUCHED;
 	DEAD;
-	DOORTRIGGER;
 }
 class Player extends FlxSprite
 {
-	public var currentState(get, null):States;
+	private var currentState:States;
 	private var speed:Int;
 	private var jumpSpeed:Int;
 	private var attackBox:Box;
+	private var hp:Int;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -29,6 +30,7 @@ class Player extends FlxSprite
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		acceleration.y = Reg.gravity;
+		health = 100;
 
 		attackBox = new Box(x + width, y + height / 3, 30, 12);
 		attackBox.kill();
@@ -41,7 +43,8 @@ class Player extends FlxSprite
 		animation.add("idle", [0, 1], 6, true);
 		animation.add("move", [2, 3, 4], 6, true);
 		animation.add("jump", [5, 6], 6, false);
-		animation.add("attack", [8, 0], 6, false);
+		animation.add("attack", [8, 9, 0], 9, false);
+		animation.add("crouch", [10], false);
 	}
 	override public function update(elapsed:Float):Void
 	{
@@ -59,6 +62,7 @@ class Player extends FlxSprite
 				moveHor();
 				jump();
 				attack();
+				crouch();
 				if (velocity.x != 0)
 					currentState = States.MOVING;
 				if (velocity.y != 0)
@@ -93,11 +97,10 @@ class Player extends FlxSprite
 			case States.ATTACKING:
 				if (animation.name != "attack")
 					animation.play("attack");
-				if (animation.name == "attack" && animation.frameIndex == 1)	
-					if (facing == FlxObject.RIGHT)
-						attackBox.reset(x + width, y + height / 3);
-					else
-						attackBox.reset(x - 30, y + height / 3);
+				if (facing == FlxObject.RIGHT)
+					attackBox.reset(x + width, y + height / 3);
+				else
+					attackBox.reset(x - 30, y + height / 3);
 				
 				if (animation.name == "attack" && animation.finished)
 				{
@@ -113,9 +116,23 @@ class Player extends FlxSprite
 					}
 
 				}
+				
+			case States.CROUCHED:
+				animation.play("crouch");
+				
+				if (velocity.y != 0)
+					currentState = States.JUMPING;
+				else
+				{
+					if (velocity.x != 0)
+						currentState = States.MOVING;
+					else
+						if (FlxG.keys.justReleased.DOWN)
+							currentState = States.IDLE;
+				}
+				
+				
 			case States.DEAD:
-
-			case States.DOORTRIGGER:
 
 		}
 	}
@@ -147,18 +164,16 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.justPressed.A)
 		{
-			velocity.x = 0;
 			currentState = States.ATTACKING;
-			
-			if (facing == FlxObject.RIGHT)
-				velocity.x = speed;
-			else
-				velocity.x = -speed;
 		}
 	}
 	
-	function get_currentState():States 
+	private function crouch():Void
 	{
-		return currentState;
+		if (FlxG.keys.pressed.DOWN)
+		{
+			currentState = States.CROUCHED;
+		}
+		
 	}
 }
