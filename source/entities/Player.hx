@@ -17,7 +17,7 @@ enum States
 }
 class Player extends FlxSprite
 {
-	private var currentState:States;
+	public var currentState(get, null):States;
 	private var speed:Int;
 	private var jumpSpeed:Int;
 	private var attackBox:Box;
@@ -41,7 +41,7 @@ class Player extends FlxSprite
 		animation.add("idle", [0, 1], 6, true);
 		animation.add("move", [2, 3, 4], 6, true);
 		animation.add("jump", [5, 6], 6, false);
-		animation.add("attack", [0, 8, 0], 9, false);
+		animation.add("attack", [8, 0], 6, false);
 	}
 	override public function update(elapsed:Float):Void
 	{
@@ -70,14 +70,15 @@ class Player extends FlxSprite
 				moveHor();
 				jump();
 				attack();
-
+				
 				if (velocity.x == 0)
 					currentState = States.IDLE;
 				if (velocity.y != 0)
 					currentState = States.JUMPING;
 					
 			case States.JUMPING:
-				animation.play("jump");
+				if (animation.name != "jump")
+					animation.play("jump");
 				
 				attack();
 
@@ -88,17 +89,15 @@ class Player extends FlxSprite
 					else
 						currentState = States.MOVING;
 				}
+				
 			case States.ATTACKING:
 				if (animation.name != "attack")
 					animation.play("attack");
-					
-				if (animation.name == "attack" && animation.curAnim && !animation.finished)
-				{
+				if (animation.name == "attack" && animation.frameIndex == 1)	
 					if (facing == FlxObject.RIGHT)
 						attackBox.reset(x + width, y + height / 3);
 					else
 						attackBox.reset(x - 30, y + height / 3);
-				}
 				
 				if (animation.name == "attack" && animation.finished)
 				{
@@ -148,13 +147,18 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.justPressed.A)
 		{
-			
-			currentState = States.ATTACKING;
 			velocity.x = 0;
-			//if (facing == FlxObject.RIGHT)
-				//velocity.x = speed;
-			//else
-				//velocity.x = -speed;
+			currentState = States.ATTACKING;
+			
+			if (facing == FlxObject.RIGHT)
+				velocity.x = speed;
+			else
+				velocity.x = -speed;
 		}
+	}
+	
+	function get_currentState():States 
+	{
+		return currentState;
 	}
 }

@@ -3,10 +3,6 @@ package entities;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 
-/**
- * ...
- * @author ...
- */
 class Box extends FlxSprite 
 {
 	public function new(X:Float, Y:Float, Width:Int, Height:Int) 
