@@ -139,8 +139,6 @@ class Player extends FlxSprite
 				}
 			case States.DEAD:
 				
-			case States.DOORTRIGGER:
-				
 		}
 	}
 	private function moveHor():Void
@@ -149,22 +147,22 @@ class Player extends FlxSprite
 
 	if (FlxG.keys.pressed.RIGHT)
 	{
-		speed = Reg.playerNormalSpeed;
+		velocity.x = speed;
 		facing = FlxObject.RIGHT;
 	}
 	if (FlxG.keys.pressed.LEFT)
 	{
-		speed = -Reg.playerNormalSpeed;
+		velocity.x = -speed;
 		facing = FlxObject.LEFT;
 	}
-	velocity.x = speed;
+	
 }
 
 private function jump():Void
 {
 	if (FlxG.keys.justPressed.S)
 	{
-		velocity.y += speedYJump;
+		velocity.y += jumpSpeed;
 		animation.play("jump");
 	}
 }
@@ -174,8 +172,17 @@ private function attack():Void
 	if (FlxG.keys.justPressed.A)
 	{
 		animation.play("attack");
-		currentState = States.ATTACK;
+		currentState = States.ATTACKING;
 		if (!isTouching(FlxObject.FLOOR) && speed != 0)
 			velocity.x = speed;
+	}
+}
+	private function crouch():Void
+	{
+		currentState = States.CROUCHED;
+		if (FlxG.keys.pressed.DOWN)
+		{
+		  currentState = States.CROUCHED;
+		}
 	}
 }
