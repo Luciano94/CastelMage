@@ -3,10 +3,6 @@ package entities;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 
-/**
- * ...
- * @author Aleman5
- */
 class PowerUp extends FlxSprite 
 {
   public var whichPowerUp(get, null):Int;
