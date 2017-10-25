@@ -82,7 +82,13 @@ class Player extends FlxSprite
 					currentState = States.JUMPING;
 				}
 			case States.JUMPING:
-				velocity.x = speed;
+				if (velocity.x == 0)
+					velocity.x = 0;
+				else if (velocity.x > 0)
+					velocity.x = speed;
+				else
+					velocity.x = -speed;
+					
 				attack();
 
 				if (velocity.y == 0 && isTouching(FlxObject.FLOOR))
@@ -110,51 +116,57 @@ class Player extends FlxSprite
 				}
 				if (animation.name == "attack" && animation.curAnim.curFrame == 2 && !animation.finished)
 				{
-					if(facing == FlxObject.RIGHT)
+					if (facing == FlxObject.RIGHT)
 						attackBox.reset(x + width, y + height / 3);
 					else
 						attackBox.reset(x - 30, y + height / 3);
 				}
 			case States.DEAD:
-				
+
 			case States.DOORTRIGGER:
-				
+
 		}
 	}
-private function moveHor():Void
-{
-	speed = 0;
+	private function moveHor():Void
+	{
+		velocity.x = 0;
 
-	if (FlxG.keys.pressed.RIGHT)
-	{
-		speed = Reg.playerNormalSpeed;
-		facing = FlxObject.RIGHT;
-	}
-	if (FlxG.keys.pressed.LEFT)
-	{
-		speed = -Reg.playerNormalSpeed;
-		facing = FlxObject.LEFT;
-	}
-	velocity.x = speed;
-}
-
-private function jump():Void
-{
-	if (FlxG.keys.justPressed.S)
-	{
-		velocity.y += speedYJump;
-		animation.play("jump");
-	}
-}
-
-private function attack():Void
-{
-	if (FlxG.keys.justPressed.A)
-	{
-		animation.play("attack");
-		currentState = States.ATTACK;
-		if (!isTouching(FlxObject.FLOOR) && speed != 0)
+		if (FlxG.keys.pressed.RIGHT)
+		{
 			velocity.x = speed;
+			facing = FlxObject.RIGHT;
+		}
+		if (FlxG.keys.pressed.LEFT)
+		{
+			velocity.x = -speed;
+			facing = FlxObject.LEFT;
+		}
 	}
-}
+
+	private function jump():Void
+	{
+		if (FlxG.keys.justPressed.S)
+		{
+			velocity.y += speedYJump;
+			animation.play("jump");
+		}
+	}
+
+	private function attack():Void
+	{
+		if (FlxG.keys.justPressed.A)
+		{
+			animation.play("attack");
+			currentState = States.ATTACK;
+			if (velocity.x == 0)
+				velocity.x = 0;
+			else if (!isTouching(FlxObject.FLOOR) && speed != 0)
+			{
+				if(facing == FlxObject.RIGHT)
+					velocity.x = speed;
+				else
+					velocity.x = -speed;
+			}
+		}
+	}
 }
