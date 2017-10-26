@@ -26,19 +26,20 @@ class Player extends FlxSprite
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
 		super(X, Y);
+		// Variables Inicialization
 		currentState = States.IDLE;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		acceleration.y = Reg.gravity;
 		health = 100;
-
+		// Box Collider Creation
 		attackBox = new Box(x + width, y + height / 3, 30, 12);
 		attackBox.kill();
 		FlxG.state.add(attackBox);
-
+		// Player Facings
 		setFacingFlip(FlxObject.RIGHT, false, false);
 		setFacingFlip(FlxObject.LEFT, true, false);
-
+		// Animations
 		loadGraphic(AssetPaths.player__png, true, 32, 48);
 		animation.add("idle", [0, 1], 6, true);
 		animation.add("move", [2, 3, 4], 6, true);
@@ -51,7 +52,6 @@ class Player extends FlxSprite
 		stateMachine();
 		super.update(elapsed);
 	}
-
 	private function stateMachine():Void
 	{
 		switch (currentState)
@@ -67,7 +67,7 @@ class Player extends FlxSprite
 					currentState = States.MOVING;
 				if (velocity.y != 0)
 					currentState = States.JUMPING;
-					
+				
 			case States.MOVING:
 				animation.play("move");
 				
@@ -79,7 +79,7 @@ class Player extends FlxSprite
 					currentState = States.IDLE;
 				if (velocity.y != 0)
 					currentState = States.JUMPING;
-					
+				
 			case States.JUMPING:
 				if (animation.name != "jump")
 					animation.play("jump");
@@ -90,9 +90,9 @@ class Player extends FlxSprite
 					velocity.x = speed;
 				else
 					velocity.x = -speed;
-					
+				
 				attack();
-
+				
 				if (velocity.y == 0 && isTouching(FlxObject.FLOOR))
 				{
 					if (velocity.x == 0)
@@ -102,13 +102,15 @@ class Player extends FlxSprite
 				}
 				
 			case States.ATTACKING:
-				if (animation.name != "attack")
-					animation.play("attack");
-				if (facing == FlxObject.RIGHT)
-					attackBox.reset(x + width, y + height / 3);
+				if (!isTouching(FlxObject.FLOOR) && velocity.x != 0)
+					if(facing == FlxObject.RIGHT)
+						velocity.x = speed;
+					else
+						velocity.x = -speed;
 				else
-					attackBox.reset(x - 30, y + height / 3);
-				
+					velocity.x = 0;
+				attackBox.velocity.x = velocity.x;
+				attackBox.velocity.y = velocity.y;
 				if (animation.name == "attack" && animation.finished)
 				{
 					attackBox.kill();
@@ -121,22 +123,15 @@ class Player extends FlxSprite
 						else
 							currentState = States.IDLE;
 					}
-
 				}
 				
 			case States.CROUCHED:
 				animation.play("crouch");
+				attack();
+				jump();
+				if (FlxG.keys.justReleased.DOWN)
+					currentState = States.IDLE;
 				
-				if (velocity.y != 0)
-					currentState = States.JUMPING;
-				else
-				{
-					if (facing == FlxObject.RIGHT)
-						attackBox.reset(x + width, y + height / 3);
-					else
-						if (FlxG.keys.justReleased.DOWN)
-							currentState = States.IDLE;
-				}
 			case States.DEAD:
 				
 		}
@@ -144,42 +139,46 @@ class Player extends FlxSprite
 	private function moveHor():Void
 	{
 		velocity.x = 0;
-
-	if (FlxG.keys.pressed.RIGHT)
-	{
-		velocity.x = speed;
-		facing = FlxObject.RIGHT;
-	}
-	if (FlxG.keys.pressed.LEFT)
-	{
-		velocity.x = -speed;
-		facing = FlxObject.LEFT;
-	}
-	
-}
-
-private function jump():Void
-{
-	if (FlxG.keys.justPressed.S)
-	{
-		velocity.y += jumpSpeed;
-		animation.play("jump");
-	}
-}
-
-private function attack():Void
-{
-	if (FlxG.keys.justPressed.A)
-	{
-		animation.play("attack");
-		currentState = States.ATTACKING;
-		if (!isTouching(FlxObject.FLOOR) && speed != 0)
+		if (FlxG.keys.pressed.RIGHT)
+		{
 			velocity.x = speed;
+			facing = FlxObject.RIGHT;
+		}
+		if (FlxG.keys.pressed.LEFT)
+		{
+			velocity.x = -speed;
+			facing = FlxObject.LEFT;
+		}
 	}
-}
+	private function jump():Void
+	{
+		if (FlxG.keys.justPressed.S)
+		{
+			velocity.y += jumpSpeed;
+			animation.play("jump");
+		}
+	}
+	private function attack():Void
+	{
+		if (FlxG.keys.justPressed.A)
+		{
+			animation.play("attack");
+			currentState = States.ATTACKING;
+			
+			if (facing == FlxObject.RIGHT)
+			{
+				attackBox.facing = FlxObject.RIGHT;
+				attackBox.reset(x + width, y + height / 3 - 4);
+			}
+			else
+			{
+				attackBox.facing = FlxObject.LEFT;
+				attackBox.reset(x - 30, y + height / 3 - 4);
+			}
+		}
+	}
 	private function crouch():Void
 	{
-		currentState = States.CROUCHED;
 		if (FlxG.keys.pressed.DOWN)
 		{
 		  currentState = States.CROUCHED;
