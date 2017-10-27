@@ -14,6 +14,7 @@ class WeaponSpear extends WeaponBase
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
 		super(X, Y);
+		
 		speed = Reg.weaponNormalSpeed;
 		initialPoint = 0;
 		loadGraphic(AssetPaths.weaponSpear__png, true, 30, 12);
@@ -39,6 +40,7 @@ class WeaponSpear extends WeaponBase
 	override public function reset(X:Float, Y:Float):Void 
 	{
 		super.reset(X, Y);
+		
 		animation.play("wp1");
 		initialPoint = X;
 	}

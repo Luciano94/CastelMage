@@ -3,10 +3,7 @@ package entities;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxObject;
-/**
- * ...
- * @author Aleman5
- */
+
 class WeaponBase extends FlxSprite 
 {
 	static public var pFacing:Int;

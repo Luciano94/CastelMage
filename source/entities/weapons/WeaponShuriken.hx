@@ -1,12 +1,9 @@
 package entities.weapons;
 
 import entities.WeaponBase;
+import flixel.FlxG;
 import flixel.FlxObject;
 
-/**
- * ...
- * @author Aleman5
- */
 class WeaponShuriken extends WeaponBase 
 {
 	private var speed:Int;
@@ -21,6 +18,7 @@ class WeaponShuriken extends WeaponBase
 	override public function update(elapsed:Float):Void 
 	{
 		super.update(elapsed);
+		
 		angularVelocity = 720;
 		if (facing == FlxObject.RIGHT)
 		{
@@ -32,10 +30,19 @@ class WeaponShuriken extends WeaponBase
 			velocity.x = -Reg.weaponBNormalSpeed;
 			angularVelocity = -1540;
 		}
+		
+		checkBoundaries();
 	}
 	override public function reset(X:Float, Y:Float):Void 
 	{
 		super.reset(X, Y);
+		
 		velocity.y = Reg.weaponYSpeed;
+	}
+	
+	private function checkBoundaries():Void 
+	{
+		if (x < camera.scroll.x || x > camera.scroll.x + FlxG.width || y < camera.scroll.y || y > camera.scroll.y + FlxG.height)
+			kill();
 	}
 }
