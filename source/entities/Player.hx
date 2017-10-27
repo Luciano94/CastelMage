@@ -22,28 +22,34 @@ class Player extends FlxSprite
 	private var jumpSpeed:Int;
 	private var attackBox:Box;
 	private var hp:Int;
+	private var lives:Int;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
 		super(X, Y);
-		// Variables Inicialization
+		
+		// Attributes Inicialization
 		currentState = States.IDLE;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		acceleration.y = Reg.gravity;
-		health = 100;
+		health = Reg.playerMaxHealth;
+		lives = Reg.playerMaxLives;
+		
 		// Box Collider Creation
 		attackBox = new Box(x + width, y + height / 3, 30, 12);
 		attackBox.kill();
 		FlxG.state.add(attackBox);
+		
 		// Player Facings
 		setFacingFlip(FlxObject.RIGHT, false, false);
 		setFacingFlip(FlxObject.LEFT, true, false);
+		
 		// Animations
 		loadGraphic(AssetPaths.player__png, true, 32, 48);
 		animation.add("idle", [0, 1], 6, true);
 		animation.add("move", [2, 3, 4], 6, true);
-		animation.add("jump", [5, 6], 6, false);
+		animation.add("jump", [5, 6], 9, false);
 		animation.add("attack", [8, 9, 0], 9, false);
 		animation.add("crouch", [10], false);
 	}
@@ -67,6 +73,8 @@ class Player extends FlxSprite
 					currentState = States.MOVING;
 				if (velocity.y != 0)
 					currentState = States.JUMPING;
+				if (attackBox.alive)
+					currentState = States.ATTACKING;
 				
 			case States.MOVING:
 				animation.play("move");
@@ -79,42 +87,53 @@ class Player extends FlxSprite
 					currentState = States.IDLE;
 				if (velocity.y != 0)
 					currentState = States.JUMPING;
+				if (attackBox.alive)
+					currentState = States.ATTACKING;
 				
 			case States.JUMPING:
 				if (animation.name != "jump")
 					animation.play("jump");
 				
-				if (velocity.x == 0)
-					velocity.x = 0;
-				else if (velocity.x > 0)
-					velocity.x = speed;
-				else
-					velocity.x = -speed;
+				//if (velocity.x == 0)
+					//velocity.x = 0;
+				//else if (velocity.x > 0)
+					//velocity.x = speed;
+				//else
+					//velocity.x = -speed;
 				
 				attack();
 				
-				if (velocity.y == 0 && isTouching(FlxObject.FLOOR))
+				if (velocity.y == 0)
 				{
 					if (velocity.x == 0)
 						currentState = States.IDLE;
 					else
 						currentState = States.MOVING;
 				}
+				if (attackBox.alive)
+					currentState = States.ATTACKING;
 				
 			case States.ATTACKING:
-				if (!isTouching(FlxObject.FLOOR) && velocity.x != 0)
-					if(facing == FlxObject.RIGHT)
+				if (animation.name != "attack")
+					animation.play("attack");
+					
+				if (velocity.y != 0 && velocity.x != 0)
+				{
+					if (facing == FlxObject.RIGHT)
 						velocity.x = speed;
 					else
 						velocity.x = -speed;
+				}
 				else
 					velocity.x = 0;
+				
 				attackBox.velocity.x = velocity.x;
 				attackBox.velocity.y = velocity.y;
+				
 				if (animation.name == "attack" && animation.finished)
 				{
 					attackBox.kill();
-					if (!isTouching(FlxObject.FLOOR))
+					if (velocity.y != 0)
 						currentState = States.JUMPING;
 					else
 					{
@@ -131,6 +150,8 @@ class Player extends FlxSprite
 				jump();
 				if (FlxG.keys.justReleased.DOWN)
 					currentState = States.IDLE;
+				if (attackBox.alive)
+					currentState = States.ATTACKING;
 				
 			case States.DEAD:
 				
@@ -155,15 +176,15 @@ class Player extends FlxSprite
 		if (FlxG.keys.justPressed.S)
 		{
 			velocity.y += jumpSpeed;
-			animation.play("jump");
+			//animation.play("jump");
 		}
 	}
 	private function attack():Void
 	{
 		if (FlxG.keys.justPressed.A)
 		{
-			animation.play("attack");
-			currentState = States.ATTACKING;
+			//animation.play("attack");
+			//currentState = States.ATTACKING;
 			
 			if (facing == FlxObject.RIGHT)
 			{
