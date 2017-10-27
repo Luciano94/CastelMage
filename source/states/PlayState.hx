@@ -2,7 +2,7 @@ package states;
 
 import entities.Player;
 import entities.PowerUp;
-import entities.WeaponN;
+import entities.weapons.WeaponNormal;
 import flixel.FlxCamera;
 import flixel.FlxState;
 import flixel.FlxG;

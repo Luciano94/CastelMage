@@ -3,22 +3,25 @@ package entities;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxObject;
-
-class WeaponN extends FlxSprite 
+/**
+ * ...
+ * @author Aleman5
+ */
+class WeaponBase extends FlxSprite 
 {
-	public function new(X:Float, Y:Float) 
+	static public var pFacing:Int;
+
+	public function new(?X:Float=0, ?Y:Float=0) 
 	{
 		super(X, Y);
-		loadGraphic(AssetPaths.normalAttack__png, true, 30, 12);
-		animation.add("normalAttack", [0, 1, 2, 3, 4, 5], 18, false);
-		animation.play("normalAttack");
 		
 		setFacingFlip(FlxObject.RIGHT, false, false);
 		setFacingFlip(FlxObject.LEFT, true, false);
 	}
+	
 	override public function update(elapsed:Float):Void 
 	{
 		super.update(elapsed);
-		animation.play("normalAttack");
+		facing = pFacing;
 	}
 }
