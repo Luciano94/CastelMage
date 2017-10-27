@@ -1,16 +1,17 @@
-package entities;
+package entities.weapons;
 
-import flixel.FlxSprite;
-import flixel.system.FlxAssets.FlxGraphicAsset;
-
-class Box extends FlxSprite 
+import entities.WeaponBase;
+import flixel.FlxObject;
+/**
+ * ...
+ * @author Aleman5
+ */
+class WeaponNormal extends WeaponBase 
 {
-	public function new(X:Float, Y:Float, Width:Int, Height:Int) 
+	public function new(X:Float, Y:Float) 
 	{
 		super(X, Y);
 		loadGraphic(AssetPaths.normalAttack__png, true, 30, 12);
-		width = Width;
-		height = Height;
 		animation.add("normalAttack", [0, 1, 2, 3, 4, 5], 18, false);
 		animation.play("normalAttack");
 	}

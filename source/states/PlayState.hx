@@ -2,8 +2,7 @@ package states;
 
 import entities.Player;
 import entities.PowerUp;
-import entities.Box;
-import flash.display3D.textures.Texture;
+import entities.weapons.WeaponNormal;
 import flixel.FlxCamera;
 import flixel.FlxState;
 import flixel.FlxG;
