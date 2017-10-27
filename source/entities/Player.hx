@@ -15,12 +15,20 @@ enum States
 	CROUCHED;
 	DEAD;
 }
+enum WeaponStates
+{
+	SINWEA;
+	WEASPEAR;
+	WEABOOMERANG;
+	WEA3;
+}
 class Player extends FlxSprite
 {
 	private var currentState:States;
+	private var weaponCurrentState:WeaponStates;
 	private var speed:Int;
 	private var jumpSpeed:Int;
-	private var attackBox:Box;
+	private var weaponN:WeaponN;
 	private var hp:Int;
 
 	public function new(?X:Float=0, ?Y:Float=0)
@@ -28,14 +36,15 @@ class Player extends FlxSprite
 		super(X, Y);
 		// Variables Inicialization
 		currentState = States.IDLE;
+		weaponCurrentState = WeaponStates.WEASPEAR;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		acceleration.y = Reg.gravity;
 		health = 100;
 		// Box Collider Creation
-		attackBox = new Box(x + width, y + height / 3, 30, 12);
-		attackBox.kill();
-		FlxG.state.add(attackBox);
+		weaponN = new WeaponN(x + width, y + height / 3);
+		weaponN.kill();
+		FlxG.state.add(weaponN);
 		// Player Facings
 		setFacingFlip(FlxObject.RIGHT, false, false);
 		setFacingFlip(FlxObject.LEFT, true, false);
@@ -61,12 +70,12 @@ class Player extends FlxSprite
 				
 				moveHor();
 				jump();
-				attack();
 				crouch();
 				if (velocity.x != 0)
 					currentState = States.MOVING;
 				if (velocity.y != 0)
 					currentState = States.JUMPING;
+				attack(); // This goes here to correct a bug
 				
 			case States.MOVING:
 				animation.play("move");
@@ -109,13 +118,13 @@ class Player extends FlxSprite
 						velocity.x = -speed;
 				else
 					velocity.x = 0;
-				attackBox.velocity.x = velocity.x;
-				attackBox.velocity.y = velocity.y;
+				weaponN.velocity.x = velocity.x;
+				weaponN.velocity.y = velocity.y;
 				if (animation.name == "attack" && animation.finished)
 				{
-					attackBox.kill();
+					weaponN.kill();
 					if (!isTouching(FlxObject.FLOOR))
-						currentState = States.JUMPING;
+						  currentState = States.JUMPING;
 					else
 					{
 						if (velocity.x != 0)
@@ -162,19 +171,34 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.justPressed.A)
 		{
-			animation.play("attack");
-			currentState = States.ATTACKING;
-			
-			if (facing == FlxObject.RIGHT)
+			if (!FlxG.keys.pressed.UP)
 			{
-				attackBox.facing = FlxObject.RIGHT;
-				attackBox.reset(x + width, y + height / 3 - 4);
+				animation.play("attack");
+				currentState = States.ATTACKING;
+				
+				if (facing == FlxObject.RIGHT)
+				{
+					weaponN.facing = FlxObject.RIGHT;
+					weaponN.reset(x + width, y + height / 3 - 4);
+				}
+				else
+				{
+					weaponN.facing = FlxObject.LEFT;
+					weaponN.reset(x - 30, y + height / 3 - 4);
+				}
 			}
 			else
-			{
-				attackBox.facing = FlxObject.LEFT;
-				attackBox.reset(x - 30, y + height / 3 - 4);
-			}
+				switch (weaponCurrentState) 
+				{
+					case WeaponStates.SINWEA:
+						// Tengo pensado en que aparezca un mensaje diciendo que no tiene arma
+					case WeaponStates.WEASPEAR:
+						
+					case WeaponStates.WEABOOMERANG:
+						
+					case WeaponStates.WEA3:
+						
+				}
 		}
 	}
 	private function crouch():Void
