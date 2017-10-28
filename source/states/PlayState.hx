@@ -27,7 +27,10 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		super.create();
-
+		
+		//Hide Cursor
+		FlxG.mouse.visible = false;
+		
 		//Tilemap
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
 		tilemap = loader.loadTilemap(AssetPaths.tileset__png, 16, 16, "Tiles");
@@ -49,6 +52,8 @@ class PlayState extends FlxState
 
 		hud = new HUD();
 		add(hud);
+		
+		//hud.updateHUD(1, 1, 10, 200);
 
 		playerHealth = new FlxBar(10, 10, FlxBarFillDirection.LEFT_TO_RIGHT, 68, 12, player, "hp", 0, 100, true);
 		playerHealth.scrollFactor.set(0, 0);
@@ -58,7 +63,8 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
-
+		
+		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score);
 		FlxG.collide(player, tilemap);
 	}
 

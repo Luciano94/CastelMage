@@ -19,18 +19,7 @@ class WeaponShuriken extends WeaponBase
 	{
 		super.update(elapsed);
 		
-		angularVelocity = 720;
-		if (facing == FlxObject.RIGHT)
-		{
-			velocity.x = Reg.weaponBNormalSpeed;
-			angularVelocity = 1540;
-		}
-		else
-		{
-			velocity.x = -Reg.weaponBNormalSpeed;
-			angularVelocity = -1540;
-		}
-		
+		checkTravel();
 		checkBoundaries();
 	}
 	override public function reset(X:Float, Y:Float):Void 
@@ -42,7 +31,22 @@ class WeaponShuriken extends WeaponBase
 	
 	private function checkBoundaries():Void 
 	{
-		if (x < camera.scroll.x || x > camera.scroll.x + FlxG.width || y < camera.scroll.y || y > camera.scroll.y + FlxG.height)
+		if (y > camera.scroll.y + FlxG.height)
 			kill();
+	}
+	
+	private function checkTravel():Void 
+	{
+		angularVelocity = 720;
+		if (facing == FlxObject.RIGHT)
+		{
+			velocity.x = Reg.weaponBNormalSpeed;
+			angularVelocity = 1540;
+		}
+		else
+		{
+			velocity.x = -Reg.weaponBNormalSpeed;
+			angularVelocity = -1540;
+		}
 	}
 }

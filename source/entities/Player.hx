@@ -47,7 +47,7 @@ class Player extends FlxSprite
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		acceleration.y = Reg.gravity;
-		health = Reg.playerMaxHealth;
+		hp = Reg.playerMaxHealth;
 		lives = Reg.playerMaxLives;
 
 		// Weapons Creation
@@ -160,7 +160,6 @@ class Player extends FlxSprite
 			case States.CROUCHED:
 				animation.play("crouch");
 				attack();
-				jump();
 				if (FlxG.keys.justReleased.DOWN)
 					currentState = States.IDLE;
 				if (weaponN.alive)
@@ -195,7 +194,8 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.justPressed.A)
 		{
-			WeaponBase.pFacing = facing;
+			if (!weaponSpear.alive && !weaponShuriken.alive)
+				WeaponBase.pFacing = facing;
 			if (!FlxG.keys.pressed.UP)
 			{
 				if (facing == FlxObject.RIGHT)
@@ -210,11 +210,13 @@ class Player extends FlxSprite
 					case WeaponStates.SINWEA:
 					// Tengo pensado en que aparezca un mensaje diciendo que no tiene arma
 					case WeaponStates.WEASPEAR:
-						if (facing == FlxObject.RIGHT)
-							weaponSpear.reset(x + width / 2, y + height / 3 - 4);
-						else
-							weaponSpear.reset(x - width / 2, y + height / 3 - 4);
-
+						if (!weaponSpear.alive)
+						{
+							if (facing == FlxObject.RIGHT)
+								weaponSpear.reset(x + width / 2, y + height / 3 - 4);
+							else
+								weaponSpear.reset(x - width / 2, y + height / 3 - 4);
+						}
 					case WeaponStates.WEASHURIKEN:
 						if (!weaponShuriken.alive)
 						{

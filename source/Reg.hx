@@ -9,8 +9,8 @@ class Reg
 	static public var playerMaxHealth:Int = 100;
 	static public var playerMaxLives:Int = 3;
 	// Weapon Spear
-	static public var weaponNormalSpeed:Int = 140;
-	static public var weaponMaxDistance:Int = 90;
+	static public var weaponNormalSpeed:Int = 200;
+	static public var weaponMaxDistance:Int = 150;
 	// Weapon Boomerang
 	static public var weaponBNormalSpeed:Int = 275;
 	static public var weaponYSpeed:Int = -300;

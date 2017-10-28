@@ -35,23 +35,41 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		livesSprite.scrollFactor.set(0, 0);
 		add(livesSprite);
 		
-		ammo = new FlxText(FlxG.width / 2 + 16, 8, 0, "3", 11, true);
+		ammo = new FlxText(FlxG.width / 2 + 16, 8, 0, "10", 11, true);
 		ammo.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
 		ammo.scrollFactor.set(0, 0);
 		add(ammo);
 		
+		ammoSprite = new FlxSprite(FlxG.width / 2, 8, AssetPaths.weapons__png);
+		ammoSprite.loadGraphic(AssetPaths.weapons__png, true, 16, 16);
+		ammoSprite.animation.add("thunder", [0], 12, false);
+		ammoSprite.animation.add("spear", [1], 12, false);
+		ammoSprite.animation.add("shuriken", [2], 12, false);
+		ammoSprite.scrollFactor.set(0, 0);
+		add(ammoSprite);
 		
-		
-		score = new FlxText(FlxG.width - 96, 8, "Score: 0", 11, true);
+		score = new FlxText(FlxG.width - 80, 8, "Score: 0", 11, true);
 		score.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
 		score.scrollFactor.set(0, 0);
 		add(score);
 		
 	}
 	
-	public function updateHUD(l:Int, s:Int):Void
+	public function updateHUD(Lives:Int, Weapon:String, Ammo:Int, Score:Int):Void
 	{
-		lives.text = Std.string(l);
-		score.text = "Score: " + Std.string(s);
+		lives.text = Std.string(Lives);
+		if (Lives <= 1)
+			lives.color = FlxColor.RED;
+		ammo.text = Std.string(Ammo);
+		score.text = "Score: " + Std.string(Score);
+		switch (Weapon)
+		{
+			case "SINWEA":
+				ammoSprite.animation.play("thunder");
+			case "WEASPEAR":
+				ammoSprite.animation.play("spear");
+			case "WEASHURIKEN":
+				ammoSprite.animation.play("shuriken");
+		}
 	}
 }
