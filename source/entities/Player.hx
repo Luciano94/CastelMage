@@ -28,14 +28,15 @@ enum WeaponStates
 class Player extends FlxSprite
 {
 	private var currentState:States;
-	private var weaponCurrentState:WeaponStates;
+	public var weaponCurrentState(get, null):WeaponStates;
 	private var speed:Int;
 	private var jumpSpeed:Int;
 	private var weaponN:WeaponNormal;
 	private var weaponSpear:WeaponSpear;
 	private var weaponShuriken:WeaponShuriken;
 	private var hp:Int;
-	private var lives:Int;
+	public var lives(get, null):Int;
+	public var ammo(get, null):Int;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -49,6 +50,7 @@ class Player extends FlxSprite
 		acceleration.y = Reg.gravity;
 		hp = Reg.playerMaxHealth;
 		lives = Reg.playerMaxLives;
+		ammo = 10;
 
 		// Weapons Creation
 		weaponN = new WeaponNormal(x + width, y + height / 3);
@@ -76,6 +78,8 @@ class Player extends FlxSprite
 	override public function update(elapsed:Float):Void
 	{
 		stateMachine();
+		checkAmmo();
+		
 		super.update(elapsed);
 	}
 	private function stateMachine():Void
@@ -210,20 +214,24 @@ class Player extends FlxSprite
 					case WeaponStates.SINWEA:
 					// Tengo pensado en que aparezca un mensaje diciendo que no tiene arma
 					case WeaponStates.WEASPEAR:
-						if (!weaponSpear.alive)
+						if (!weaponSpear.alive && ammo > 0)
 						{
 							if (facing == FlxObject.RIGHT)
 								weaponSpear.reset(x + width / 2, y + height / 3 - 4);
 							else
 								weaponSpear.reset(x - width / 2, y + height / 3 - 4);
+								
+							ammo--;
 						}
 					case WeaponStates.WEASHURIKEN:
-						if (!weaponShuriken.alive)
+						if (!weaponShuriken.alive && ammo > 0)
 						{
 							if (facing == FlxObject.RIGHT)
 								weaponShuriken.reset(x + width * 4 / 5, y + height / 4);
 							else
 								weaponShuriken.reset(x - width * 4 / 5, y + height / 4);
+							
+							ammo--;
 						}
 					case WeaponStates.WEA3:
 
@@ -235,5 +243,26 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.pressed.DOWN)
 			currentState = States.CROUCHED;
+	}
+	
+	private function checkAmmo():Void
+	{
+		if (ammo == 0)
+			weaponCurrentState = WeaponStates.SINWEA;
+	}
+	
+	function get_lives():Int 
+	{
+		return lives;
+	}
+	
+	function get_ammo():Int 
+	{
+		return ammo;
+	}
+	
+	function get_weaponCurrentState():WeaponStates 
+	{
+		return weaponCurrentState;
 	}
 }
