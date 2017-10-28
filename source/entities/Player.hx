@@ -87,8 +87,6 @@ class Player extends FlxSprite
 		switch (currentState)
 		{
 			case States.IDLE:
-				setGraphicSize(32, 48);
-				updateHitbox();
 				animation.play("idle");
 
 				moveHor();
@@ -246,8 +244,6 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.pressed.DOWN)
 		{
-			setGraphicSize(32, 36);
-			updateHitbox();
 			currentState = States.CROUCHED;
 		}
 	}
