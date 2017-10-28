@@ -6,15 +6,15 @@
   <GridColor A="255" R="255" G="240" B="90" />
   <LevelDefaultSize>
     <Width>5120</Width>
-    <Height>480</Height>
+    <Height>512</Height>
   </LevelDefaultSize>
   <LevelMinimumSize>
     <Width>2560</Width>
-    <Height>240</Height>
+    <Height>272</Height>
   </LevelMinimumSize>
   <LevelMaximumSize>
     <Width>10240</Width>
-    <Height>480</Height>
+    <Height>512</Height>
   </LevelMaximumSize>
   <Filename>C:\Users\Ignacio Mosconi\Documents\HaxeDevelop Projects\CastelMage\assets\data\Castlevania.oep</Filename>
   <AngleMode>Radians</AngleMode>

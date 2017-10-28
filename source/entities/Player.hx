@@ -72,8 +72,8 @@ class Player extends FlxSprite
 		animation.add("idle", [0, 1], 6, true);
 		animation.add("move", [2, 3, 4], 6, true);
 		animation.add("jump", [5, 6], 9, false);
-		animation.add("attack", [8, 9, 0], 9, false);
-		animation.add("crouch", [10], false);
+		animation.add("attack", [7, 8, 0], 9, false);
+		animation.add("crouch", [9], false);
 	}
 	override public function update(elapsed:Float):Void
 	{
@@ -87,6 +87,8 @@ class Player extends FlxSprite
 		switch (currentState)
 		{
 			case States.IDLE:
+				setGraphicSize(32, 48);
+				updateHitbox();
 				animation.play("idle");
 
 				moveHor();
@@ -163,6 +165,7 @@ class Player extends FlxSprite
 
 			case States.CROUCHED:
 				animation.play("crouch");
+				
 				attack();
 				if (FlxG.keys.justReleased.DOWN)
 					currentState = States.IDLE;
@@ -242,7 +245,11 @@ class Player extends FlxSprite
 	private function crouch():Void
 	{
 		if (FlxG.keys.pressed.DOWN)
+		{
+			setGraphicSize(32, 36);
+			updateHitbox();
 			currentState = States.CROUCHED;
+		}
 	}
 	
 	private function checkAmmo():Void

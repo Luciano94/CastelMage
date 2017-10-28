@@ -31,7 +31,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		lives.scrollFactor.set(0, 0);
 		add(lives);
 		
-		livesSprite = new FlxSprite(FlxG.width / 2 - 32, 8, AssetPaths.lives__png);
+		livesSprite = new FlxSprite(FlxG.width / 2 - 32, 8, AssetPaths.livesHUD__png);
 		livesSprite.scrollFactor.set(0, 0);
 		add(livesSprite);
 		
@@ -40,9 +40,9 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		ammo.scrollFactor.set(0, 0);
 		add(ammo);
 		
-		ammoSprite = new FlxSprite(FlxG.width / 2, 8, AssetPaths.weapons__png);
-		ammoSprite.loadGraphic(AssetPaths.weapons__png, true, 16, 16);
-		ammoSprite.animation.add("thunder", [0], 12, false);
+		ammoSprite = new FlxSprite(FlxG.width / 2, 8, AssetPaths.weaponsHUD__png);
+		ammoSprite.loadGraphic(AssetPaths.weaponsHUD__png, true, 16, 16);
+		ammoSprite.animation.add("noWeapon", [0], 12, false);
 		ammoSprite.animation.add("spear", [1], 12, false);
 		ammoSprite.animation.add("shuriken", [2], 12, false);
 		ammoSprite.scrollFactor.set(0, 0);
@@ -60,12 +60,28 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		lives.text = Std.string(Lives);
 		if (Lives <= 1)
 			lives.color = FlxColor.RED;
+		else
+			lives.color = FlxColor.WHITE;
+		
 		ammo.text = Std.string(Ammo);
+		if (Ammo < 4)
+		{
+			if (Ammo == 0)
+				ammo.visible = false;
+			else
+				ammo.color = FlxColor.RED;
+		}
+		else
+			ammo.color = FlxColor.WHITE;
+		if (Ammo > 0)
+			ammo.visible = true;
+		
 		score.text = "Score: " + Std.string(Score);
+		
 		switch (Weapon)
 		{
 			case "SINWEA":
-				ammoSprite.animation.play("thunder");
+				ammoSprite.animation.play("noWeapon");
 			case "WEASPEAR":
 				ammoSprite.animation.play("spear");
 			case "WEASHURIKEN":

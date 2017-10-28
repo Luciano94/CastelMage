@@ -34,38 +34,43 @@ class PlayState extends FlxState
 		//Tilemap
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
 		tilemap = loader.loadTilemap(AssetPaths.tileset__png, 16, 16, "Tiles");
-		tilemap.setTileProperties(0, FlxObject.NONE);
-		tilemap.setTileProperties(1, FlxObject.NONE);
-		tilemap.setTileProperties(2, FlxObject.ANY);
+		for (i in 0...8)
+			tilemap.setTileProperties(i, FlxObject.NONE);
+		for (i in 8...10)
+			tilemap.setTileProperties(i, FlxObject.ANY);
+		for (i in 11...19)
+			tilemap.setTileProperties(i, FlxObject.NONE);
 		add(tilemap);
 
 		//Loader && Bounds
 		loader.loadEntities(entityCreator, "Entities");
-		FlxG.worldBounds.set(0, 0, 5120, 480);
+		FlxG.worldBounds.set(0, 0, 5120, 512);
 
 		//Camera
 		camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 2);
-		camera.setScrollBounds(0, 5120, 0, 480);
+		camera.setScrollBounds(0, 5120, 0, 512);
 
 		//HUD
 		score = 0;
-
+		
 		hud = new HUD();
 		add(hud);
-		
-		//hud.updateHUD(1, 1, 10, 200);
 
 		playerHealth = new FlxBar(10, 10, FlxBarFillDirection.LEFT_TO_RIGHT, 68, 12, player, "hp", 0, 100, true);
 		playerHealth.scrollFactor.set(0, 0);
-		add(playerHealth);
+		add(playerHealth);	
 	}
 
 	override public function update(elapsed:Float):Void
 	{
-		super.update(elapsed);
-		
-		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score);
+		if (!Reg.paused)
+		{
+			super.update(elapsed);
+			
+			hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score);
+		}
 		FlxG.collide(player, tilemap);
+		checkPause();
 	}
 
 	private function entityCreator(entityName:String, entityData:Xml):Void
@@ -79,5 +84,11 @@ class PlayState extends FlxState
 				player = new Player(x, y);
 				add(player);
 		}
+	}
+	
+	private function checkPause():Void
+	{
+		if (FlxG.keys.justPressed.ENTER)
+			Reg.paused = !Reg.paused;
 	}
 }
