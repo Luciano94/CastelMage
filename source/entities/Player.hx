@@ -37,6 +37,7 @@ class Player extends FlxSprite
 	private var hp:Int;
 	public var lives(get, null):Int;
 	public var ammo(get, null):Int;
+	//public var isNextToStairs(null, set):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -93,6 +94,7 @@ class Player extends FlxSprite
 				jump();
 				attack();
 				crouch();
+				//takeStairs();
 				if (velocity.x != 0)
 					currentState = States.MOVING;
 				if (velocity.y != 0)
@@ -106,6 +108,7 @@ class Player extends FlxSprite
 				moveHor();
 				jump();
 				attack();
+				//takeStairs();
 
 				if (velocity.x == 0)
 					currentState = States.IDLE;
@@ -248,6 +251,18 @@ class Player extends FlxSprite
 		}
 	}
 	
+	private function takeStairs():Void
+	{
+		if (isNextToStairs)
+		{
+			if (FlxG.keys.pressed.UP)
+				velocity.set(16, 16);
+			if (FlxG.keys.pressed.DOWN)
+				velocity.set( -16, -16);
+				
+		}
+	}
+	
 	private function checkAmmo():Void
 	{
 		if (ammo == 0)
@@ -268,4 +283,9 @@ class Player extends FlxSprite
 	{
 		return weaponCurrentState;
 	}
+	
+	//function set_isNextToStairs(value:Bool):Bool 
+	//{
+		//return isNextToStairs = value;
+	//}
 }
