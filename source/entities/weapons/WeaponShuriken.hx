@@ -11,7 +11,7 @@ class WeaponShuriken extends WeaponBase
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
 		super(X, Y);
-		speed = Reg.weaponNormalSpeed;
+		speed = Reg.weaponSpeNormalSpeed;
 		acceleration.y = Reg.gravity;
 		loadGraphic(AssetPaths.weaponShuriken__png, false, 14, 14);
 	}
@@ -26,7 +26,7 @@ class WeaponShuriken extends WeaponBase
 	{
 		super.reset(X, Y);
 		
-		velocity.y = Reg.weaponYSpeed;
+		velocity.y = Reg.weaponShuYSpeed;
 	}
 	
 	private function checkBoundaries():Void 
@@ -37,15 +37,15 @@ class WeaponShuriken extends WeaponBase
 	
 	private function checkTravel():Void 
 	{
-		angularVelocity = 720;
+		//angularVelocity = 720;
 		if (facing == FlxObject.RIGHT)
 		{
-			velocity.x = Reg.weaponBNormalSpeed;
+			velocity.x = Reg.weaponShuNormalSpeed;
 			angularVelocity = 1540;
 		}
 		else
 		{
-			velocity.x = -Reg.weaponBNormalSpeed;
+			velocity.x = -Reg.weaponShuNormalSpeed;
 			angularVelocity = -1540;
 		}
 	}

@@ -1,5 +1,6 @@
 package entities;
 
+import entities.weapons.WeaponPotion;
 import entities.weapons.WeaponShuriken;
 import entities.weapons.WeaponNormal;
 import entities.weapons.WeaponSpear;
@@ -23,7 +24,7 @@ enum WeaponStates
 	SINWEA;
 	WEASPEAR;
 	WEASHURIKEN;
-	WEA3;
+	WEAPOTION;
 }
 class Player extends FlxSprite
 {
@@ -34,6 +35,7 @@ class Player extends FlxSprite
 	private var weaponN:WeaponNormal;
 	private var weaponSpear:WeaponSpear;
 	private var weaponShuriken:WeaponShuriken;
+	private var weaponPotion:WeaponPotion;
 	private var hp:Int;
 	public var lives(get, null):Int;
 	public var ammo(get, null):Int;
@@ -44,7 +46,7 @@ class Player extends FlxSprite
 
 		// Attributes Inicialization
 		currentState = States.IDLE;
-		weaponCurrentState = WeaponStates.WEASHURIKEN;
+		weaponCurrentState = WeaponStates.WEAPOTION;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		acceleration.y = Reg.gravity;
@@ -59,9 +61,12 @@ class Player extends FlxSprite
 		weaponSpear.kill();
 		weaponShuriken = new WeaponShuriken(x + width / 2, y + height / 3);
 		weaponShuriken.kill();
+		weaponPotion = new WeaponPotion(x + width, y + height / 3);
+		weaponPotion.kill();
 		FlxG.state.add(weaponN);
 		FlxG.state.add(weaponSpear);
 		FlxG.state.add(weaponShuriken);
+		FlxG.state.add(weaponPotion);
 
 		// Player Facings
 		setFacingFlip(FlxObject.RIGHT, false, false);
@@ -198,6 +203,8 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.justPressed.A)
 		{
+			currentState = States.ATTACKING;
+			
 			if (!weaponSpear.alive && !weaponShuriken.alive)
 				WeaponBase.pFacing = facing;
 			if (!FlxG.keys.pressed.UP)
@@ -220,7 +227,7 @@ class Player extends FlxSprite
 								weaponSpear.reset(x + width / 2, y + height / 3 - 4);
 							else
 								weaponSpear.reset(x - width / 2, y + height / 3 - 4);
-								
+							
 							ammo--;
 						}
 					case WeaponStates.WEASHURIKEN:
@@ -233,8 +240,16 @@ class Player extends FlxSprite
 							
 							ammo--;
 						}
-					case WeaponStates.WEA3:
-
+					case WeaponStates.WEAPOTION:
+						if (!weaponPotion.alive && ammo > 0)
+						{
+							if (facing == FlxObject.RIGHT)
+								weaponPotion.reset(x + width - weaponPotion.width / 2, y + height / 3);
+							else
+								weaponPotion.reset(x - weaponPotion.width / 2, y + height / 3);
+							
+							ammo--;
+						}
 				}
 			}
 		}

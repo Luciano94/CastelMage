@@ -66,7 +66,7 @@ class PlayState extends FlxState
 		
 		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score);
 		FlxG.collide(player, tilemap);
-	}
+		}
 
 	private function entityCreator(entityName:String, entityData:Xml):Void
 	{

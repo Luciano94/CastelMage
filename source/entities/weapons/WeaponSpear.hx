@@ -13,8 +13,8 @@ class WeaponSpear extends WeaponBase
 	{
 		super(X, Y);
 		
-		speed = Reg.weaponNormalSpeed;
-		maxDistance = Reg.weaponMaxDistance;
+		speed = Reg.weaponSpeNormalSpeed;
+		maxDistance = Reg.weaponSpeMaxDistance;
 		initialPoint = 0;
 		loadGraphic(AssetPaths.weaponSpear__png, true, 30, 12);
 		animation.add("wp1", [21], 44, false);

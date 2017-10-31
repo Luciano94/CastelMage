@@ -9,11 +9,14 @@ class Reg
 	static public var playerMaxHealth:Int = 100;
 	static public var playerMaxLives:Int = 3;
 	// Weapon Spear
-	static public var weaponNormalSpeed:Int = 200;
-	static public var weaponMaxDistance:Int = 150;
-	// Weapon Boomerang
-	static public var weaponBNormalSpeed:Int = 275;
-	static public var weaponYSpeed:Int = -300;
+	static public var weaponSpeNormalSpeed:Int = 200;
+	static public var weaponSpeMaxDistance:Int = 150;
+	// Weapon Shuriken
+	static public var weaponShuNormalSpeed:Int = 275;
+	static public var weaponShuYSpeed:Int = -300;
+	// Weapon Potion
+	static public var weaponPotNormalSpeed:Int = 120;
+	static public var weaponPotYSpeed:Int = -150;
 	// Pause
 	static public var paused:Bool = false;
 }
