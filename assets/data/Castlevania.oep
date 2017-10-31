@@ -6,15 +6,15 @@
   <GridColor A="255" R="255" G="240" B="90" />
   <LevelDefaultSize>
     <Width>5120</Width>
-    <Height>480</Height>
+    <Height>512</Height>
   </LevelDefaultSize>
   <LevelMinimumSize>
     <Width>2560</Width>
-    <Height>240</Height>
+    <Height>272</Height>
   </LevelMinimumSize>
   <LevelMaximumSize>
     <Width>10240</Width>
-    <Height>480</Height>
+    <Height>512</Height>
   </LevelMaximumSize>
   <Filename>C:\Users\Ignacio Mosconi\Documents\HaxeDevelop Projects\CastelMage\assets\data\Castlevania.oep</Filename>
   <AngleMode>Radians</AngleMode>
@@ -43,8 +43,8 @@
     <LayerDefinition xsi:type="EntityLayerDefinition">
       <Name>Entities</Name>
       <Grid>
-        <Width>32</Width>
-        <Height>48</Height>
+        <Width>16</Width>
+        <Height>16</Height>
       </Grid>
       <ScrollFactor>
         <X>1</X>
@@ -74,6 +74,21 @@
         <Y>0</Y>
       </Origin>
       <ImageDefinition DrawMode="Image" ImagePath="..\images\player.png" Tiled="true">
+        <RectColor A="255" R="255" G="0" B="0" />
+      </ImageDefinition>
+      <ValueDefinitions />
+      <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
+    </EntityDefinition>
+    <EntityDefinition Name="Stairs" Limit="-1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
+      <Size>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Size>
+      <Origin>
+        <X>0</X>
+        <Y>0</Y>
+      </Origin>
+      <ImageDefinition DrawMode="Image" ImagePath="..\images\stairs.png" Tiled="true">
         <RectColor A="255" R="255" G="0" B="0" />
       </ImageDefinition>
       <ValueDefinitions />

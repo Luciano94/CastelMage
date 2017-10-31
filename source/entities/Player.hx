@@ -39,6 +39,7 @@ class Player extends FlxSprite
 	private var hp:Int;
 	public var lives(get, null):Int;
 	public var ammo(get, null):Int;
+	//public var isNextToStairs(null, set):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -77,8 +78,8 @@ class Player extends FlxSprite
 		animation.add("idle", [0, 1], 6, true);
 		animation.add("move", [2, 3, 4], 6, true);
 		animation.add("jump", [5, 6], 9, false);
-		animation.add("attack", [8, 9, 0], 9, false);
-		animation.add("crouch", [10], false);
+		animation.add("attack", [7, 8, 0], 9, false);
+		animation.add("crouch", [9], false);
 	}
 	override public function update(elapsed:Float):Void
 	{
@@ -98,6 +99,7 @@ class Player extends FlxSprite
 				jump();
 				attack();
 				crouch();
+				//takeStairs();
 				if (velocity.x != 0)
 					currentState = States.MOVING;
 				if (velocity.y != 0)
@@ -111,6 +113,7 @@ class Player extends FlxSprite
 				moveHor();
 				jump();
 				attack();
+				//takeStairs();
 
 				if (velocity.x == 0)
 					currentState = States.IDLE;
@@ -168,6 +171,7 @@ class Player extends FlxSprite
 
 			case States.CROUCHED:
 				animation.play("crouch");
+				
 				attack();
 				if (FlxG.keys.justReleased.DOWN)
 					currentState = States.IDLE;
@@ -257,7 +261,21 @@ class Player extends FlxSprite
 	private function crouch():Void
 	{
 		if (FlxG.keys.pressed.DOWN)
+		{
 			currentState = States.CROUCHED;
+		}
+	}
+	
+	private function takeStairs():Void
+	{
+		if (isNextToStairs)
+		{
+			if (FlxG.keys.pressed.UP)
+				velocity.set(16, 16);
+			if (FlxG.keys.pressed.DOWN)
+				velocity.set( -16, -16);
+				
+		}
 	}
 	
 	private function checkAmmo():Void
@@ -280,4 +298,9 @@ class Player extends FlxSprite
 	{
 		return weaponCurrentState;
 	}
+	
+	//function set_isNextToStairs(value:Bool):Bool 
+	//{
+		//return isNextToStairs = value;
+	//}
 }

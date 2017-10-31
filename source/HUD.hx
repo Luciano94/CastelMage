@@ -16,60 +16,105 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	private var ammo:FlxText;
 	private var ammoSprite:FlxSprite;
 	private var score:FlxText;
+	private var pause:FlxText;
 	
 	public function new() 
 	{
 		super();
 		
-		background = new FlxSprite(0, 0);
-		background.makeGraphic(FlxG.width, 32, FlxColor.BLACK);
-		background.scrollFactor.set(0, 0);
-		add(background);
-		
-		lives = new FlxText(FlxG.width / 2 - 16, 8, 0, "3", 11, true);
-		lives.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
-		lives.scrollFactor.set(0, 0);
-		add(lives);
-		
-		livesSprite = new FlxSprite(FlxG.width / 2 - 32, 8, AssetPaths.lives__png);
-		livesSprite.scrollFactor.set(0, 0);
-		add(livesSprite);
-		
-		ammo = new FlxText(FlxG.width / 2 + 16, 8, 0, "10", 11, true);
-		ammo.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
-		ammo.scrollFactor.set(0, 0);
-		add(ammo);
-		
-		ammoSprite = new FlxSprite(FlxG.width / 2, 8, AssetPaths.weapons__png);
-		ammoSprite.loadGraphic(AssetPaths.weapons__png, true, 16, 16);
-		ammoSprite.animation.add("thunder", [0], 12, false);
-		ammoSprite.animation.add("spear", [1], 12, false);
-		ammoSprite.animation.add("shuriken", [2], 12, false);
-		ammoSprite.scrollFactor.set(0, 0);
-		add(ammoSprite);
-		
-		score = new FlxText(FlxG.width - 80, 8, "Score: 0", 11, true);
-		score.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
-		score.scrollFactor.set(0, 0);
-		add(score);
-		
+		backgroundSetUp();
+		livesSetUp();	
+		ammoSetUp();
+		pauseSetUp();
 	}
 	
-	public function updateHUD(Lives:Int, Weapon:String, Ammo:Int, Score:Int):Void
+	public function updateHUD(Lives:Int, Weapon:String, Ammo:Int, Score:Int, Paused:Bool):Void
 	{
 		lives.text = Std.string(Lives);
 		if (Lives <= 1)
 			lives.color = FlxColor.RED;
+		else
+			lives.color = FlxColor.WHITE;
+		
 		ammo.text = Std.string(Ammo);
+		if (Ammo < 4)
+		{
+			if (Ammo == 0)
+				ammo.visible = false;
+			else
+				ammo.color = FlxColor.RED;
+		}
+		else
+			ammo.color = FlxColor.WHITE;
+		if (Ammo > 0)
+			ammo.visible = true;
+		
 		score.text = "Score: " + Std.string(Score);
+		
 		switch (Weapon)
 		{
 			case "SINWEA":
-				ammoSprite.animation.play("thunder");
+				ammoSprite.animation.play("noWeapon");
 			case "WEASPEAR":
 				ammoSprite.animation.play("spear");
 			case "WEASHURIKEN":
 				ammoSprite.animation.play("shuriken");
 		}
+		
+		if (Paused)
+			pause.visible = true;
+		else
+			pause.visible = false;
+	}
+	
+	private function backgroundSetUp():Void 
+	{
+		background = new FlxSprite(0, 0);
+		background.makeGraphic(FlxG.width, 32, FlxColor.BLACK);
+		background.scrollFactor.set(0, 0);
+		add(background);
+	}
+	
+	private function livesSetUp():Void 
+	{
+		lives = new FlxText(FlxG.width / 2 - 16, 8, 0, "3", 11, true);
+		lives.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
+		lives.scrollFactor.set(0, 0);
+		add(lives);
+		
+		livesSprite = new FlxSprite(FlxG.width / 2 - 32, 8, AssetPaths.livesHUD__png);
+		livesSprite.scrollFactor.set(0, 0);
+		add(livesSprite);
+	}
+	
+	private function ammoSetUp():Void 
+	{
+		ammo = new FlxText(FlxG.width / 2 + 16, 8, 0, "10", 11, true);
+		ammo.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
+		ammo.scrollFactor.set(0, 0);
+		add(ammo);
+		
+		ammoSprite = new FlxSprite(FlxG.width / 2, 8, AssetPaths.weaponsHUD__png);
+		ammoSprite.loadGraphic(AssetPaths.weaponsHUD__png, true, 16, 16);
+		ammoSprite.animation.add("noWeapon", [0], 12, false);
+		ammoSprite.animation.add("spear", [1], 12, false);
+		ammoSprite.animation.add("shuriken", [2], 12, false);
+		ammoSprite.scrollFactor.set(0, 0);
+		add(ammoSprite);
+	}
+	
+	private function pauseSetUp():Void 
+	{
+		score = new FlxText(FlxG.width - 80, 8, 0, "Score: 0", 11, true);
+		score.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
+		score.scrollFactor.set(0, 0);
+		add(score);
+		
+		pause = new FlxText(FlxG.width / 2 - 32, FlxG.height / 2, 0, "Paused", 12, true);
+		pause.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
+		pause.alignment = FlxTextAlign.CENTER;
+		pause.scrollFactor.set(0, 0);
+		pause.visible = false;
+		add(pause);
 	}
 }
