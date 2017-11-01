@@ -1,4 +1,4 @@
-package entities;
+package entities.enemies;
 
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
@@ -147,5 +147,10 @@ class ArmoredEnemy extends FlxSprite
 			lifePoints --;
 		else
 			kill();
+	}
+	
+	public function getState():State
+	{
+		return currentState;
 	}
 }

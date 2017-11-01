@@ -1,7 +1,9 @@
 package states;
 
+import entities.Player.WeaponStates;
 import entities.Player;
 import entities.PowerUp;
+import entities.WeaponBase;
 import entities.weapons.WeaponNormal;
 import flixel.FlxCamera;
 import flixel.FlxState;
@@ -14,6 +16,12 @@ import flixel.tile.FlxTilemap;
 import flixel.FlxObject;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
+import entities.enemies.ArmoredEnemy;
+import entities.enemies.ArmoredEnemy.State;
+import entities.enemies.Bat;
+import entities.enemies.Chaman;
+import entities.enemies.Minion;
+import entities.enemies.Zombie;
 
 class PlayState extends FlxState
 {
@@ -25,6 +33,19 @@ class PlayState extends FlxState
 	private var playerHealth:FlxBar;
 	private var score:Int;
 	private var stairs:FlxTypedGroup<FlxSprite>;
+	
+	// Enemies
+	private var bat:Bat;
+	private var chaman:Chaman;
+	private var minion: Minion;
+	private var arEnemy: ArmoredEnemy;
+	private var zombie: Zombie;
+	
+	private var batGruop:FlxTypedGroup<Bat>;
+	private var chamanGroup:FlxTypedGroup<Chaman>;
+	private var minionGroup: FlxTypedGroup<Minion>;
+	private var arEnemyGroup: FlxTypedGroup<ArmoredEnemy>;
+	private var zombieGroup: FlxTypedGroup<Zombie>;
 
 	override public function create():Void
 	{
@@ -41,6 +62,12 @@ class PlayState extends FlxState
 		FlxG.worldBounds.set(0, 0, 5120, 512);
 		cameraSetUp();
 		hudSetUp();	
+		
+		batGruop = new FlxTypedGroup<Bat>();
+		chamanGroup = new FlxTypedGroup<Chaman>();
+		minionGroup = new FlxTypedGroup<Minion>();
+		arEnemyGroup = new FlxTypedGroup<ArmoredEnemy>();
+		zombieGroup = new FlxTypedGroup<Zombie>();
 	}
 
 	override public function update(elapsed:Float):Void
@@ -54,6 +81,76 @@ class PlayState extends FlxState
 		
 		checkPause();
 		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score, Reg.paused);
+		// Player - Enemies
+		FlxG.collide(player, batGruop, colPlayerBat);
+		FlxG.collide(player, chamanGroup, colPlayerChaman);
+		FlxG.collide(player, zombieGroup, colPlayerZombie);
+		FlxG.collide(player, arEnemyGroup, colPayerArEnemy);
+		FlxG.collide(player, minionGroup, colPlayerMinion);
+		//Weapon - Enemies
+		FlxG.collide(player.getWeaponN(), batGruop, colWeaponBat);
+		FlxG.collide(player.getWeaponN(), chamanGroup, colWeaponChaman);
+		FlxG.collide(player.getWeaponN(), zombieGroup, colWeaponZombie);
+		FlxG.collide(player.getWeaponN(), arEnemyGroup, colWeaponArEnemy);
+		FlxG.collide(player.getWeaponN(), minionGroup, colWeaponMinion);
+		
+		FlxG.collide(player.getMAinWeapon(), batGruop, colWeaponBat);
+		FlxG.collide(player.getMAinWeapon(), chamanGroup, colWeaponChaman);
+		FlxG.collide(player.getMAinWeapon(), zombieGroup, colWeaponZombie);
+		FlxG.collide(player.getMAinWeapon(), arEnemyGroup, colWeaponArEnemy);
+		FlxG.collide(player.getMAinWeapon(), minionGroup, colWeaponMinion);
+	}
+	// Weapon - Enemies
+	private function colWeaponBat(w:WeaponBase, b:Bat):Void
+	{
+		b.kill();
+	}
+	
+	private function colWeaponChaman(w:WeaponBase, c:Chaman):Void
+	{
+		c.kill();
+	}
+	
+	private function colWeaponZombie(w:WeaponBase, z:Zombie):Void
+	{
+		z.kill();
+	}
+	
+	private function colWeaponArEnemy(w:WeaponBase, a:ArmoredEnemy):Void
+	{
+		if(a.getState() == State.ATTACKING)
+			a.getDamage();
+	}
+	
+	private function colWeaponMinion(w:WeaponBase, m:Minion):Void
+	{
+		m.kill();
+	}
+	
+	// Player - Enemies
+	private function colPlayerBat(p:Player, b:Bat):Void
+	{
+		p.getDamage();
+	}
+	
+	private function colPlayerChaman(p:Player, c:Chaman):Void
+	{
+		p.getDamage();
+	}
+	
+	private function colPlayerZombie(p:Player, z:Zombie):Void
+	{
+		p.getDamage();
+	}
+	
+	private function colPayerArEnemy(p:Player, a:ArmoredEnemy):Void
+	{
+		p.getDamage();
+	}
+	
+	private function colPlayerMinion(p:Player, m:Minion): Void
+	{
+		p.getDamage();
 	}
 
 	private function entityCreator(entityName:String, entityData:Xml):Void
@@ -111,4 +208,6 @@ class PlayState extends FlxState
 		else
 			player.isStepingStairs = false;
 	}
+	
+	
 }
