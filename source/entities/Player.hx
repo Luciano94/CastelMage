@@ -29,10 +29,11 @@ enum WeaponStates
 }
 class Player extends FlxSprite
 {
-	private var currentState:States;
+	public var currentState(get, null):States;
 	public var weaponCurrentState(get, null):WeaponStates;
 	private var speed:Int;
 	private var jumpSpeed:Int;
+	private var stairsSpeed:Int;
 	private var weaponN:WeaponNormal;
 	private var weaponSpear:WeaponSpear;
 	private var weaponShuriken:WeaponShuriken;
@@ -51,6 +52,7 @@ class Player extends FlxSprite
 		weaponCurrentState = WeaponStates.WEAPOTION;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
+		stairsSpeed = Reg.playerStairsSpeed;
 		acceleration.y = Reg.gravity;
 		hp = Reg.playerMaxHealth;
 		lives = Reg.playerMaxLives;
@@ -108,8 +110,11 @@ class Player extends FlxSprite
 					currentState = States.JUMPING;
 				if (weaponN.alive)
 					currentState = States.ATTACKING;
-				if (isStepingStairs && velocity.y != 0 && velocity.x != 0)
-					currentState = States.TAKING_STAIRS;
+				if (height == 32)
+					currentState = States.CROUCHED;
+				if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
+					if (isStepingStairs && velocity.y != 0 && velocity.x != 0)
+						currentState = States.TAKING_STAIRS;
 
 			case States.MOVING:
 				animation.play("move");
@@ -117,7 +122,7 @@ class Player extends FlxSprite
 				moveHor();
 				jump();
 				attack();
-				takeStairs();
+				//takeStairs();
 
 				if (velocity.x == 0)
 					currentState = States.IDLE;
@@ -125,7 +130,10 @@ class Player extends FlxSprite
 					currentState = States.JUMPING;
 				if (weaponN.alive)
 					currentState = States.ATTACKING;
-
+				//if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
+					//if (isStepingStairs && velocity.y != 0 && velocity.x != 0)	
+                		//currentState = States.TAKING_STAIRS;
+						
 			case States.JUMPING:
 				if (animation.name != "jump")
 					animation.play("jump");
@@ -174,19 +182,15 @@ class Player extends FlxSprite
 				}
 			case States.TAKING_STAIRS:
 				
+				velocity.set(0, 0);
 				takeStairs();
 				if (!isStepingStairs)
 				{
 					acceleration.y = Reg.gravity;
-					if (velocity.y != 0)
-						currentState = States.JUMPING;
+					if (velocity.x != 0)
+						currentState = States.MOVING;
 					else
-					{
-						if (velocity.x != 0)
-							currentState = States.MOVING;
-						else
-							currentState = States.IDLE;
-					}
+						currentState = States.IDLE;
 				}
 				
 			case States.CROUCHED:
@@ -194,7 +198,12 @@ class Player extends FlxSprite
 				
 				attack();
 				if (FlxG.keys.justReleased.DOWN)
+				{
+					height = 48;
+					y -= 12;
+					updateHitbox();
 					currentState = States.IDLE;
+				}
 				if (weaponN.alive)
 					currentState = States.ATTACKING;
 
@@ -281,6 +290,9 @@ class Player extends FlxSprite
 		if (FlxG.keys.pressed.DOWN)
 		{
 			currentState = States.CROUCHED;
+			
+			height = 36;
+			offset.y = 12;
 		}
 	}
 	
@@ -288,15 +300,14 @@ class Player extends FlxSprite
 	{
 		if (isStepingStairs)
 		{
-			velocity.set(0, 0);
 			acceleration.y = 0;
 			if (FlxG.keys.pressed.UP)
 			{
-				velocity.set(50, -50);
+				velocity.set(stairsSpeed, -stairsSpeed);
 			}
 			if (FlxG.keys.pressed.DOWN)
 			{
-				velocity.set( -50, 50);	
+				velocity.set( -stairsSpeed, stairsSpeed);	
 			}
 		}
 	}
@@ -325,5 +336,10 @@ class Player extends FlxSprite
 	function set_isStepingStairs(value:Bool):Bool 
 	{
 		return isStepingStairs = value;
+	}
+	
+	function get_currentState():States 
+	{
+		return currentState;
 	}
 }

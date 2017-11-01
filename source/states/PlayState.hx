@@ -2,6 +2,11 @@ package states;
 
 import entities.Player;
 import entities.PowerUp;
+import entities.enemies.ArmoredEnemy;
+import entities.enemies.Bat;
+import entities.enemies.Chaman;
+import entities.enemies.Minion;
+import entities.enemies.Zombie;
 import entities.weapons.WeaponNormal;
 import flixel.FlxCamera;
 import flixel.FlxState;
@@ -25,6 +30,11 @@ class PlayState extends FlxState
 	private var playerHealth:FlxBar;
 	private var score:Int;
 	private var stairs:FlxTypedGroup<FlxSprite>;
+	private var bats:FlxTypedGroup<Bat>;
+	private var zombies:FlxTypedGroup<Zombie>;
+	private var shamans:FlxTypedGroup<Chaman>;
+	private var armoredEnemies:FlxTypedGroup<ArmoredEnemy>;
+	private var minions:FlxTypedGroup<Minion>;
 
 	override public function create():Void
 	{
@@ -33,10 +43,21 @@ class PlayState extends FlxState
 		FlxG.mouse.visible = false;
 		score = 0;
 		stairs = new FlxTypedGroup<FlxSprite>();
+		bats = new FlxTypedGroup<Bat>();
+		zombies = new FlxTypedGroup<Zombie>();
+		shamans = new FlxTypedGroup<Chaman>();
+		armoredEnemies = new FlxTypedGroup<ArmoredEnemy>();
+		minions = new FlxTypedGroup<Minion>();
 		
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
 		add(stairs);
+		add(bats);
+		add(zombies);
+		add(shamans);
+		add(armoredEnemies);
+		add(minions);
+		add(player);
 		
 		FlxG.worldBounds.set(0, 0, 5120, 512);
 		cameraSetUp();
@@ -50,6 +71,10 @@ class PlayState extends FlxState
 			super.update(elapsed);
 		}
 		FlxG.collide(player, tilemap);
+		FlxG.collide(zombies, tilemap);
+		FlxG.collide(shamans, tilemap);
+		FlxG.collide(armoredEnemies, tilemap);
+		FlxG.collide(minions, tilemap);
 		playerTouchStairs();
 		
 		checkPause();
@@ -65,11 +90,22 @@ class PlayState extends FlxState
 		{
 			case "Player":
 				player = new Player(x, y);
-				add(player);
 			case "Stairs":
 				var stair = new FlxSprite(x, y);
 				stair.loadGraphic(AssetPaths.stairs__png, true, 16, 16);
 				stairs.add(stair);
+			case "Bat":
+				var bat = new Bat(x, y, player);
+				bats.add(bat);
+			case "Zombie":
+				var zombie = new Zombie(x, y, player);
+				zombies.add(zombie);
+			case "Shaman":
+				var shaman = new Chaman(x, y, player, minions);
+				shamans.add(shaman);
+			case "ArmoredEnemy":
+				var armoredEnemy = new ArmoredEnemy(x, y, player);
+				armoredEnemies.add(armoredEnemy);
 		}
 	}
 	
@@ -107,7 +143,9 @@ class PlayState extends FlxState
 	private function playerTouchStairs():Void 
 	{
 		if (FlxG.overlap(player, stairs))
+		{
 			player.isStepingStairs = true;
+		}
 		else
 			player.isStepingStairs = false;
 	}
