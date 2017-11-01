@@ -1,4 +1,4 @@
-package entities;
+package entities.enemies;
 
 import flash.display.InterpolationMethod;
 import flixel.group.FlxGroup.FlxTypedGroup;

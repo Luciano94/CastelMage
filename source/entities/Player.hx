@@ -29,7 +29,7 @@ enum WeaponStates
 }
 class Player extends FlxSprite
 {
-	private var currentState:States;
+	public var currentState(get, null):States;
 	public var weaponCurrentState(get, null):WeaponStates;
 	private var speed:Int;
 	private var jumpSpeed:Int;
@@ -122,7 +122,7 @@ class Player extends FlxSprite
 				moveHor();
 				jump();
 				attack();
-				takeStairs();
+				//takeStairs();
 
 				if (velocity.x == 0)
 					currentState = States.IDLE;
@@ -130,9 +130,9 @@ class Player extends FlxSprite
 					currentState = States.JUMPING;
 				if (weaponN.alive)
 					currentState = States.ATTACKING;
-				if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
-					if (isStepingStairs && velocity.y != 0 && velocity.x != 0)	
-                		currentState = States.TAKING_STAIRS;
+				//if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
+					//if (isStepingStairs && velocity.y != 0 && velocity.x != 0)	
+                		//currentState = States.TAKING_STAIRS;
 						
 			case States.JUMPING:
 				if (animation.name != "jump")
@@ -336,5 +336,10 @@ class Player extends FlxSprite
 	function set_isStepingStairs(value:Bool):Bool 
 	{
 		return isStepingStairs = value;
+	}
+	
+	function get_currentState():States 
+	{
+		return currentState;
 	}
 }

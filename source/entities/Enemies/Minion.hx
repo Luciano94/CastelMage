@@ -1,4 +1,4 @@
-package entities;
+package entities.enemies;
 
 import flixel.system.FlxAssets.FlxGraphicAsset;
 
