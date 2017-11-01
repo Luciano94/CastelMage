@@ -9,6 +9,7 @@ import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 import flixel.FlxObject;
+import flixel.effects.FlxFlicker;
 
 enum States
 {
@@ -42,6 +43,7 @@ class Player extends FlxSprite
 	public var lives(get, null):Int;
 	public var ammo(get, null):Int;
 	public var isStepingStairs(null, set):Bool;
+	private var inmort:Int;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -58,6 +60,7 @@ class Player extends FlxSprite
 		lives = Reg.playerMaxLives;
 		isStepingStairs = false;
 		ammo = 10;
+		inmort = 0;
 
 		// Weapons Creation
 		weaponN = new WeaponNormal(x + width, y + height / 3);
@@ -84,7 +87,36 @@ class Player extends FlxSprite
 		animation.add("jump", [5, 6], 9, false);
 		animation.add("attack", [7, 8, 0], 9, false);
 		animation.add("crouch", [9], false);
+		
 	}
+	
+	public function getWeaponN():WeaponBase
+	{
+		switch (weaponCurrentState) 
+		{
+			case WeaponStates.SINWEA:
+				return null;
+			case WeaponStates.WEAPOTION:
+				return weaponPotion;
+			case WeaponStates.WEASHURIKEN:
+				return weaponShuriken;
+			case WeaponStates.WEASPEAR:
+				return weaponSpear;
+		}
+	}
+	
+	public function getMAinWeapon(): WeaponBase
+	{
+		return weaponN;
+	}
+	
+	public function getDamage()
+	{
+		FlxFlicker.flicker(this, 3, 0.08, true, true);
+		if (lives > 0) lives--;
+		else kill();
+	}
+	
 	override public function update(elapsed:Float):Void
 	{
 		stateMachine();
