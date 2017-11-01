@@ -37,6 +37,7 @@ class PlayState extends FlxState
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
 		add(stairs);
+		add(player);
 		
 		FlxG.worldBounds.set(0, 0, 5120, 512);
 		cameraSetUp();
@@ -65,7 +66,6 @@ class PlayState extends FlxState
 		{
 			case "Player":
 				player = new Player(x, y);
-				add(player);
 			case "Stairs":
 				var stair = new FlxSprite(x, y);
 				stair.loadGraphic(AssetPaths.stairs__png, true, 16, 16);

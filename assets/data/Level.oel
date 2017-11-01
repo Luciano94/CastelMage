@@ -45,6 +45,6 @@
     <Stairs id="11" x="2736" y="304" />
     <Stairs id="12" x="2752" y="288" />
     <Stairs id="13" x="2768" y="272" />
-    <Player id="14" x="2112" y="432" />
+    <Player id="0" x="336" y="432" />
   </Entities>
 </level>
