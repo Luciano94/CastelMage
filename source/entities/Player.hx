@@ -94,8 +94,10 @@ class Player extends FlxSprite
 	{
 		switch (weaponCurrentState) 
 		{
+			case WeaponStates.SINWEA:
+				return null;
 			case WeaponStates.WEAPOTION:
-				return weaponPotion
+				return weaponPotion;
 			case WeaponStates.WEASHURIKEN:
 				return weaponShuriken;
 			case WeaponStates.WEASPEAR:

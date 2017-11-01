@@ -35,8 +35,8 @@ class PlayState extends FlxState
 	private var stairs:FlxTypedGroup<FlxSprite>;
 	
 	// Enemies
-	private var batGruop:FlxTypedGroup<Bat>;
-	private var chamanGroup:FlxTypedGroup<Chaman>;
+	private var batGroup:FlxTypedGroup<Bat>;
+	private var shamanGroup:FlxTypedGroup<Chaman>;
 	private var minionGroup: FlxTypedGroup<Minion>;
 	private var arEnemyGroup: FlxTypedGroup<ArmoredEnemy>;
 	private var zombieGroup: FlxTypedGroup<Zombie>;
@@ -48,28 +48,28 @@ class PlayState extends FlxState
 		FlxG.mouse.visible = false;
 		score = 0;
 		stairs = new FlxTypedGroup<FlxSprite>();
-		bats = new FlxTypedGroup<Bat>();
-		zombies = new FlxTypedGroup<Zombie>();
-		shamans = new FlxTypedGroup<Chaman>();
-		armoredEnemies = new FlxTypedGroup<ArmoredEnemy>();
-		minions = new FlxTypedGroup<Minion>();
+		batGroup = new FlxTypedGroup<Bat>();
+		zombieGroup = new FlxTypedGroup<Zombie>();
+		shamanGroup = new FlxTypedGroup<Chaman>();
+		arEnemyGroup = new FlxTypedGroup<ArmoredEnemy>();
+		minionGroup = new FlxTypedGroup<Minion>();
 		
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
 		add(stairs);
-		add(bats);
-		add(zombies);
-		add(shamans);
-		add(armoredEnemies);
-		add(minions);
+		add(batGroup);
+		add(zombieGroup);
+		add(shamanGroup);
+		add(arEnemyGroup);
+		add(minionGroup);
 		add(player);
 		
 		FlxG.worldBounds.set(0, 0, 5120, 512);
 		cameraSetUp();
 		hudSetUp();	
 		
-		batGruop = new FlxTypedGroup<Bat>();
-		chamanGroup = new FlxTypedGroup<Chaman>();
+		batGroup = new FlxTypedGroup<Bat>();
+		shamanGroup = new FlxTypedGroup<Chaman>();
 		minionGroup = new FlxTypedGroup<Minion>();
 		arEnemyGroup = new FlxTypedGroup<ArmoredEnemy>();
 		zombieGroup = new FlxTypedGroup<Zombie>();
@@ -82,29 +82,29 @@ class PlayState extends FlxState
 			super.update(elapsed);
 		}
 		FlxG.collide(player, tilemap);
-		FlxG.collide(zombies, tilemap);
-		FlxG.collide(shamans, tilemap);
-		FlxG.collide(armoredEnemies, tilemap);
-		FlxG.collide(minions, tilemap);
+		FlxG.collide(zombieGroup, tilemap);
+		FlxG.collide(shamanGroup, tilemap);
+		FlxG.collide(arEnemyGroup, tilemap);
+		FlxG.collide(minionGroup, tilemap);
 		playerTouchStairs();
 		
 		checkPause();
 		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score, Reg.paused);
 		// Player - Enemies
-		FlxG.collide(player, batGruop, colPlayerBat);
-		FlxG.collide(player, chamanGroup, colPlayerChaman);
+		FlxG.collide(player, batGroup, colPlayerBat);
+		FlxG.collide(player, shamanGroup, colPlayerChaman);
 		FlxG.collide(player, zombieGroup, colPlayerZombie);
 		FlxG.collide(player, arEnemyGroup, colPayerArEnemy);
 		FlxG.collide(player, minionGroup, colPlayerMinion);
 		//Weapon - Enemies
-		FlxG.collide(player.getWeaponN(), batGruop, colWeaponBat);
-		FlxG.collide(player.getWeaponN(), chamanGroup, colWeaponChaman);
+		FlxG.collide(player.getWeaponN(), batGroup, colWeaponBat);
+		FlxG.collide(player.getWeaponN(), shamanGroup, colWeaponChaman);
 		FlxG.collide(player.getWeaponN(), zombieGroup, colWeaponZombie);
 		FlxG.collide(player.getWeaponN(), arEnemyGroup, colWeaponArEnemy);
 		FlxG.collide(player.getWeaponN(), minionGroup, colWeaponMinion);
 		
-		FlxG.collide(player.getMAinWeapon(), batGruop, colWeaponBat);
-		FlxG.collide(player.getMAinWeapon(), chamanGroup, colWeaponChaman);
+		FlxG.collide(player.getMAinWeapon(), batGroup, colWeaponBat);
+		FlxG.collide(player.getMAinWeapon(), shamanGroup, colWeaponChaman);
 		FlxG.collide(player.getMAinWeapon(), zombieGroup, colWeaponZombie);
 		FlxG.collide(player.getMAinWeapon(), arEnemyGroup, colWeaponArEnemy);
 		FlxG.collide(player.getMAinWeapon(), minionGroup, colWeaponMinion);
@@ -177,16 +177,16 @@ class PlayState extends FlxState
 				stairs.add(stair);
 			case "Bat":
 				var bat = new Bat(x, y, player);
-				bats.add(bat);
+				batGroup.add(bat);
 			case "Zombie":
 				var zombie = new Zombie(x, y, player);
-				zombies.add(zombie);
+				zombieGroup.add(zombie);
 			case "Shaman":
-				var shaman = new Chaman(x, y, player, minions);
-				shamans.add(shaman);
+				var shaman = new Chaman(x, y, player, minionGroup);
+				shamanGroup.add(shaman);
 			case "ArmoredEnemy":
 				var armoredEnemy = new ArmoredEnemy(x, y, player);
-				armoredEnemies.add(armoredEnemy);
+				arEnemyGroup.add(armoredEnemy);
 		}
 	}
 	
