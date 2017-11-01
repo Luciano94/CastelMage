@@ -130,7 +130,7 @@ class PlayState extends FlxState
 	
 	private function cameraSetUp():Void 
 	{
-		camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 2);
+		camera.follow(player);
 		camera.setScrollBounds(0, 5120, 0, 512);
 	}
 	

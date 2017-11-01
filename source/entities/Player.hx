@@ -98,12 +98,13 @@ class Player extends FlxSprite
 		{
 			case States.IDLE:
 				animation.play("idle");
-
+				
 				moveHor();
 				jump();
 				attack();
 				crouch();
 				takeStairs();
+				
 				if (velocity.x != 0)
 					currentState = States.MOVING;
 				if (velocity.y != 0)
@@ -112,9 +113,8 @@ class Player extends FlxSprite
 					currentState = States.ATTACKING;
 				if (height == 32)
 					currentState = States.CROUCHED;
-				if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
-					if (isStepingStairs && velocity.y != 0 && velocity.x != 0)
-						currentState = States.TAKING_STAIRS;
+				if (isStepingStairs && velocity.y != 0 && velocity.x != 0)
+					currentState = States.TAKING_STAIRS;
 
 			case States.MOVING:
 				animation.play("move");
@@ -122,7 +122,6 @@ class Player extends FlxSprite
 				moveHor();
 				jump();
 				attack();
-				//takeStairs();
 
 				if (velocity.x == 0)
 					currentState = States.IDLE;
@@ -130,9 +129,6 @@ class Player extends FlxSprite
 					currentState = States.JUMPING;
 				if (weaponN.alive)
 					currentState = States.ATTACKING;
-				//if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
-					//if (isStepingStairs && velocity.y != 0 && velocity.x != 0)	
-                		//currentState = States.TAKING_STAIRS;
 						
 			case States.JUMPING:
 				if (animation.name != "jump")
@@ -180,6 +176,7 @@ class Player extends FlxSprite
 							currentState = States.IDLE;
 					}
 				}
+				
 			case States.TAKING_STAIRS:
 				
 				velocity.set(0, 0);
