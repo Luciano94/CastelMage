@@ -3,14 +3,15 @@ package entities;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxObject;
+import flixel.addons.util.FlxFSM;
+import flixel.math.FlxVelocity;
 
 enum StatesB
 {
-	STATE1;
-	STATE2;
-	STATE3;
+	NORMALMOV;
+	INVIMOV;
+	CHASE;
 }
-
 class Boss extends FlxSprite 
 {
 	private var currentState:StatesB;
@@ -25,17 +26,16 @@ class Boss extends FlxSprite
 		super.update(elapsed);
 		stateMachine();
 	}
-	
 	function stateMachine() 
 	{
 		switch (currentState) 
 		{
-			case StatesB.STATE1:
+			case StatesB.NORMALMOV:
 				
-			case StatesB.STATE2:
+			case StatesB.INVIMOV:
 				
-			case StatesB.STATE3:
-				
+			case StatesB.CHASE:
+				FlxVelocity.accelerateTowardsPoint();
 		}
 	}
 }
