@@ -35,12 +35,6 @@ class PlayState extends FlxState
 	private var stairs:FlxTypedGroup<FlxSprite>;
 	
 	// Enemies
-	private var bat:Bat;
-	private var chaman:Chaman;
-	private var minion: Minion;
-	private var arEnemy: ArmoredEnemy;
-	private var zombie: Zombie;
-	
 	private var batGruop:FlxTypedGroup<Bat>;
 	private var chamanGroup:FlxTypedGroup<Chaman>;
 	private var minionGroup: FlxTypedGroup<Minion>;
@@ -54,10 +48,21 @@ class PlayState extends FlxState
 		FlxG.mouse.visible = false;
 		score = 0;
 		stairs = new FlxTypedGroup<FlxSprite>();
+		bats = new FlxTypedGroup<Bat>();
+		zombies = new FlxTypedGroup<Zombie>();
+		shamans = new FlxTypedGroup<Chaman>();
+		armoredEnemies = new FlxTypedGroup<ArmoredEnemy>();
+		minions = new FlxTypedGroup<Minion>();
 		
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
 		add(stairs);
+		add(bats);
+		add(zombies);
+		add(shamans);
+		add(armoredEnemies);
+		add(minions);
+		add(player);
 		
 		FlxG.worldBounds.set(0, 0, 5120, 512);
 		cameraSetUp();
@@ -77,6 +82,10 @@ class PlayState extends FlxState
 			super.update(elapsed);
 		}
 		FlxG.collide(player, tilemap);
+		FlxG.collide(zombies, tilemap);
+		FlxG.collide(shamans, tilemap);
+		FlxG.collide(armoredEnemies, tilemap);
+		FlxG.collide(minions, tilemap);
 		playerTouchStairs();
 		
 		checkPause();
@@ -162,11 +171,22 @@ class PlayState extends FlxState
 		{
 			case "Player":
 				player = new Player(x, y);
-				add(player);
 			case "Stairs":
 				var stair = new FlxSprite(x, y);
 				stair.loadGraphic(AssetPaths.stairs__png, true, 16, 16);
 				stairs.add(stair);
+			case "Bat":
+				var bat = new Bat(x, y, player);
+				bats.add(bat);
+			case "Zombie":
+				var zombie = new Zombie(x, y, player);
+				zombies.add(zombie);
+			case "Shaman":
+				var shaman = new Chaman(x, y, player, minions);
+				shamans.add(shaman);
+			case "ArmoredEnemy":
+				var armoredEnemy = new ArmoredEnemy(x, y, player);
+				armoredEnemies.add(armoredEnemy);
 		}
 	}
 	
@@ -204,7 +224,9 @@ class PlayState extends FlxState
 	private function playerTouchStairs():Void 
 	{
 		if (FlxG.overlap(player, stairs))
+		{
 			player.isStepingStairs = true;
+		}
 		else
 			player.isStepingStairs = false;
 	}
