@@ -26,7 +26,7 @@ class Boss extends FlxSprite
 		super.update(elapsed);
 		stateMachine();
 	}
-	function stateMachine() 
+	function stateMachine() // http://haxeflixel.com/documentation/enemies-and-basic-ai/
 	{
 		switch (currentState) 
 		{
