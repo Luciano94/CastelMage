@@ -1,8 +1,10 @@
 package;
 
+import entities.Player;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.FlxBasic;
@@ -11,18 +13,21 @@ import flixel.text.FlxText;
 class HUD extends FlxTypedGroup<FlxSprite>
 {
 	private var background:FlxSprite;
+	private var backgroundFill:FlxSprite;
 	private var lives:FlxText;
 	private var livesSprite:FlxSprite;
 	private var ammo:FlxText;
 	private var ammoSprite:FlxSprite;
 	private var score:FlxText;
 	private var pause:FlxText;
+	private var playerHealth:FlxBar;
 	
-	public function new() 
+	public function new(player:Player)
 	{
 		super();
 		
 		backgroundSetUp();
+		playerHealthBarSetUp(player);
 		livesSetUp();	
 		ammoSetUp();
 		pauseSetUp();
@@ -59,6 +64,8 @@ class HUD extends FlxTypedGroup<FlxSprite>
 				ammoSprite.animation.play("spear");
 			case "WEASHURIKEN":
 				ammoSprite.animation.play("shuriken");
+			case "WEAPOTION":
+				ammoSprite.animation.play("poison");
 		}
 		
 		if (Paused)
@@ -70,7 +77,10 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	private function backgroundSetUp():Void 
 	{
 		background = new FlxSprite(0, 0);
-		background.makeGraphic(FlxG.width, 32, FlxColor.BLACK);
+		backgroundFill = new FlxSprite();
+		backgroundFill.makeGraphic(FlxG.width - 2, 30, FlxColor.BLACK);
+		background.makeGraphic(FlxG.width, 32, FlxColor.WHITE);
+		background.stamp(backgroundFill, 1, 1);
 		background.scrollFactor.set(0, 0);
 		add(background);
 	}
@@ -99,6 +109,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		ammoSprite.animation.add("noWeapon", [0], 12, false);
 		ammoSprite.animation.add("spear", [1], 12, false);
 		ammoSprite.animation.add("shuriken", [2], 12, false);
+		ammoSprite.animation.add("poison", [3], 12, false);
 		ammoSprite.scrollFactor.set(0, 0);
 		add(ammoSprite);
 	}
@@ -116,5 +127,12 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		pause.scrollFactor.set(0, 0);
 		pause.visible = false;
 		add(pause);
+	}
+	
+	private function playerHealthBarSetUp(player:Player):Void
+	{
+		playerHealth = new FlxBar(10, 10, FlxBarFillDirection.LEFT_TO_RIGHT, 68, 12, player, "hp", 0, 100, true);
+		playerHealth.scrollFactor.set(0, 0);
+		add(playerHealth);
 	}
 }

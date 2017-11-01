@@ -17,6 +17,7 @@ enum States
 	JUMPING;
 	ATTACKING;
 	CROUCHED;
+	TAKING_STAIRS;
 	DEAD;
 }
 enum WeaponStates
@@ -39,7 +40,7 @@ class Player extends FlxSprite
 	private var hp:Int;
 	public var lives(get, null):Int;
 	public var ammo(get, null):Int;
-	//public var isNextToStairs(null, set):Bool;
+	public var isStepingStairs(null, set):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -53,6 +54,7 @@ class Player extends FlxSprite
 		acceleration.y = Reg.gravity;
 		hp = Reg.playerMaxHealth;
 		lives = Reg.playerMaxLives;
+		isStepingStairs = false;
 		ammo = 10;
 
 		// Weapons Creation
@@ -99,13 +101,15 @@ class Player extends FlxSprite
 				jump();
 				attack();
 				crouch();
-				//takeStairs();
+				takeStairs();
 				if (velocity.x != 0)
 					currentState = States.MOVING;
 				if (velocity.y != 0)
 					currentState = States.JUMPING;
 				if (weaponN.alive)
 					currentState = States.ATTACKING;
+				if (isStepingStairs && velocity.y != 0 && velocity.x != 0)
+					currentState = States.TAKING_STAIRS;
 
 			case States.MOVING:
 				animation.play("move");
@@ -113,7 +117,7 @@ class Player extends FlxSprite
 				moveHor();
 				jump();
 				attack();
-				//takeStairs();
+				takeStairs();
 
 				if (velocity.x == 0)
 					currentState = States.IDLE;
@@ -168,7 +172,23 @@ class Player extends FlxSprite
 							currentState = States.IDLE;
 					}
 				}
-
+			case States.TAKING_STAIRS:
+				
+				takeStairs();
+				if (!isStepingStairs)
+				{
+					acceleration.y = Reg.gravity;
+					if (velocity.y != 0)
+						currentState = States.JUMPING;
+					else
+					{
+						if (velocity.x != 0)
+							currentState = States.MOVING;
+						else
+							currentState = States.IDLE;
+					}
+				}
+				
 			case States.CROUCHED:
 				animation.play("crouch");
 				
@@ -206,9 +226,7 @@ class Player extends FlxSprite
 	private function attack():Void
 	{
 		if (FlxG.keys.justPressed.A)
-		{
-			currentState = States.ATTACKING;
-			
+		{			
 			if (!weaponSpear.alive && !weaponShuriken.alive)
 				WeaponBase.pFacing = facing;
 			if (!FlxG.keys.pressed.UP)
@@ -268,14 +286,19 @@ class Player extends FlxSprite
 	
 	private function takeStairs():Void
 	{
-		/*if (isNextToStairs())
+		if (isStepingStairs)
 		{
+			velocity.set(0, 0);
+			acceleration.y = 0;
 			if (FlxG.keys.pressed.UP)
-				velocity.set(16, 16);
+			{
+				velocity.set(50, -50);
+			}
 			if (FlxG.keys.pressed.DOWN)
-				velocity.set( -16, -16);
-				
-		}*/
+			{
+				velocity.set( -50, 50);	
+			}
+		}
 	}
 	
 	private function checkAmmo():Void
@@ -299,8 +322,8 @@ class Player extends FlxSprite
 		return weaponCurrentState;
 	}
 	
-	/*function set_isNextToStairs(value:Bool):Bool 
+	function set_isStepingStairs(value:Bool):Bool 
 	{
-		return isNextToStairs = value;
-	}*/
+		return isStepingStairs = value;
+	}
 }

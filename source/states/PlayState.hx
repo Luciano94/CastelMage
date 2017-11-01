@@ -24,7 +24,7 @@ class PlayState extends FlxState
 	private var hud:HUD;
 	private var playerHealth:FlxBar;
 	private var score:Int;
-	//private var stairs:FlxTypedGroup<FlxSprite>;	Experimental Feature.
+	private var stairs:FlxTypedGroup<FlxSprite>;
 
 	override public function create():Void
 	{
@@ -32,11 +32,12 @@ class PlayState extends FlxState
 		
 		FlxG.mouse.visible = false;
 		score = 0;
+		stairs = new FlxTypedGroup<FlxSprite>();
 		
-		//stairs = new FlxTypedGroup<FlxSprite>();
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
-		//add(stairs);
+		add(stairs);
+		
 		FlxG.worldBounds.set(0, 0, 5120, 512);
 		cameraSetUp();
 		hudSetUp();	
@@ -49,11 +50,10 @@ class PlayState extends FlxState
 			super.update(elapsed);
 		}
 		FlxG.collide(player, tilemap);
-		//FlxG.overlap(player, stairs, contactStairs);
-			
+		playerTouchStairs();
+		
 		checkPause();
 		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score, Reg.paused);
-		//player.isNextToStairs = false;
 	}
 
 	private function entityCreator(entityName:String, entityData:Xml):Void
@@ -66,9 +66,10 @@ class PlayState extends FlxState
 			case "Player":
 				player = new Player(x, y);
 				add(player);
-			//case "Stairs":
-				//var stair = new FlxSprite(x, y, AssetPaths.stairs__png);
-				//stairs.add(stair);
+			case "Stairs":
+				var stair = new FlxSprite(x, y);
+				stair.loadGraphic(AssetPaths.stairs__png, true, 16, 16);
+				stairs.add(stair);
 		}
 	}
 	
@@ -86,7 +87,7 @@ class PlayState extends FlxState
 			tilemap.setTileProperties(i, FlxObject.NONE);
 		for (i in 8...10)
 			tilemap.setTileProperties(i, FlxObject.ANY);
-		for (i in 11...19)
+		for (i in 11...20)
 			tilemap.setTileProperties(i, FlxObject.NONE);
 		add(tilemap);
 	}
@@ -99,16 +100,15 @@ class PlayState extends FlxState
 	
 	private function hudSetUp():Void 
 	{
-		hud = new HUD();
+		hud = new HUD(player);
 		add(hud);
-	
-		playerHealth = new FlxBar(10, 10, FlxBarFillDirection.LEFT_TO_RIGHT, 68, 12, player, "hp", 0, 100, true);
-		playerHealth.scrollFactor.set(0, 0);
-		add(playerHealth);
 	}
 	
-	//private function contactStairs(p:Player, s:FlxSprite):Void
-	//{
-		//p.isNextToStairs = true;
-	//}
+	private function playerTouchStairs():Void 
+	{
+		if (FlxG.overlap(player, stairs))
+			player.isStepingStairs = true;
+		else
+			player.isStepingStairs = false;
+	}
 }
