@@ -148,4 +148,9 @@ class ArmoredEnemy extends FlxSprite
 		else
 			kill();
 	}
+	
+	public function getState():State
+	{
+		return currentState;
+	}
 }
