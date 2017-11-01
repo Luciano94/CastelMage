@@ -15,7 +15,7 @@ class Reg
 	static public var weaponShuNormalSpeed:Int = 275;
 	static public var weaponShuYSpeed:Int = -300;
 	// Weapon Potion
-	static public var weaponPotNormalSpeed:Int = 120;
+	static public var weaponPotNormalSpeed:Int = 180;
 	static public var weaponPotYSpeed:Int = -150;
 	// Pause
 	static public var paused:Bool = false;

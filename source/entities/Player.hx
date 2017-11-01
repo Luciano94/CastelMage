@@ -268,14 +268,14 @@ class Player extends FlxSprite
 	
 	private function takeStairs():Void
 	{
-		if (isNextToStairs)
+		/*if (isNextToStairs())
 		{
 			if (FlxG.keys.pressed.UP)
 				velocity.set(16, 16);
 			if (FlxG.keys.pressed.DOWN)
 				velocity.set( -16, -16);
 				
-		}
+		}*/
 	}
 	
 	private function checkAmmo():Void
@@ -299,8 +299,8 @@ class Player extends FlxSprite
 		return weaponCurrentState;
 	}
 	
-	//function set_isNextToStairs(value:Bool):Bool 
-	//{
-		//return isNextToStairs = value;
-	//}
+	/*function set_isNextToStairs(value:Bool):Bool 
+	{
+		return isNextToStairs = value;
+	}*/
 }
