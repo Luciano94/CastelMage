@@ -18,7 +18,7 @@ enum States
 	JUMPING;
 	ATTACKING;
 	CROUCHED;
-	TAKING_STAIRS;
+	CLIMBING_LADDERS;
 	DEAD;
 }
 enum WeaponStates
@@ -42,7 +42,7 @@ class Player extends FlxSprite
 	private var hp:Int;
 	public var lives(get, null):Int;
 	public var ammo(get, null):Int;
-	public var isStepingStairs(null, set):Bool;
+	public var isTouchingLadder(null, set):Bool;
 	private var inmort:Int;
 
 	public function new(?X:Float=0, ?Y:Float=0)
@@ -58,7 +58,7 @@ class Player extends FlxSprite
 		acceleration.y = Reg.gravity;
 		hp = Reg.playerMaxHealth;
 		lives = Reg.playerMaxLives;
-		isStepingStairs = false;
+		isTouchingLadder = false;
 		ammo = 10;
 		inmort = 0;
 
@@ -90,33 +90,6 @@ class Player extends FlxSprite
 		
 	}
 	
-	public function getWeaponN():WeaponBase
-	{
-		switch (weaponCurrentState) 
-		{
-			case WeaponStates.SINWEA:
-				return null;
-			case WeaponStates.WEAPOTION:
-				return weaponPotion;
-			case WeaponStates.WEASHURIKEN:
-				return weaponShuriken;
-			case WeaponStates.WEASPEAR:
-				return weaponSpear;
-		}
-	}
-	
-	public function getMAinWeapon(): WeaponBase
-	{
-		return weaponN;
-	}
-	
-	public function getDamage()
-	{
-		FlxFlicker.flicker(this, 3, 0.08, true, true);
-		if (lives > 0) lives--;
-		else kill();
-	}
-	
 	override public function update(elapsed:Float):Void
 	{
 		stateMachine();
@@ -124,6 +97,7 @@ class Player extends FlxSprite
 		
 		super.update(elapsed);
 	}
+	
 	private function stateMachine():Void
 	{
 		switch (currentState)
@@ -135,7 +109,7 @@ class Player extends FlxSprite
 				jump();
 				attack();
 				crouch();
-				takeStairs();
+				climbLadders();
 				
 				if (velocity.x != 0)
 					currentState = States.MOVING;
@@ -143,10 +117,10 @@ class Player extends FlxSprite
 					currentState = States.JUMPING;
 				if (weaponN.alive)
 					currentState = States.ATTACKING;
-				if (height == 32)
+				if (height == 36)
 					currentState = States.CROUCHED;
-				if (isStepingStairs && velocity.y != 0 && velocity.x != 0)
-					currentState = States.TAKING_STAIRS;
+				if (acceleration.y == 0)
+					currentState = States.CLIMBING_LADDERS;
 
 			case States.MOVING:
 				animation.play("move");
@@ -209,17 +183,14 @@ class Player extends FlxSprite
 					}
 				}
 				
-			case States.TAKING_STAIRS:
+			case States.CLIMBING_LADDERS:
 				
 				velocity.set(0, 0);
-				takeStairs();
-				if (!isStepingStairs)
+				climbLadders();
+				if (!isTouchingLadder || isTouching(FlxObject.FLOOR))
 				{
 					acceleration.y = Reg.gravity;
-					if (velocity.x != 0)
-						currentState = States.MOVING;
-					else
-						currentState = States.IDLE;
+					currentState = States.IDLE;
 				}
 				
 			case States.CROUCHED:
@@ -279,7 +250,7 @@ class Player extends FlxSprite
 				switch (weaponCurrentState)
 				{
 					case WeaponStates.SINWEA:
-					// Tengo pensado en que aparezca un mensaje diciendo que no tiene arma
+
 					case WeaponStates.WEASPEAR:
 						if (!weaponSpear.alive && ammo > 0)
 						{
@@ -316,27 +287,26 @@ class Player extends FlxSprite
 	}
 	private function crouch():Void
 	{
-		if (FlxG.keys.pressed.DOWN)
-		{
-			currentState = States.CROUCHED;
-			
+		if (FlxG.keys.pressed.DOWN && !isTouchingLadder)
+		{	
 			height = 36;
 			offset.y = 12;
 		}
 	}
 	
-	private function takeStairs():Void
+	private function climbLadders():Void
 	{
-		if (isStepingStairs)
+		if (isTouchingLadder)
 		{
-			acceleration.y = 0;
 			if (FlxG.keys.pressed.UP)
 			{
-				velocity.set(stairsSpeed, -stairsSpeed);
+				acceleration.y = 0;
+				velocity.y = -stairsSpeed;
 			}
 			if (FlxG.keys.pressed.DOWN)
 			{
-				velocity.set( -stairsSpeed, stairsSpeed);	
+				acceleration.y = 0;
+				velocity.y = stairsSpeed;
 			}
 		}
 	}
@@ -345,6 +315,35 @@ class Player extends FlxSprite
 	{
 		if (ammo == 0)
 			weaponCurrentState = WeaponStates.SINWEA;
+	}
+	
+	public function getWeaponN():WeaponBase
+	{
+		switch (weaponCurrentState) 
+		{
+			case WeaponStates.SINWEA:
+				return null;
+			case WeaponStates.WEAPOTION:
+				return weaponPotion;
+			case WeaponStates.WEASHURIKEN:
+				return weaponShuriken;
+			case WeaponStates.WEASPEAR:
+				return weaponSpear;
+		}
+	}
+	
+	public function getMainWeapon():WeaponBase
+	{
+		return weaponN;
+	}
+	
+	public function getDamage()
+	{
+		FlxFlicker.flicker(this, 3, 0.08, true, true);
+		if (lives > 0) 
+			lives--;
+		else 
+			kill();
 	}
 	
 	function get_lives():Int 
@@ -362,9 +361,9 @@ class Player extends FlxSprite
 		return weaponCurrentState;
 	}
 	
-	function set_isStepingStairs(value:Bool):Bool 
+	function set_isTouchingLadder(value:Bool):Bool 
 	{
-		return isStepingStairs = value;
+		return isTouchingLadder = value;
 	}
 	
 	function get_currentState():States 
