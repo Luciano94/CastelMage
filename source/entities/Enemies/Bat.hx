@@ -23,7 +23,6 @@ class Bat extends FlxSprite
 	private var player: Player;
 	private var timeAttack:Int;
 	private var gotcha:Bool;
-	private var timetrk:Int;
 	private var currentState:BatState;
 	
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset, _player:Player) 
@@ -34,12 +33,13 @@ class Bat extends FlxSprite
 		animation.play("idle");
 		setFacingFlip(FlxObject.RIGHT, false, false);
 		setFacingFlip(FlxObject.LEFT, true, false);
+		height = 16;
+		offset.y += 20;
 		speed = Reg.speedEnemy;
 		velocity.set(speed, speed);
 		gotcha = false;
 		player = _player;
 		timeAttack = 0;
-		timetrk = 0;
 		currentState = BatState.IDLE;
 	}
 	
@@ -49,11 +49,7 @@ class Bat extends FlxSprite
 		switch (currentState) 
 		{
 			case BatState.IDLE:
-				if (timetrk == Reg.timeToTrk)
-				{ 
-					tracking();
-				}
-				else timetrk ++;
+				tracking();
 			case BatState.MOVING:
 				mov();
 			case BatState.ATTACKING:
@@ -67,9 +63,10 @@ class Bat extends FlxSprite
 	
 	private function tracking():Void
 	{
-		if (gotcha)
-			currentState = BatState.MOVING;
-		else{
+		if (timeAttack < Reg.atkTime) timeAttack ++;
+		else
+		{
+			timeAttack = 0;	
 			if (((x > player.x) && (x - player.x < Reg.trackDist)) && 
 				((y > player.y)&&( y - player.y < Reg.trackDist / 2)))
 			{
@@ -87,11 +84,22 @@ class Bat extends FlxSprite
 	
 	private function mov():Void
 	{
+		if (FlxG.overlap(this, player))
+		{
+			if (velocity.x > 0)
+				velocity.x = -speed;
+			else if(velocity.x < 0)
+				velocity.x = speed;
+			if (velocity.y > 0)
+				velocity.y = -speed;
+			else if (velocity.y < 0)
+				velocity.y = speed;
+		}
 		if (x > player.x)
 		{
-			if(x - player.x > Reg.atkDist)
+			if (x - player.x > Reg.BatatkDist)
 				velocity.x =  -speed;
-			if (x - player.x <= Reg.atkDist)
+			if (x - player.x <= Reg.BatatkDist)
 			{
 				velocity.set(0, 0);
 				currentState = BatState.ATTACKING;
@@ -100,9 +108,9 @@ class Bat extends FlxSprite
 		else
 		if (x < player.x)
 		{
-			if(player.x - x > Reg.atkDist)
+			if(player.x - x > Reg.BatatkDist)
 				velocity.x =  speed;
-			if (player.x  - x <= Reg.atkDist)
+			if (player.x  - x <= Reg.BatatkDist)
 			{
 				velocity.set(0, 0);
 				currentState = BatState.ATTACKING;
@@ -119,7 +127,6 @@ class Bat extends FlxSprite
 			if (x - player.x <= player.x + 1)
 			{
 				velocity.set(0, 0);
-				timetrk = 0;
 				currentState = BatState.HIDING;
 			}
 		}
