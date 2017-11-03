@@ -34,6 +34,8 @@ class Reg
 	static public var AELifePoints:Int = 5;
 	static public var BatatkDist: Int = 5;
 	//Obstacles
-	static public var movingPlatformSpeed:Int = 20;
-	static public var movingPlatformTravelDistance:Int = 200;
+	static public var movingPlatformSpeed:Int = 32;
+	static public var movingPlatformTravelDistance:Int = 320;
+	static public var elevatorSpeed:Int = 16;
+	static public var elevatorTravelDistance:Int = 320;
 }

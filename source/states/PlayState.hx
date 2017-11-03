@@ -4,6 +4,7 @@ import entities.Player.WeaponStates;
 import entities.Player;
 import entities.PowerUp;
 import entities.WeaponBase;
+import entities.obstacles.Elevator;
 import entities.obstacles.Ladder;
 import entities.obstacles.MovingPlatform;
 import entities.obstacles.OneWayPlatform;
@@ -43,6 +44,7 @@ class PlayState extends FlxState
 	private var ladders:FlxTypedGroup<Ladder>;
 	private var oneWayPlatforms:FlxTypedGroup<OneWayPlatform>;
 	private var movingPlatforms:FlxTypedGroup<MovingPlatform>;
+	private var elevators:FlxTypedGroup<Elevator>;
 
 	// Enemies
 	private var batGroup:FlxTypedGroup<Bat>;
@@ -64,6 +66,7 @@ class PlayState extends FlxState
 		ladders = new FlxTypedGroup<Ladder>();
 		oneWayPlatforms = new FlxTypedGroup<OneWayPlatform>();
 		movingPlatforms = new FlxTypedGroup<MovingPlatform>();
+		elevators = new FlxTypedGroup<Elevator>();
 
 
 		//Enemies Initialization
@@ -79,6 +82,7 @@ class PlayState extends FlxState
 		add(ladders);
 		add(oneWayPlatforms);
 		add(movingPlatforms);
+		add(elevators);
 		add(batGroup);
 		add(zombieGroup);
 		add(shamanGroup);
@@ -106,6 +110,7 @@ class PlayState extends FlxState
 		FlxG.overlap(player, ladders, playerLadderCollision);
 		FlxG.collide(player, oneWayPlatforms);
 		FlxG.collide(player, movingPlatforms);
+		FlxG.collide(player, elevators);
 
 		checkPause();
 		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score, Reg.paused);
@@ -149,6 +154,9 @@ class PlayState extends FlxState
 			case "MovingPlatform":
 				var movingPlatform = new MovingPlatform(x, y);
 				movingPlatforms.add(movingPlatform);
+			case "Elevator":
+				var elevator = new Elevator(x, y);
+				elevators.add(elevator);
 			// Enemies
 			case "Bat":
 				var bat = new Bat(x, y, player);

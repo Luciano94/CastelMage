@@ -119,7 +119,7 @@ class Player extends FlxSprite
 					currentState = States.MOVING;
 				else
 				{
-					if (velocity.y != 0 && !weaponN.alive && acceleration.y != 0)
+					if (velocity.y != 0 && !weaponN.alive && acceleration.y != 0 && !isTouching(FlxObject.FLOOR))
 						currentState = States.JUMPING;
 					else
 					{
@@ -149,7 +149,7 @@ class Player extends FlxSprite
 					currentState = States.IDLE;
 				else
 				{
-					if (velocity.y != 0 && !weaponN.alive)
+					if (velocity.y != 0 && !weaponN.alive  && !isTouching(FlxObject.FLOOR))
 						currentState = States.JUMPING;
 					else
 						if (weaponN.alive)
@@ -162,7 +162,7 @@ class Player extends FlxSprite
 
 				attack();
 
-				if (velocity.y == 0)
+				if (velocity.y == 0 || velocity.y == Reg.elevatorSpeed || velocity.y == -Reg.elevatorSpeed)
 				{
 					if (velocity.x == 0)
 						currentState = States.IDLE;
