@@ -5,6 +5,7 @@ import entities.Player;
 import entities.PowerUp;
 import entities.WeaponBase;
 import entities.obstacles.Ladder;
+import entities.obstacles.MovingPlatform;
 import entities.obstacles.OneWayPlatform;
 import entities.weapons.WeaponNormal;
 import flixel.FlxCamera;
@@ -14,6 +15,7 @@ import flixel.FlxSprite;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
+import flixel.tile.FlxTileblock;
 import flixel.tile.FlxTilemap;
 import flixel.FlxObject;
 import flixel.ui.FlxBar;
@@ -40,6 +42,7 @@ class PlayState extends FlxState
 	//Obstacles
 	private var ladders:FlxTypedGroup<Ladder>;
 	private var oneWayPlatforms:FlxTypedGroup<OneWayPlatform>;
+	private var movingPlatforms:FlxTypedGroup<MovingPlatform>;
 
 	// Enemies
 	private var batGroup:FlxTypedGroup<Bat>;
@@ -54,12 +57,13 @@ class PlayState extends FlxState
 
 		score = 0;
 		
-		FlxG.worldBounds.set(0, 0, 5120, 512);
+		FlxG.worldBounds.set(0, 0, 5120, 640);
 		FlxG.mouse.visible = false;
 
 		//Obstacles Intitialization
 		ladders = new FlxTypedGroup<Ladder>();
 		oneWayPlatforms = new FlxTypedGroup<OneWayPlatform>();
+		movingPlatforms = new FlxTypedGroup<MovingPlatform>();
 
 
 		//Enemies Initialization
@@ -74,6 +78,7 @@ class PlayState extends FlxState
 		
 		add(ladders);
 		add(oneWayPlatforms);
+		add(movingPlatforms);
 		add(batGroup);
 		add(zombieGroup);
 		add(shamanGroup);
@@ -100,6 +105,7 @@ class PlayState extends FlxState
 		ladderOverlapChecking();
 		FlxG.overlap(player, ladders, playerLadderCollision);
 		FlxG.collide(player, oneWayPlatforms);
+		FlxG.collide(player, movingPlatforms);
 
 		checkPause();
 		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score, Reg.paused);
@@ -130,14 +136,20 @@ class PlayState extends FlxState
 
 		switch (entityName)
 		{
+			// Player
 			case "Player":
 				player = new Player(x, y);
+			// Obstacles
 			case "Ladder":
 				var ladder = new Ladder(x, y);
 				ladders.add(ladder);
 			case "OneWayPlatform":
 				var oneWayPlatform = new OneWayPlatform(x, y);
 				oneWayPlatforms.add(oneWayPlatform);
+			case "MovingPlatform":
+				var movingPlatform = new MovingPlatform(x, y);
+				movingPlatforms.add(movingPlatform);
+			// Enemies
 			case "Bat":
 				var bat = new Bat(x, y, player);
 				batGroup.add(bat);
@@ -166,7 +178,7 @@ class PlayState extends FlxState
 		tilemap.setTileProperties(0, FlxObject.NONE);
 		for (i in 1...3)
 			tilemap.setTileProperties(i, FlxObject.ANY);
-		for (i in 4...16)
+		for (i in 4...21)
 			tilemap.setTileProperties(i, FlxObject.NONE);
 		add(tilemap);
 	}
@@ -174,7 +186,9 @@ class PlayState extends FlxState
 	private function cameraSetUp():Void
 	{
 		camera.follow(player);
-		camera.setScrollBounds(0, 5120, 0, 512);
+		camera.followLerp = 2;
+		camera.targetOffset.set(0, -64);
+		camera.setScrollBounds(0, 5120, 0, 640);
 	}
 
 	private function hudSetUp():Void

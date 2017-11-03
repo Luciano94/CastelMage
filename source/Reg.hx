@@ -20,7 +20,7 @@ class Reg
 	// Game
 	static public var paused:Bool = false;
 	static public var gravity:Int = 1600;
-	// Enemy
+	// Enemies
 	static public var speedEnemy:Int = 65;
 	static public var pathSpeed:Int = 50;
 	static public var trackDist:Int = 100;
@@ -33,4 +33,7 @@ class Reg
 	static public var preAtkTime: Int = 60;
 	static public var AELifePoints:Int = 5;
 	static public var BatatkDist: Int = 5;
+	//Obstacles
+	static public var movingPlatformSpeed:Int = 20;
+	static public var movingPlatformTravelDistance:Int = 200;
 }
