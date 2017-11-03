@@ -28,19 +28,21 @@ class PlayState extends FlxState
 {
 	// Player
 	public var player:Player;
-	private var loader:FlxOgmoLoader;
-	private var tilemap:FlxTilemap;
 	private var hud:HUD;
 	private var playerHealth:FlxBar;
 	private var score:Int;
-	private var stairs:FlxTypedGroup<FlxSprite>;
+	
+	//Environment
+	private var loader:FlxOgmoLoader;
+	private var tilemap:FlxTilemap;
+	private var ladders:FlxTypedGroup<FlxSprite>;
 	
 	// Enemies
 	private var batGroup:FlxTypedGroup<Bat>;
 	private var shamanGroup:FlxTypedGroup<Chaman>;
-	private var minionGroup: FlxTypedGroup<Minion>;
-	private var arEnemyGroup: FlxTypedGroup<ArmoredEnemy>;
-	private var zombieGroup: FlxTypedGroup<Zombie>;
+	private var minionGroup:FlxTypedGroup<Minion>;
+	private var arEnemyGroup:FlxTypedGroup<ArmoredEnemy>;
+	private var zombieGroup:FlxTypedGroup<Zombie>;
 
 	override public function create():Void
 	{
@@ -48,7 +50,7 @@ class PlayState extends FlxState
 		
 		FlxG.mouse.visible = false;
 		score = 0;
-		stairs = new FlxTypedGroup<FlxSprite>();
+		ladders = new FlxTypedGroup<FlxSprite>();
 		batGroup = new FlxTypedGroup<Bat>();
 		zombieGroup = new FlxTypedGroup<Zombie>();
 		shamanGroup = new FlxTypedGroup<Chaman>();
@@ -57,7 +59,7 @@ class PlayState extends FlxState
 		
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
-		add(stairs);
+		add(ladders);
 		add(batGroup);
 		add(zombieGroup);
 		add(shamanGroup);
@@ -68,12 +70,6 @@ class PlayState extends FlxState
 		FlxG.worldBounds.set(0, 0, 5120, 512);
 		cameraSetUp();
 		hudSetUp();	
-		
-		batGroup = new FlxTypedGroup<Bat>();
-		shamanGroup = new FlxTypedGroup<Chaman>();
-		minionGroup = new FlxTypedGroup<Minion>();
-		arEnemyGroup = new FlxTypedGroup<ArmoredEnemy>();
-		zombieGroup = new FlxTypedGroup<Zombie>();
 	}
 
 	override public function update(elapsed:Float):Void
@@ -87,7 +83,9 @@ class PlayState extends FlxState
 		FlxG.collide(shamanGroup, tilemap);
 		FlxG.collide(arEnemyGroup, tilemap);
 		FlxG.collide(minionGroup, tilemap);
-		playerTouchStairs();
+		
+		ladderOverlapChecking();
+		FlxG.overlap(player, ladders, playerLadderCollision);
 		
 		checkPause();
 		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score, Reg.paused);
@@ -104,11 +102,11 @@ class PlayState extends FlxState
 		FlxG.collide(player.getWeaponN(), arEnemyGroup, colWeaponArEnemy);
 		FlxG.collide(player.getWeaponN(), minionGroup, colWeaponMinion);
 		
-		FlxG.collide(player.getMAinWeapon(), batGroup, colWeaponBat);
-		FlxG.collide(player.getMAinWeapon(), shamanGroup, colWeaponChaman);
-		FlxG.collide(player.getMAinWeapon(), zombieGroup, colWeaponZombie);
-		FlxG.collide(player.getMAinWeapon(), arEnemyGroup, colWeaponArEnemy);
-		FlxG.collide(player.getMAinWeapon(), minionGroup, colWeaponMinion);
+		FlxG.collide(player.getMainWeapon(), batGroup, colWeaponBat);
+		FlxG.collide(player.getMainWeapon(), shamanGroup, colWeaponChaman);
+		FlxG.collide(player.getMainWeapon(), zombieGroup, colWeaponZombie);
+		FlxG.collide(player.getMainWeapon(), arEnemyGroup, colWeaponArEnemy);
+		FlxG.collide(player.getMainWeapon(), minionGroup, colWeaponMinion);
 	}
 	// Weapon - Enemies
 	private function colWeaponBat(w:WeaponBase, b:Bat):Void
@@ -128,7 +126,7 @@ class PlayState extends FlxState
 	
 	private function colWeaponArEnemy(w:WeaponBase, a:ArmoredEnemy):Void
 	{
-		if(a.getState() == State.ATTACKING)
+		if (a.getState() == State.ATTACKING)
 			a.getDamage();
 	}
 	
@@ -173,9 +171,10 @@ class PlayState extends FlxState
 			case "Player":
 				player = new Player(x, y);
 			case "Stairs":
-				var stair = new FlxSprite(x, y);
-				stair.loadGraphic(AssetPaths.stairs__png, true, 16, 16);
-				stairs.add(stair);
+				var ladder = new FlxSprite(x, y);
+				ladder.immovable = true;
+				ladder.loadGraphic(AssetPaths.ladder__png, true, 32, 128);
+				ladders.add(ladder);
 			case "Bat":
 				var bat = new Bat(x, y, player);
 				batGroup.add(bat);
@@ -212,7 +211,7 @@ class PlayState extends FlxState
 	
 	private function cameraSetUp():Void 
 	{
-		camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 2);
+		camera.follow(player);
 		camera.setScrollBounds(0, 5120, 0, 512);
 	}
 	
@@ -222,15 +221,24 @@ class PlayState extends FlxState
 		add(hud);
 	}
 	
-	private function playerTouchStairs():Void 
+	private function ladderOverlapChecking():Void 
 	{
-		if (FlxG.overlap(player, stairs))
+		if (FlxG.overlap(player, ladders))
 		{
-			player.isStepingStairs = true;
+			player.isTouchingLadder = true;
 		}
 		else
-			player.isStepingStairs = false;
+			player.isTouchingLadder = false;
 	}
 	
-	
+	private function playerLadderCollision(p:Player, l:FlxSprite):Void
+	{
+		if (p.y < l.y && p.currentState.getName() != "CLIMBING_LADDERS")
+		{	
+			FlxG.collide(p, l);
+		}
+		else
+			if (p.currentState.getName() == "CLIMBING_LADDERS")
+				p.x = l.x;	 
+	}	
 }
