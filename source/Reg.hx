@@ -6,7 +6,6 @@ class Reg
 	static public var playerNormalSpeed:Int = 75;
 	static public var playerJumpSpeed:Int = -500;
 	static public var playerStairsSpeed:Int = 50;
-	static public var gravity:Int = 1600;
 	static public var playerMaxHealth:Int = 100;
 	static public var playerMaxLives:Int = 3;
 	// Weapon Spear
@@ -18,8 +17,9 @@ class Reg
 	// Weapon Potion
 	static public var weaponPotNormalSpeed:Int = 180;
 	static public var weaponPotYSpeed:Int = -150;
-	// Pause
+	// Game
 	static public var paused:Bool = false;
+	static public var gravity:Int = 1600;
 	// Enemy
 	static public var speedEnemy:Int = 65;
 	static public var pathSpeed:Int = 50;
