@@ -43,6 +43,7 @@ class Player extends FlxSprite
 	public var lives(get, null):Int;
 	public var ammo(get, null):Int;
 	public var isTouchingLadder(null, set):Bool;
+	public var isOnTopOfLadder(null, set):Bool;
 	private var inmort:Int;
 
 	public function new(?X:Float=0, ?Y:Float=0)
@@ -59,6 +60,7 @@ class Player extends FlxSprite
 		hp = Reg.playerMaxHealth;
 		lives = Reg.playerMaxLives;
 		isTouchingLadder = false;
+		isOnTopOfLadder = false;
 		ammo = 10;
 		inmort = 0;
 
@@ -331,7 +333,7 @@ class Player extends FlxSprite
 	{
 		if (isTouchingLadder)
 		{
-			if (FlxG.keys.pressed.UP)
+			if (FlxG.keys.pressed.UP && !isOnTopOfLadder)
 			{
 				acceleration.y = 0;
 				velocity.y = -stairsSpeed;
@@ -402,5 +404,10 @@ class Player extends FlxSprite
 	function get_currentState():States 
 	{
 		return currentState;
+	}
+	
+	function set_isOnTopOfLadder(value:Bool):Bool 
+	{
+		return isOnTopOfLadder = value;
 	}
 }
