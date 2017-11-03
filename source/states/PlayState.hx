@@ -22,6 +22,7 @@ import entities.enemies.Bat;
 import entities.enemies.Chaman;
 import entities.enemies.Minion;
 import entities.enemies.Zombie;
+import entities.Boss;
 
 class PlayState extends FlxState
 {
