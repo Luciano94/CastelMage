@@ -5,6 +5,7 @@ import entities.Player;
 import entities.PowerUp;
 import entities.WeaponBase;
 import entities.obstacles.Ladder;
+import entities.obstacles.OneWayPlatform;
 import entities.weapons.WeaponNormal;
 import flixel.FlxCamera;
 import flixel.FlxState;
@@ -38,6 +39,7 @@ class PlayState extends FlxState
 
 	//Obstacles
 	private var ladders:FlxTypedGroup<Ladder>;
+	private var oneWayPlatforms:FlxTypedGroup<OneWayPlatform>;
 
 	// Enemies
 	private var batGroup:FlxTypedGroup<Bat>;
@@ -51,9 +53,14 @@ class PlayState extends FlxState
 		super.create();
 
 		score = 0;
+		
+		FlxG.worldBounds.set(0, 0, 5120, 512);
+		FlxG.mouse.visible = false;
 
 		//Obstacles Intitialization
 		ladders = new FlxTypedGroup<Ladder>();
+		oneWayPlatforms = new FlxTypedGroup<OneWayPlatform>();
+
 
 		//Enemies Initialization
 		batGroup = new FlxTypedGroup<Bat>();
@@ -64,17 +71,16 @@ class PlayState extends FlxState
 
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
+		
 		add(ladders);
+		add(oneWayPlatforms);
 		add(batGroup);
 		add(zombieGroup);
 		add(shamanGroup);
 		add(arEnemyGroup);
 		add(minionGroup);
 		add(player);
-
-		FlxG.worldBounds.set(0, 0, 5120, 512);
-		FlxG.mouse.visible = false;
-
+		
 		cameraSetUp();
 		hudSetUp();
 	}
@@ -93,6 +99,7 @@ class PlayState extends FlxState
 
 		ladderOverlapChecking();
 		FlxG.overlap(player, ladders, playerLadderCollision);
+		FlxG.collide(player, oneWayPlatforms);
 
 		checkPause();
 		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score, Reg.paused);
@@ -125,9 +132,12 @@ class PlayState extends FlxState
 		{
 			case "Player":
 				player = new Player(x, y);
-			case "Stairs":
+			case "Ladder":
 				var ladder = new Ladder(x, y);
 				ladders.add(ladder);
+			case "OneWayPlatform":
+				var oneWayPlatform = new OneWayPlatform(x, y);
+				oneWayPlatforms.add(oneWayPlatform);
 			case "Bat":
 				var bat = new Bat(x, y, player);
 				batGroup.add(bat);

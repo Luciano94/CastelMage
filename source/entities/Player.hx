@@ -324,8 +324,8 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.pressed.DOWN && !isTouchingLadder)
 		{	
-			height = 36;
 			offset.y = 12;
+			height = 36;
 		}
 	}
 	
