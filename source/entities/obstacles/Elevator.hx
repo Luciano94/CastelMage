@@ -4,9 +4,9 @@ import flixel.FlxObject;
 class Elevator extends OneWayPlatform 
 {
 	private var speed:Int;
-	private var direction:Int;
-	private var yStartUp:Float;
-	private var travelDistance:Int;
+	@:isVar public var direction(get, set):Int;
+	@:isVar public var hasJustChangedDirection(get, set):Bool;
+	private var timeSinceChange:Float;
 	
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
@@ -14,8 +14,8 @@ class Elevator extends OneWayPlatform
 		
 		loadGraphic(AssetPaths.movingPlatform__png, true, 48, 16);
 		speed = Reg.elevatorSpeed;
-		travelDistance = Reg.elevatorTravelDistance;
-		yStartUp = Y;
+		hasJustChangedDirection = false;
+		timeSinceChange = 0;
 		direction = FlxObject.DOWN;
 		animation.add("PGB", [0, 1, 2], 6, true);
 		animation.play("PGB");		
@@ -25,7 +25,7 @@ class Elevator extends OneWayPlatform
 	{
 		super.update(elapsed);
 		
-		checkDirection();
+		checkMovement(elapsed);
 		move();
 	}
 	
@@ -37,18 +37,34 @@ class Elevator extends OneWayPlatform
 			velocity.y = -speed;
 	}
 	
-	private function checkDirection():Void 
+	private function checkMovement(elapsed:Float):Void 
 	{
-		if (direction == FlxObject.DOWN && y >= yStartUp + travelDistance)
+		if (hasJustChangedDirection)
+			timeSinceChange += elapsed;
+		if (timeSinceChange >= 2)
 		{
-			direction = FlxObject.UP;
-			yStartUp = y;
+			timeSinceChange = 0;
+			hasJustChangedDirection = false;
 		}
-		else
-			if (direction == FlxObject.UP && y <= yStartUp - travelDistance)
-			{
-				direction = FlxObject.DOWN;
-				yStartUp = y;
-			}
+	}
+	
+	function get_direction():Int 
+	{
+		return direction;
+	}
+	
+	function set_direction(value:Int):Int 
+	{
+		return direction = value;
+	}
+	
+	function get_hasJustChangedDirection():Bool 
+	{
+		return hasJustChangedDirection;
+	}
+	
+	function set_hasJustChangedDirection(value:Bool):Bool 
+	{
+		return hasJustChangedDirection = value;
 	}
 }

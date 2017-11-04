@@ -97,9 +97,9 @@ class Bat extends FlxSprite
 		}
 		if (x > player.x)
 		{
-			if (x - player.x > Reg.BatatkDist)
+			if (x - player.x > Reg.batAtkDist)
 				velocity.x =  -speed;
-			if (x - player.x <= Reg.BatatkDist)
+			if (x - player.x <= Reg.batAtkDist)
 			{
 				velocity.set(0, 0);
 				currentState = BatState.ATTACKING;
@@ -108,9 +108,9 @@ class Bat extends FlxSprite
 		else
 		if (x < player.x)
 		{
-			if(player.x - x > Reg.BatatkDist)
+			if(player.x - x > Reg.batAtkDist)
 				velocity.x =  speed;
-			if (player.x  - x <= Reg.BatatkDist)
+			if (player.x  - x <= Reg.batAtkDist)
 			{
 				velocity.set(0, 0);
 				currentState = BatState.ATTACKING;
