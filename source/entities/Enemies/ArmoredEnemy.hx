@@ -44,7 +44,7 @@ class ArmoredEnemy extends FlxSprite
 		speed = Reg.speedEnemy;
 		gravity = Reg.gravity;
 		acceleration.y = gravity;
-		lifePoints = Reg.AELifePoints;
+		lifePoints = Reg.armoredEnemyLifePoints;
 	}
 	
 	override public function update(elapsed:Float):Void 

@@ -107,6 +107,13 @@ class Player extends FlxSprite
 		super.update(elapsed);
 	}
 	
+	override public function reset(X, Y)
+	{
+		super.reset(X, Y);
+		
+		hp = Reg.playerMaxHealth;
+	}
+	
 	private function stateMachine():Void
 	{
 		switch (currentState)
@@ -135,8 +142,13 @@ class Player extends FlxSprite
 							if (height == 36)
 								currentState = States.CROUCHED;
 							else
+							{
 								if (acceleration.y == 0)
 									currentState = States.CLIMBING_LADDERS;
+								else
+									if (hasJustBeenHit && inmortalityTime == 0)
+										currentState = States.BEING_HIT;
+							}
 						}
 					}	
 				}
@@ -155,8 +167,13 @@ class Player extends FlxSprite
 					if (velocity.y != 0 && !weaponN.alive  && !isTouching(FlxObject.FLOOR))
 						currentState = States.JUMPING;
 					else
+					{
 						if (weaponN.alive)
 							currentState = States.ATTACKING;
+						else
+							if (hasJustBeenHit && inmortalityTime == 0)
+								currentState = States.BEING_HIT;
+					}
 				}
 						
 			case States.JUMPING:
@@ -173,8 +190,13 @@ class Player extends FlxSprite
 						currentState = States.MOVING;
 				}
 				else
+				{
 					if (weaponN.alive)
 						currentState = States.ATTACKING;
+					else
+						if (hasJustBeenHit && inmortalityTime == 0)
+							currentState = States.BEING_HIT;
+				}
 
 			case States.ATTACKING:
 				if (height == 48)
@@ -213,7 +235,12 @@ class Player extends FlxSprite
 							if (height == 36)
 								currentState = States.CROUCHED;
 							else
-								currentState = States.IDLE;
+							{
+								if (hasJustBeenHit && inmortalityTime == 0)
+									currentState = States.BEING_HIT;
+								else
+									currentState = States.IDLE;
+							}
 						}
 					}
 				}
@@ -242,22 +269,20 @@ class Player extends FlxSprite
 					currentState = States.IDLE;
 				}
 				else
+				{
 					if (weaponN.alive)
 						currentState = States.ATTACKING;
+					else
+						if (hasJustBeenHit && inmortalityTime == 0)
+							currentState = States.BEING_HIT;
+				}
 
 			case States.BEING_HIT:
-				if (animation.name ! = "beHit")
+				if (animation.name != "beHit")
 					animation.play("beHit");
 					
-					checkInmortality(elapsed);
 					if (animation.name == "beHit" && animation.finished)
-					{
-						moveHor();
-						jump();
-						attack();
-						crouch();
-					cclimbLadders(
-					}
+						currentState = States.IDLE;
 						
 			case States.DEAD:
 
@@ -388,21 +413,21 @@ class Player extends FlxSprite
 	{
 		if (!hasJustBeenHit)
 		{
-			hasJustBeenHit = true;
-			inmortalityTime = 0;
-			FlxFlicker.flicker(this, 3, 0.08, true, true);
 			hp -= damage;
 		
 			if (hp <= 0)
 			{
 				lives--;
 				if (lives > 0)
-				{
-					hp = 100;
 					reset(320, 496);
-				}
 				else
 					kill();
+			}
+			else
+			{
+				hasJustBeenHit = true;
+				inmortalityTime = 0;
+				FlxFlicker.flicker(this, 3, 0.08, true, true);
 			}
 		}
 	}

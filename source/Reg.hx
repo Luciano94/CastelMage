@@ -30,9 +30,14 @@ class Reg
 	static public var minionTime:Int = 5;
 	static public var atkTime:Int = 120;
 	static public var timeToTrk:Int = 360;
-	static public var preAtkTime: Int = 60;
-	static public var AELifePoints:Int = 5;
-	static public var BatatkDist: Int = 5;
+	static public var preAtkTime:Int = 60;
+	static public var armoredEnemyLifePoints:Int = 5;
+	static public var batAtkDist:Int = 5;
+	static public var zombieAtkDamage:Int = 15;
+	static public var batAtkDamage:Int = 5;
+	static public var shamanAtkDamage:Int = 10;
+	static public var armoredEnemyAtkDamage:Int = 20;
+	static public var minionAtkDamage:Int = 10;
 	//Obstacles
 	static public var movingPlatformSpeed:Int = 32;
 	static public var movingPlatformTravelDistance:Int = 320;

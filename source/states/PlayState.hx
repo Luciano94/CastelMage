@@ -325,26 +325,26 @@ class PlayState extends FlxState
 	// Player - Enemies
 	private function colPlayerBat(p:Player, b:Bat):Void
 	{
-		p.getDamage(5);
+		p.getDamage(Reg.batAtkDamage);
 	}
 
 	private function colPlayerChaman(p:Player, c:Chaman):Void
 	{
-		p.getDamage(10);
+		p.getDamage(Reg.shamanAtkDamage);
 	}
 
 	private function colPlayerZombie(p:Player, z:Zombie):Void
 	{
-		p.getDamage(15);
+		p.getDamage(Reg.zombieAtkDamage);
 	}
 
 	private function colPayerArEnemy(p:Player, a:ArmoredEnemy):Void
 	{
-		p.getDamage(20);
+		p.getDamage(Reg.armoredEnemyAtkDamage);
 	}
 
 	private function colPlayerMinion(p:Player, m:Minion): Void
 	{
-		p.getDamage(5);
+		p.getDamage(Reg.minionAtkDamage);
 	}
 }
