@@ -35,19 +35,21 @@ class PlayState extends FlxState
 	public var player:Player;
 	private var hud:HUD;
 	private var playerHealth:FlxBar;
-	private var score:Int;
 
-	//Tilemap
+	// Tilemap
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
 
-	//Obstacles
+	// Obstacles
 	private var ladders:FlxTypedGroup<Ladder>;
 	private var oneWayPlatforms:FlxTypedGroup<OneWayPlatform>;
 	private var movingPlatforms:FlxTypedGroup<MovingPlatform>;
 	private var elevators:FlxTypedGroup<Elevator>;
 	private var platformLimits:FlxTypedGroup<FlxSprite>;
 	private var barrels:FlxTypedGroup<Barrel>;
+	
+	// Power Up
+	private var powerUps:FlxTypedGroup<PowerUp>;
 
 	// Enemies
 	private var batGroup:FlxTypedGroup<Bat>;
@@ -59,21 +61,22 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		super.create();
-
-		score = 0;
 		
 		FlxG.worldBounds.set(0, 0, 5120, 640);
 		FlxG.mouse.visible = false;
 
-		//Obstacles Intitialization
+		// Obstacles Intitialization
 		ladders = new FlxTypedGroup<Ladder>();
 		oneWayPlatforms = new FlxTypedGroup<OneWayPlatform>();
 		movingPlatforms = new FlxTypedGroup<MovingPlatform>();
 		elevators = new FlxTypedGroup<Elevator>();
 		platformLimits = new FlxTypedGroup<FlxSprite>();
 		barrels = new FlxTypedGroup<Barrel>();
+		
+		// Power Ups Inicialization
+		powerUps = new FlxTypedGroup<PowerUp>();
 
-		//Enemies Initialization
+		// Enemies Initialization
 		batGroup = new FlxTypedGroup<Bat>();
 		zombieGroup = new FlxTypedGroup<Zombie>();
 		shamanGroup = new FlxTypedGroup<Chaman>();
@@ -89,6 +92,7 @@ class PlayState extends FlxState
 		add(elevators);
 		add(platformLimits);
 		add(barrels);
+		add(powerUps);
 		add(batGroup);
 		add(zombieGroup);
 		add(shamanGroup);
@@ -141,9 +145,11 @@ class PlayState extends FlxState
 		FlxG.overlap(player.getSecondaryWeapon(), minionGroup, colWeaponMinion);
 		// Main Weapon - Obstacles
 		FlxG.overlap(player.weaponN, barrels, weaponBarrelCollision);
+		// Player - Power Ups
+		FlxG.collide(player, powerUps, playerPowerUpCollision);
 		
 		checkPause();
-		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score, Reg.paused);
+		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused);
 	}
 
 	private function entityCreator(entityName:String, entityData:Xml):Void
@@ -319,7 +325,7 @@ class PlayState extends FlxState
 	// Weapon - Obstacles
 	private function weaponBarrelCollision(w:WeaponNormal, b:Barrel):Void
 	{
-		b.preKill();
+		b.preKill(powerUps);
 	}
 	
 	// Player - Enemies
@@ -346,5 +352,12 @@ class PlayState extends FlxState
 	private function colPlayerMinion(p:Player, m:Minion): Void
 	{
 		p.getDamage(Reg.minionAtkDamage);
+	}
+	
+	// Player - Power Ups
+	private function playerPowerUpCollision(p:Player, pUp:PowerUp) 
+	{
+		p.collectPowerUp(pUp);	
+		powerUps.remove(pUp);
 	}
 }

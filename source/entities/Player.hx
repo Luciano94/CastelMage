@@ -440,6 +440,67 @@ class Player extends FlxSprite
 			hasJustBeenHit = false;
 	}
 	
+	public function collectPowerUp(powerUp:PowerUp)
+	{
+		switch (powerUp.whichPowerUp)
+		{
+			case 0:
+				if (health <= Reg.playerMaxHealth - Reg.healthPackPoints)
+					health += Reg.healthPackPoints;
+			case 1:
+				if (lives < 3)
+					lives += 1;
+			case 2:
+				if (weaponCurrentState != WeaponStates.WEASPEAR)
+				{
+					weaponCurrentState = WeaponStates.WEASPEAR;
+					ammo = Reg.weaponInitialAmmo;
+				}
+				else
+				{
+					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+						ammo += Reg.weaponInitialAmmo;
+					else
+						ammo = Reg.playerMaxAmmo;
+				}
+			
+			case 3:
+				if (weaponCurrentState != WeaponStates.WEASHURIKEN)
+				{
+					weaponCurrentState = WeaponStates.WEASHURIKEN;
+					ammo = Reg.weaponInitialAmmo;
+				}
+				else
+				{
+					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+						ammo += Reg.weaponInitialAmmo;
+					else
+						ammo = Reg.playerMaxAmmo;
+				}
+					
+			case 4:
+				if (weaponCurrentState != WeaponStates.WEAPOTION)
+				{
+					weaponCurrentState = WeaponStates.WEAPOTION;
+					ammo = Reg.weaponInitialAmmo;
+				}
+				else
+				{
+					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+						ammo += Reg.weaponInitialAmmo;
+					else
+						ammo = Reg.playerMaxAmmo;
+				}
+			case 5:
+				if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+					ammo += Reg.ammoPackPoints;
+				else
+					ammo = Reg.playerMaxAmmo;
+			case 6:
+				Reg.score += 5;
+		}
+	}
+	
 	function get_lives():Int 
 	{
 		return lives;
