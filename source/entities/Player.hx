@@ -54,7 +54,7 @@ class Player extends FlxSprite
 
 		// Attributes Inicialization
 		currentState = States.IDLE;
-		weaponCurrentState = WeaponStates.WEAPOTION;
+		weaponCurrentState = WeaponStates.SINWEA;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		stairsSpeed = Reg.playerStairsSpeed;
@@ -63,7 +63,7 @@ class Player extends FlxSprite
 		lives = Reg.playerMaxLives;
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
-		ammo = 10;
+		ammo = 0;
 		inmortalityTime = 0;
 		hasJustBeenHit = false;
 
@@ -102,6 +102,7 @@ class Player extends FlxSprite
 	{
 		stateMachine();
 		checkAmmo();
+		checkBoundaries();
 		checkInmortality(elapsed);
 		
 		super.update(elapsed);
@@ -112,6 +113,8 @@ class Player extends FlxSprite
 		super.reset(X, Y);
 		
 		hp = Reg.playerMaxHealth;
+		ammo = 0;
+		weaponCurrentState = WeaponStates.SINWEA;
 	}
 	
 	private function stateMachine():Void
@@ -127,31 +130,32 @@ class Player extends FlxSprite
 				crouch();
 				climbLadders();
 				
-				if (velocity.x != 0)
-					currentState = States.MOVING;
+				if (hasJustBeenHit && inmortalityTime == 0)
+					currentState = States.BEING_HIT;
 				else
 				{
-					if (velocity.y != 0 && !weaponN.alive && acceleration.y != 0 && !isTouching(FlxObject.FLOOR))
-						currentState = States.JUMPING;
+					if (velocity.x != 0)
+						currentState = States.MOVING;
 					else
 					{
-						if (weaponN.alive)
-							currentState = States.ATTACKING;
+						if (velocity.y != 0 && !weaponN.alive && acceleration.y != 0 && !isTouching(FlxObject.FLOOR))
+							currentState = States.JUMPING;
 						else
 						{
-							if (height == 36)
-								currentState = States.CROUCHED;
+							if (weaponN.alive)
+								currentState = States.ATTACKING;
 							else
 							{
-								if (acceleration.y == 0)
-									currentState = States.CLIMBING_LADDERS;
+								if (height == 36)
+									currentState = States.CROUCHED;
 								else
-									if (hasJustBeenHit && inmortalityTime == 0)
-										currentState = States.BEING_HIT;
+									if (acceleration.y == 0)
+										currentState = States.CLIMBING_LADDERS;
 							}
-						}
-					}	
+						}	
+					}
 				}
+				
 
 			case States.MOVING:
 				animation.play("move");
@@ -159,45 +163,46 @@ class Player extends FlxSprite
 				moveHor();
 				jump();
 				attack();
-
-				if (velocity.x == 0)
-					currentState = States.IDLE;
+				
+				if (hasJustBeenHit && inmortalityTime == 0)
+					currentState = States.BEING_HIT;
 				else
 				{
-					if (velocity.y != 0 && !weaponN.alive  && !isTouching(FlxObject.FLOOR))
-						currentState = States.JUMPING;
+					if (velocity.x == 0)
+						currentState = States.IDLE;
 					else
 					{
-						if (weaponN.alive)
-							currentState = States.ATTACKING;
+						if (velocity.y != 0 && !weaponN.alive  && !isTouching(FlxObject.FLOOR))
+							currentState = States.JUMPING;
 						else
-							if (hasJustBeenHit && inmortalityTime == 0)
-								currentState = States.BEING_HIT;
+							if (weaponN.alive)
+								currentState = States.ATTACKING;
 					}
 				}
+				
 						
 			case States.JUMPING:
 				if (animation.name != "jump")
 					animation.play("jump");
 
 				attack();
-
-				if (velocity.y == 0 || velocity.y == Reg.elevatorSpeed || velocity.y == -Reg.elevatorSpeed)
-				{
-					if (velocity.x == 0)
-						currentState = States.IDLE;
-					else
-						currentState = States.MOVING;
-				}
+				
+				if (hasJustBeenHit && inmortalityTime == 0)
+					currentState = States.BEING_HIT;
 				else
 				{
-					if (weaponN.alive)
-						currentState = States.ATTACKING;
+					if (velocity.y == 0 || velocity.y == Reg.elevatorSpeed || velocity.y == -Reg.elevatorSpeed)
+					{
+						if (velocity.x == 0)
+							currentState = States.IDLE;
+						else
+							currentState = States.MOVING;
+					}
 					else
-						if (hasJustBeenHit && inmortalityTime == 0)
-							currentState = States.BEING_HIT;
+						if (weaponN.alive)
+							currentState = States.ATTACKING;
 				}
-
+				
 			case States.ATTACKING:
 				if (height == 48)
 				{
@@ -224,20 +229,20 @@ class Player extends FlxSprite
 				if ((animation.name == "attack" || animation.name == "crouchAttack") && animation.finished)
 				{
 					weaponN.kill();
-					if (velocity.y != 0)
-						currentState = States.JUMPING;
+					if (hasJustBeenHit && inmortalityTime == 0)
+						currentState = States.BEING_HIT;
 					else
 					{
-						if (velocity.x != 0)
-							currentState = States.MOVING;
+						if (velocity.y != 0)
+							currentState = States.JUMPING;
 						else
 						{
-							if (height == 36)
-								currentState = States.CROUCHED;
+							if (velocity.x != 0)
+								currentState = States.MOVING;
 							else
 							{
-								if (hasJustBeenHit && inmortalityTime == 0)
-									currentState = States.BEING_HIT;
+								if (height == 36)
+									currentState = States.CROUCHED;
 								else
 									currentState = States.IDLE;
 							}
@@ -440,6 +445,15 @@ class Player extends FlxSprite
 			hasJustBeenHit = false;
 	}
 	
+	private function checkBoundaries():Void 
+	{
+		if (!inWorldBounds())
+		{
+			lives--;
+			if (lives > 0)
+				reset(320, 496);
+		}
+	}
 	public function collectPowerUp(powerUp:PowerUp)
 	{
 		switch (powerUp.whichPowerUp)

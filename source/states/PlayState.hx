@@ -14,6 +14,7 @@ import flixel.FlxCamera;
 import flixel.FlxState;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.addons.display.FlxBackdrop;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
@@ -39,6 +40,7 @@ class PlayState extends FlxState
 	// Tilemap
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
+	private var backdrop:FlxBackdrop;
 
 	// Obstacles
 	private var ladders:FlxTypedGroup<Ladder>;
@@ -82,6 +84,9 @@ class PlayState extends FlxState
 		shamanGroup = new FlxTypedGroup<Chaman>();
 		arEnemyGroup = new FlxTypedGroup<ArmoredEnemy>();
 		minionGroup = new FlxTypedGroup<Minion>();
+		
+		backdrop = new FlxBackdrop(AssetPaths.backdrop__png, 0.5, 0.25, true, true, 0, 0);
+		add(backdrop);
 
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");

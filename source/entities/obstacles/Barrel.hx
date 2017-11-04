@@ -37,7 +37,7 @@ class Barrel extends FlxSprite
 		if (random.bool(45))
 		{
 			powerUpIndex = random.int(0, 6);
-			var powerUp = new PowerUp(x + 8, y + 20, powerUpIndex);
+			var powerUp = new PowerUp(x + 8, y + 12, powerUpIndex);
 			powerUps.add(powerUp);
 		}
 	}	
