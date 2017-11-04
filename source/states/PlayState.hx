@@ -9,6 +9,7 @@ import entities.obstacles.Ladder;
 import entities.obstacles.MovingPlatform;
 import entities.obstacles.OneWayPlatform;
 import entities.weapons.WeaponNormal;
+import entities.weapons.WeaponPotion;
 import flixel.FlxCamera;
 import flixel.FlxState;
 import flixel.FlxG;
@@ -36,12 +37,12 @@ class PlayState extends FlxState
 	private var hud:HUD;
 	private var playerHealth:FlxBar;
 	private var score:Int;
-
-	//Tilemap
+	
+	// Tilemap
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
 
-	//Obstacles
+	// Obstacles
 	private var ladders:FlxTypedGroup<Ladder>;
 	private var oneWayPlatforms:FlxTypedGroup<OneWayPlatform>;
 	private var movingPlatforms:FlxTypedGroup<MovingPlatform>;
@@ -68,7 +69,6 @@ class PlayState extends FlxState
 		oneWayPlatforms = new FlxTypedGroup<OneWayPlatform>();
 		movingPlatforms = new FlxTypedGroup<MovingPlatform>();
 		elevators = new FlxTypedGroup<Elevator>();
-
 
 		//Enemies Initialization
 		batGroup = new FlxTypedGroup<Bat>();
@@ -106,6 +106,7 @@ class PlayState extends FlxState
 		FlxG.collide(shamanGroup, tilemap);
 		FlxG.collide(arEnemyGroup, tilemap);
 		FlxG.collide(minionGroup, tilemap);
+		FlxG.collide(player.get_weaponPotion(), tilemap, colWeaPotTile);
 
 		ladderOverlapChecking();
 		FlxG.overlap(player, ladders, playerLadderCollision);
@@ -133,6 +134,11 @@ class PlayState extends FlxState
 		FlxG.collide(player.getMainWeapon(), zombieGroup, colWeaponZombie);
 		FlxG.collide(player.getMainWeapon(), arEnemyGroup, colWeaponArEnemy);
 		FlxG.collide(player.getMainWeapon(), minionGroup, colWeaponMinion);
+	}
+	
+	function colWeaPotTile(w:WeaponPotion, b:Bat) 
+	{
+		w.set_isItTouching(true);
 	}
 
 	private function entityCreator(entityName:String, entityData:Xml):Void

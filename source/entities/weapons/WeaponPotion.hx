@@ -13,6 +13,7 @@ class WeaponPotion extends WeaponBase
 {
 	private var currentState:States;
 	private var speed:Int;
+	public var isItTouching(default, set):Bool;
 	
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
@@ -24,6 +25,7 @@ class WeaponPotion extends WeaponBase
 		animation.add("dying", [1, 2, 3, 4], 8, false);
 		currentState = States.FLYING;
 		speed = Reg.weaponPotNormalSpeed;
+		isItTouching = false;
 	}
 	override public function update(elapsed:Float):Void 
 	{
@@ -32,11 +34,8 @@ class WeaponPotion extends WeaponBase
 		switch (currentState) 
 		{
 			case States.FLYING:
-				if (facing == FlxObject.RIGHT)
-					velocity.x = speed;
-				else
-					velocity.x = -speed;
-				if (y >= 470) // Temporary
+				
+				if (isItTouching)
 				{
 					velocity.y = 0;
 					velocity.x = 0;
@@ -57,5 +56,16 @@ class WeaponPotion extends WeaponBase
 		acceleration.y = Reg.gravity;
 		animation.play("flying");
 		currentState = States.FLYING;
+		isItTouching = false;
+		
+		if (facing == FlxObject.RIGHT)
+			velocity.x = speed;
+		else
+			velocity.x = -speed;
+	}
+	
+	public function set_isItTouching(value:Bool):Bool 
+	{
+		return isItTouching = value;
 	}
 }

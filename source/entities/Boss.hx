@@ -19,7 +19,7 @@ class Boss extends FlxSprite
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
 		super(X, Y);
-		currentState = StatesB.STATE1;
+		currentState = StatesB.NORMALMOV;
 	}
 	override public function update(elapsed:Float):Void 
 	{
@@ -35,7 +35,7 @@ class Boss extends FlxSprite
 			case StatesB.INVIMOV:
 				
 			case StatesB.CHASE:
-				FlxVelocity.accelerateTowardsPoint();
+				/*FlxVelocity.accelerateTowardsPoint();*/
 		}
 	}
 }

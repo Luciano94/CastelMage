@@ -38,7 +38,7 @@ class Player extends FlxSprite
 	private var weaponN:WeaponNormal;
 	private var weaponSpear:WeaponSpear;
 	private var weaponShuriken:WeaponShuriken;
-	private var weaponPotion:WeaponPotion;
+	private var weaponPotion(get, null):WeaponPotion;
 	private var hp:Int;
 	public var lives(get, null):Int;
 	public var ammo(get, null):Int;
@@ -409,5 +409,10 @@ class Player extends FlxSprite
 	function set_isOnTopOfLadder(value:Bool):Bool 
 	{
 		return isOnTopOfLadder = value;
+	}
+	
+	public function get_weaponPotion():WeaponPotion 
+	{
+		return weaponPotion;
 	}
 }
