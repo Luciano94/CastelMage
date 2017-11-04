@@ -10,6 +10,7 @@ class PowerUp extends FlxSprite
   public function new(?X:Float=0, ?Y:Float=0, WhichPowerUp:Int) 
   {
     super(X, Y);
+	
     whichPowerUp = WhichPowerUp;
     loadGraphic(AssetPaths.player__png, true, 11, 9);
     animation.add("health1", [0]);

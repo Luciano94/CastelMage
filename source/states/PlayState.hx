@@ -4,6 +4,7 @@ import entities.Player.WeaponStates;
 import entities.Player;
 import entities.PowerUp;
 import entities.WeaponBase;
+import entities.obstacles.Barrel;
 import entities.obstacles.Elevator;
 import entities.obstacles.Ladder;
 import entities.obstacles.MovingPlatform;
@@ -45,6 +46,8 @@ class PlayState extends FlxState
 	private var oneWayPlatforms:FlxTypedGroup<OneWayPlatform>;
 	private var movingPlatforms:FlxTypedGroup<MovingPlatform>;
 	private var elevators:FlxTypedGroup<Elevator>;
+	private var platformLimits:FlxTypedGroup<FlxSprite>;
+	private var barrels:FlxTypedGroup<Barrel>;
 
 	// Enemies
 	private var batGroup:FlxTypedGroup<Bat>;
@@ -67,7 +70,8 @@ class PlayState extends FlxState
 		oneWayPlatforms = new FlxTypedGroup<OneWayPlatform>();
 		movingPlatforms = new FlxTypedGroup<MovingPlatform>();
 		elevators = new FlxTypedGroup<Elevator>();
-
+		platformLimits = new FlxTypedGroup<FlxSprite>();
+		barrels = new FlxTypedGroup<Barrel>();
 
 		//Enemies Initialization
 		batGroup = new FlxTypedGroup<Bat>();
@@ -83,6 +87,8 @@ class PlayState extends FlxState
 		add(oneWayPlatforms);
 		add(movingPlatforms);
 		add(elevators);
+		add(platformLimits);
+		add(barrels);
 		add(batGroup);
 		add(zombieGroup);
 		add(shamanGroup);
@@ -97,41 +103,47 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float):Void
 	{
 		if (!Reg.paused)
-		{
 			super.update(elapsed);
-		}
+		
+		// COLLISIONS
+		// Entities - Tilemap
 		FlxG.collide(player, tilemap);
 		FlxG.collide(zombieGroup, tilemap);
 		FlxG.collide(shamanGroup, tilemap);
 		FlxG.collide(arEnemyGroup, tilemap);
 		FlxG.collide(minionGroup, tilemap);
-
+		// Player - Obstacles
 		ladderOverlapChecking();
 		FlxG.overlap(player, ladders, playerLadderCollision);
 		FlxG.collide(player, oneWayPlatforms);
 		FlxG.collide(player, movingPlatforms);
 		FlxG.collide(player, elevators);
-
-		checkPause();
-		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score, Reg.paused);
+		// Moving Platforms - Boundaries
+		FlxG.overlap(elevators, platformLimits, changeElevatorDirection);
+		FlxG.overlap(movingPlatforms, platformLimits, changeMovingPlatformDirection);
 		// Player - Enemies
 		FlxG.collide(player, batGroup, colPlayerBat);
 		FlxG.collide(player, shamanGroup, colPlayerChaman);
 		FlxG.collide(player, zombieGroup, colPlayerZombie);
 		FlxG.collide(player, arEnemyGroup, colPayerArEnemy);
 		FlxG.collide(player, minionGroup, colPlayerMinion);
-		//Weapon - Enemies
-		FlxG.collide(player.getWeaponN(), batGroup, colWeaponBat);
-		FlxG.collide(player.getWeaponN(), shamanGroup, colWeaponChaman);
-		FlxG.collide(player.getWeaponN(), zombieGroup, colWeaponZombie);
-		FlxG.collide(player.getWeaponN(), arEnemyGroup, colWeaponArEnemy);
-		FlxG.collide(player.getWeaponN(), minionGroup, colWeaponMinion);
-
-		FlxG.collide(player.getMainWeapon(), batGroup, colWeaponBat);
-		FlxG.collide(player.getMainWeapon(), shamanGroup, colWeaponChaman);
-		FlxG.collide(player.getMainWeapon(), zombieGroup, colWeaponZombie);
-		FlxG.collide(player.getMainWeapon(), arEnemyGroup, colWeaponArEnemy);
-		FlxG.collide(player.getMainWeapon(), minionGroup, colWeaponMinion);
+		// Main Weapon - Enemies
+		FlxG.overlap(player.weaponN, batGroup, colWeaponBat);
+		FlxG.overlap(player.weaponN, shamanGroup, colWeaponChaman);
+		FlxG.overlap(player.weaponN, zombieGroup, colWeaponZombie);
+		FlxG.overlap(player.weaponN, arEnemyGroup, colWeaponArEnemy);
+		FlxG.overlap(player.weaponN, minionGroup, colWeaponMinion);
+		// Secondary Weapon - Enemies
+		FlxG.overlap(player.getSecondaryWeapon(), batGroup, colWeaponBat);
+		FlxG.overlap(player.getSecondaryWeapon(), shamanGroup, colWeaponChaman);
+		FlxG.overlap(player.getSecondaryWeapon(), zombieGroup, colWeaponZombie);
+		FlxG.overlap(player.getSecondaryWeapon(), arEnemyGroup, colWeaponArEnemy);
+		FlxG.overlap(player.getSecondaryWeapon(), minionGroup, colWeaponMinion);
+		// Main Weapon - Obstacles
+		FlxG.overlap(player.weaponN, barrels, weaponBarrelCollision);
+		
+		checkPause();
+		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, score, Reg.paused);
 	}
 
 	private function entityCreator(entityName:String, entityData:Xml):Void
@@ -157,6 +169,13 @@ class PlayState extends FlxState
 			case "Elevator":
 				var elevator = new Elevator(x, y);
 				elevators.add(elevator);
+			case "PlatformLimit":
+				var platformLimit = new FlxSprite(x, y);
+				platformLimit.makeGraphic(16, 16, 0x00000000);
+				platformLimits.add(platformLimit);
+			case "Barrel":
+				var barrel = new Barrel(x, y);
+				barrels.add(barrel);
 			// Enemies
 			case "Bat":
 				var bat = new Bat(x, y, player);
@@ -204,7 +223,9 @@ class PlayState extends FlxState
 		hud = new HUD(player);
 		add(hud);
 	}
-
+	
+	// COLLISION FUNCTIONS
+	// Player - Ladders 
 	private function ladderOverlapChecking():Void
 	{
 		if (FlxG.overlap(player, ladders))
@@ -232,7 +253,42 @@ class PlayState extends FlxState
 				p.x = l.x;
 			}
 	}
-
+	
+	// Elevator - Boundaries
+	private function changeElevatorDirection(e:Elevator, l:FlxSprite):Void
+	{
+		if (e.direction == FlxObject.DOWN && !e.hasJustChangedDirection)
+		{
+			e.direction = FlxObject.UP;
+			e.hasJustChangedDirection = true;
+		}
+		else
+		{
+			if (!e.hasJustChangedDirection)
+			{
+				e.direction = FlxObject.DOWN;
+				e.hasJustChangedDirection = true;
+			}
+		}
+	}
+		
+	private function changeMovingPlatformDirection(m:MovingPlatform, l:FlxSprite):Void
+	{
+		if (m.direction == FlxObject.RIGHT && !m.hasJustChangedDirection)
+		{
+			m.direction = FlxObject.LEFT;
+			m.hasJustChangedDirection = true;
+		}
+		else
+		{
+			if (!m.hasJustChangedDirection)
+			{
+				m.direction = FlxObject.RIGHT;
+				m.hasJustChangedDirection = true;
+			}
+		}
+	}
+	
 	// Weapon - Enemies
 	private function colWeaponBat(w:WeaponBase, b:Bat):Void
 	{
@@ -259,30 +315,36 @@ class PlayState extends FlxState
 	{
 		m.kill();
 	}
-
+	
+	// Weapon - Obstacles
+	private function weaponBarrelCollision(w:WeaponNormal, b:Barrel):Void
+	{
+		b.preKill();
+	}
+	
 	// Player - Enemies
 	private function colPlayerBat(p:Player, b:Bat):Void
 	{
-		p.getDamage();
+		p.getDamage(5);
 	}
 
 	private function colPlayerChaman(p:Player, c:Chaman):Void
 	{
-		p.getDamage();
+		p.getDamage(10);
 	}
 
 	private function colPlayerZombie(p:Player, z:Zombie):Void
 	{
-		p.getDamage();
+		p.getDamage(15);
 	}
 
 	private function colPayerArEnemy(p:Player, a:ArmoredEnemy):Void
 	{
-		p.getDamage();
+		p.getDamage(20);
 	}
 
 	private function colPlayerMinion(p:Player, m:Minion): Void
 	{
-		p.getDamage();
+		p.getDamage(5);
 	}
 }

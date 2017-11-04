@@ -19,6 +19,7 @@ enum States
 	ATTACKING;
 	CROUCHED;
 	CLIMBING_LADDERS;
+	BEING_HIT;
 	DEAD;
 }
 enum WeaponStates
@@ -35,7 +36,7 @@ class Player extends FlxSprite
 	private var speed:Int;
 	private var jumpSpeed:Int;
 	private var stairsSpeed:Int;
-	private var weaponN:WeaponNormal;
+	public var weaponN(get, null):WeaponNormal;
 	private var weaponSpear:WeaponSpear;
 	private var weaponShuriken:WeaponShuriken;
 	private var weaponPotion:WeaponPotion;
@@ -44,7 +45,8 @@ class Player extends FlxSprite
 	public var ammo(get, null):Int;
 	public var isTouchingLadder(null, set):Bool;
 	public var isOnTopOfLadder(null, set):Bool;
-	private var inmort:Int;
+	private var hasJustBeenHit:Bool;
+	private var inmortalityTime:Float;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -62,7 +64,8 @@ class Player extends FlxSprite
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
 		ammo = 10;
-		inmort = 0;
+		inmortalityTime = 0;
+		hasJustBeenHit = false;
 
 		// Weapons Creation
 		weaponN = new WeaponNormal(x + width, y + height / 3);
@@ -91,6 +94,7 @@ class Player extends FlxSprite
 		animation.add("crouch", [9], false);
 		animation.add("crouchAttack", [10, 11], 9, false);
 		animation.add("climbLadders", [12, 13], 6, false);
+		animation.add("beHit", [14], 6, false);
 		
 	}
 	
@@ -98,6 +102,7 @@ class Player extends FlxSprite
 	{
 		stateMachine();
 		checkAmmo();
+		checkInmortality(elapsed);
 		
 		super.update(elapsed);
 	}
@@ -133,9 +138,7 @@ class Player extends FlxSprite
 								if (acceleration.y == 0)
 									currentState = States.CLIMBING_LADDERS;
 						}
-						
-					}
-					
+					}	
 				}
 
 			case States.MOVING:
@@ -242,6 +245,20 @@ class Player extends FlxSprite
 					if (weaponN.alive)
 						currentState = States.ATTACKING;
 
+			case States.BEING_HIT:
+				if (animation.name ! = "beHit")
+					animation.play("beHit");
+					
+					checkInmortality(elapsed);
+					if (animation.name == "beHit" && animation.finished)
+					{
+						moveHor();
+						jump();
+						attack();
+						crouch();
+					cclimbLadders(
+					}
+						
 			case States.DEAD:
 
 		}
@@ -352,7 +369,7 @@ class Player extends FlxSprite
 			weaponCurrentState = WeaponStates.SINWEA;
 	}
 	
-	public function getWeaponN():WeaponBase
+	public function getSecondaryWeapon():WeaponBase
 	{
 		switch (weaponCurrentState) 
 		{
@@ -367,18 +384,35 @@ class Player extends FlxSprite
 		}
 	}
 	
-	public function getMainWeapon():WeaponBase
+	public function getDamage(damage:Int):Void
 	{
-		return weaponN;
+		if (!hasJustBeenHit)
+		{
+			hasJustBeenHit = true;
+			inmortalityTime = 0;
+			FlxFlicker.flicker(this, 3, 0.08, true, true);
+			hp -= damage;
+		
+			if (hp <= 0)
+			{
+				lives--;
+				if (lives > 0)
+				{
+					hp = 100;
+					reset(320, 496);
+				}
+				else
+					kill();
+			}
+		}
 	}
 	
-	public function getDamage()
+	private function checkInmortality(elapsed:Float):Void 
 	{
-		FlxFlicker.flicker(this, 3, 0.08, true, true);
-		if (lives > 0) 
-			lives--;
-		else 
-			kill();
+		if (hasJustBeenHit)
+			inmortalityTime += elapsed;
+		if (inmortalityTime >= 3)
+			hasJustBeenHit = false;
 	}
 	
 	function get_lives():Int 
@@ -409,5 +443,10 @@ class Player extends FlxSprite
 	function set_isOnTopOfLadder(value:Bool):Bool 
 	{
 		return isOnTopOfLadder = value;
+	}
+	
+	function get_weaponN():WeaponNormal 
+	{
+		return weaponN;
 	}
 }

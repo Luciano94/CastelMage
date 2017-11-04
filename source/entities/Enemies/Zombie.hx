@@ -4,10 +4,6 @@ import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxObject;
 
-/**
- * ...
- * @author holis
- */
 class Zombie extends FlxSprite 
 {
 	private var speed:Int;
