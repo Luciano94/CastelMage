@@ -8,7 +8,6 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 
 class Barrel extends FlxSprite 
 {
-	private var random:FlxRandom;
 	private var powerUpIndex:Int;
 	
 	public function new(?X:Float=0, ?Y:Float=0)
@@ -16,7 +15,6 @@ class Barrel extends FlxSprite
 		super(X, Y);
 		
 		loadGraphic(AssetPaths.barrel__png, true, 32, 36);
-		random = new FlxRandom();
 		animation.add("destroy", [1, 2, 3, 4], 12, false);
 	}
 	
@@ -34,9 +32,9 @@ class Barrel extends FlxSprite
 	{
 		animation.play("destroy");
 		solid = false;
-		if (random.bool(45))
+		if (Reg.random.bool(45))
 		{
-			powerUpIndex = random.int(0, 6);
+			powerUpIndex = Reg.random.int(0, Reg.numberOfPowerUps);
 			var powerUp = new PowerUp(x + 8, y + 12, powerUpIndex);
 			powerUps.add(powerUp);
 		}

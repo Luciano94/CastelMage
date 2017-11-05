@@ -55,7 +55,7 @@ class Player extends FlxSprite
 
 		// Attributes Inicialization
 		currentState = States.IDLE;
-		weaponCurrentState = WeaponStates.SINWEA;
+		weaponCurrentState = WeaponStates.WEASHURIKEN;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		stairsSpeed = Reg.playerStairsSpeed;
@@ -64,7 +64,7 @@ class Player extends FlxSprite
 		lives = Reg.playerMaxLives;
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
-		ammo = 0;
+		ammo = 1;
 		inmortalityTime = 0;
 		hasJustBeenHit = false;
 		willDieFromFall = false;

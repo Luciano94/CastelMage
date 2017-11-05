@@ -250,6 +250,21 @@
     <PlatformLimit id="94" x="5920" y="64" />
     <UnstablePlatform id="82" x="5856" y="96" />
     <UnstablePlatform id="83" x="5824" y="96" />
-    <Player id="91" x="288" y="496" />
+    <PowerUp id="95" x="2224" y="160" />
+    <PowerUp id="96" x="3920" y="336" />
+    <PowerUp id="97" x="4000" y="208" />
+    <Barrel id="98" x="3792" y="176" />
+    <Barrel id="99" x="4208" y="512" />
+    <Barrel id="100" x="4176" y="592" />
+    <Barrel id="101" x="4256" y="592" />
+    <PowerUp id="102" x="4032" y="608" />
+    <Barrel id="103" x="4544" y="592" />
+    <Barrel id="104" x="5712" y="560" />
+    <PowerUp id="105" x="5792" y="448" />
+    <Barrel id="106" x="5552" y="64" />
+    <Barrel id="107" x="5008" y="128" />
+    <PowerUp id="108" x="4976" y="144" />
+    <PowerUp id="109" x="4000" y="432" />
+    <Player id="110" x="2832" y="496" />
   </Entities>
 </level>

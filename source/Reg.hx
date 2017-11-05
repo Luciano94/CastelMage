@@ -1,4 +1,5 @@
 package;
+import flixel.math.FlxRandom;
 
 class Reg 
 {	
@@ -45,6 +46,8 @@ class Reg
 	static public var elevatorSpeed:Int = 16;
 	static public var elevatorTravelDistance:Int = 320;
 	// Power Ups
+	static public var random:FlxRandom = new FlxRandom();
+	static public var numberOfPowerUps:Int = 6;
 	static public var healthPackPoints:Int = 25;
 	static public var ammoPackPoints:Int = 10;
 	static public var weaponInitialAmmo:Int = 5;

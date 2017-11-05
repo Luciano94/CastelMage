@@ -162,6 +162,10 @@ class PlayState extends FlxState
 		FlxG.collide(player, powerUps, playerPowerUpCollision);
 		
 		checkPause();
+		checkEscape();
+		
+		//cameraHandling();	Experimental Feature (not finished yet).
+
 		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused);
 	}
 
@@ -201,6 +205,9 @@ class PlayState extends FlxState
 			case "SecretWay":
 				var secretWay = new FlxSprite(x, y, AssetPaths.secretWay__png);
 				secretWays.add(secretWay);
+			case "PowerUp":
+				var powerUp = new PowerUp(x, y, Reg.random.int(0, Reg.numberOfPowerUps));
+				powerUps.add(powerUp);
 			// Enemies
 			case "Bat":
 				var bat = new Bat(x, y, player);
@@ -221,6 +228,15 @@ class PlayState extends FlxState
 	{
 		if (FlxG.keys.justPressed.ENTER)
 			Reg.paused = !Reg.paused;
+	}
+	
+	private function checkEscape():Void
+	{
+		if (FlxG.keys.justPressed.ESCAPE)
+		{
+			FlxG.switchState(new MenuState());
+			FlxG.mouse.visible = true;
+		}
 	}
 
 	private function tilemapSetUp():Void
@@ -249,6 +265,14 @@ class PlayState extends FlxState
 	{
 		hud = new HUD(player);
 		add(hud);
+	}
+	
+	private function cameraHandling():Void 
+	{
+		if (player.velocity.y != 0 && player.acceleration.y != 0 && !player.isTouching(FlxObject.FLOOR))
+			camera.setScrollBoundsRect(0, camera.scroll.y, 6400, 640);
+		else
+			camera.setScrollBounds(0, 6400, 0, 640);
 	}
 	
 	// COLLISION FUNCTIONS
