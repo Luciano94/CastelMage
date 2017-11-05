@@ -47,6 +47,7 @@ class Player extends FlxSprite
 	public var isOnTopOfLadder(null, set):Bool;
 	private var hasJustBeenHit:Bool;
 	private var inmortalityTime:Float;
+	private var willDieFromFall:Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -66,6 +67,7 @@ class Player extends FlxSprite
 		ammo = 0;
 		inmortalityTime = 0;
 		hasJustBeenHit = false;
+		willDieFromFall = false;
 
 		// Weapons Creation
 		weaponN = new WeaponNormal(x + width, y + height / 3);
@@ -104,6 +106,7 @@ class Player extends FlxSprite
 		checkAmmo();
 		checkBoundaries();
 		checkInmortality(elapsed);
+		fallingDamage();
 		
 		super.update(elapsed);
 	}
@@ -115,6 +118,7 @@ class Player extends FlxSprite
 		hp = Reg.playerMaxHealth;
 		ammo = 0;
 		weaponCurrentState = WeaponStates.SINWEA;
+		willDieFromFall = false;
 	}
 	
 	private function stateMachine():Void
@@ -193,10 +197,21 @@ class Player extends FlxSprite
 				{
 					if (velocity.y == 0 || velocity.y == Reg.elevatorSpeed || velocity.y == -Reg.elevatorSpeed)
 					{
-						if (velocity.x == 0)
-							currentState = States.IDLE;
+						if (!willDieFromFall)
+						{
+							if (velocity.x == 0)
+								currentState = States.IDLE;
+							else
+								currentState = States.MOVING;
+						}
 						else
-							currentState = States.MOVING;
+						{
+							lives--;
+							if (lives > 0)
+								reset(320, 496);
+							else
+								kill();
+						}
 					}
 					else
 						if (weaponN.alive)
@@ -266,22 +281,23 @@ class Player extends FlxSprite
 				animation.play("crouch");
 				
 				attack();
-				if (!FlxG.keys.pressed.DOWN)
-				{
-					height = 48;
-					y -= 12;
-					updateHitbox();
-					currentState = States.IDLE;
-				}
+				
+				if (hasJustBeenHit && inmortalityTime == 0)
+					currentState = States.BEING_HIT;
 				else
 				{
-					if (weaponN.alive)
-						currentState = States.ATTACKING;
+					if (!FlxG.keys.pressed.DOWN)
+					{
+						height = 48;
+						y -= 12;
+						updateHitbox();
+						currentState = States.IDLE;
+					}
 					else
-						if (hasJustBeenHit && inmortalityTime == 0)
-							currentState = States.BEING_HIT;
+						if (weaponN.alive)
+							currentState = States.ATTACKING;
 				}
-
+				
 			case States.BEING_HIT:
 				if (animation.name != "beHit")
 					animation.play("beHit");
@@ -452,8 +468,17 @@ class Player extends FlxSprite
 			lives--;
 			if (lives > 0)
 				reset(320, 496);
+			else
+				kill();
 		}
 	}
+	
+	private function fallingDamage():Void 
+	{
+		if (velocity.y > 800)
+			willDieFromFall = true;
+	}
+	
 	public function collectPowerUp(powerUp:PowerUp)
 	{
 		switch (powerUp.whichPowerUp)
