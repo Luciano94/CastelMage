@@ -9,6 +9,7 @@ import entities.obstacles.Elevator;
 import entities.obstacles.Ladder;
 import entities.obstacles.MovingPlatform;
 import entities.obstacles.OneWayPlatform;
+import entities.obstacles.UnstablePlatform;
 import entities.weapons.WeaponNormal;
 import flixel.FlxCamera;
 import flixel.FlxState;
@@ -49,6 +50,8 @@ class PlayState extends FlxState
 	private var elevators:FlxTypedGroup<Elevator>;
 	private var platformLimits:FlxTypedGroup<FlxSprite>;
 	private var barrels:FlxTypedGroup<Barrel>;
+	private var unstablePlatforms:FlxTypedGroup<UnstablePlatform>;
+	private var secretWays:FlxTypedGroup<FlxSprite>;
 	
 	// Power Up
 	private var powerUps:FlxTypedGroup<PowerUp>;
@@ -64,7 +67,7 @@ class PlayState extends FlxState
 	{
 		super.create();
 		
-		FlxG.worldBounds.set(0, 0, 5120, 640);
+		FlxG.worldBounds.set(0, 0, 6400, 640);
 		FlxG.mouse.visible = false;
 
 		// Obstacles Intitialization
@@ -74,7 +77,9 @@ class PlayState extends FlxState
 		elevators = new FlxTypedGroup<Elevator>();
 		platformLimits = new FlxTypedGroup<FlxSprite>();
 		barrels = new FlxTypedGroup<Barrel>();
-		
+		unstablePlatforms = new FlxTypedGroup<UnstablePlatform>();
+		secretWays = new FlxTypedGroup<FlxSprite>();
+
 		// Power Ups Inicialization
 		powerUps = new FlxTypedGroup<PowerUp>();
 
@@ -97,6 +102,7 @@ class PlayState extends FlxState
 		add(elevators);
 		add(platformLimits);
 		add(barrels);
+		add(unstablePlatforms);
 		add(powerUps);
 		add(batGroup);
 		add(zombieGroup);
@@ -104,6 +110,7 @@ class PlayState extends FlxState
 		add(arEnemyGroup);
 		add(minionGroup);
 		add(player);
+		add(secretWays);
 		
 		cameraSetUp();
 		hudSetUp();
@@ -127,6 +134,7 @@ class PlayState extends FlxState
 		FlxG.collide(player, oneWayPlatforms);
 		FlxG.collide(player, movingPlatforms);
 		FlxG.collide(player, elevators);
+		FlxG.collide(player, unstablePlatforms, playerUnstablePlatformCollision);
 		// Moving Platforms - Boundaries
 		FlxG.overlap(elevators, platformLimits, changeElevatorDirection);
 		FlxG.overlap(movingPlatforms, platformLimits, changeMovingPlatformDirection);
@@ -187,6 +195,12 @@ class PlayState extends FlxState
 			case "Barrel":
 				var barrel = new Barrel(x, y);
 				barrels.add(barrel);
+			case "UnstablePlatform":
+				var unstablePlatform = new UnstablePlatform(x, y);
+				unstablePlatforms.add(unstablePlatform);
+			case "SecretWay":
+				var secretWay = new FlxSprite(x, y, AssetPaths.secretWay__png);
+				secretWays.add(secretWay);
 			// Enemies
 			case "Bat":
 				var bat = new Bat(x, y, player);
@@ -216,8 +230,10 @@ class PlayState extends FlxState
 		tilemap.setTileProperties(0, FlxObject.NONE);
 		for (i in 1...3)
 			tilemap.setTileProperties(i, FlxObject.ANY);
-		for (i in 4...21)
+		for (i in 4...18)
 			tilemap.setTileProperties(i, FlxObject.NONE);
+		tilemap.setTileProperties(19, FlxObject.ANY);
+		tilemap.setTileProperties(20, FlxObject.NONE);
 		add(tilemap);
 	}
 
@@ -226,7 +242,7 @@ class PlayState extends FlxState
 		camera.follow(player);
 		camera.followLerp = 2;
 		camera.targetOffset.set(0, -64);
-		camera.setScrollBounds(0, 5120, 0, 640);
+		camera.setScrollBounds(0, 6400, 0, 640);
 	}
 
 	private function hudSetUp():Void
@@ -298,6 +314,12 @@ class PlayState extends FlxState
 				m.hasJustChangedDirection = true;
 			}
 		}
+	}
+	
+	// Player - Unstable Platform
+	private function playerUnstablePlatformCollision(p:Player, u:UnstablePlatform):Void
+	{
+		u.playerIsOnTop = true;
 	}
 	
 	// Weapon - Enemies

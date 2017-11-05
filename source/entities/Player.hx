@@ -274,7 +274,15 @@ class Player extends FlxSprite
 				if (!isTouchingLadder || isTouching(FlxObject.FLOOR))
 				{
 					acceleration.y = Reg.gravity;
-					currentState = States.IDLE;
+					if (velocity.y != 0 && !isTouching(FlxObject.FLOOR))
+						currentState = States.JUMPING;
+					else
+					{
+						if (velocity.x != 0)
+							currentState = States.MOVING;
+						else
+							currentState = States.IDLE;
+					}
 				}
 				
 			case States.CROUCHED:
@@ -531,10 +539,14 @@ class Player extends FlxSprite
 						ammo = Reg.playerMaxAmmo;
 				}
 			case 5:
-				if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
-					ammo += Reg.ammoPackPoints;
-				else
-					ammo = Reg.playerMaxAmmo;
+				if (weaponCurrentState != WeaponStates.SINWEA)
+				{
+					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+						ammo += Reg.ammoPackPoints;
+					else
+						ammo = Reg.playerMaxAmmo;
+				}
+				
 			case 6:
 				Reg.score += 5;
 		}
