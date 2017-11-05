@@ -1,4 +1,5 @@
 package;
+import flixel.math.FlxRandom;
 
 class Reg 
 {	
@@ -8,6 +9,7 @@ class Reg
 	static public var playerStairsSpeed:Int = 50;
 	static public var playerMaxHealth:Int = 100;
 	static public var playerMaxLives:Int = 3;
+	static public var playerMaxAmmo:Int = 20;
 	// Weapon Spear
 	static public var weaponSpeNormalSpeed:Int = 200;
 	static public var weaponSpeMaxDistance:Int = 150;
@@ -20,6 +22,7 @@ class Reg
 	// Game
 	static public var paused:Bool = false;
 	static public var gravity:Int = 1600;
+	static public var score:Int = 0;
 	// Enemies
 	static public var speedEnemy:Int = 65;
 	static public var pathSpeed:Int = 50;
@@ -32,7 +35,6 @@ class Reg
 	static public var timeToTrk:Int = 360;
 	static public var preAtkTime:Int = 60;
 	static public var armoredEnemyLifePoints:Int = 5;
-	static public var batAtkDist:Int = 5;
 	static public var zombieAtkDamage:Int = 15;
 	static public var batAtkDamage:Int = 5;
 	static public var shamanAtkDamage:Int = 10;
@@ -43,4 +45,10 @@ class Reg
 	static public var movingPlatformTravelDistance:Int = 320;
 	static public var elevatorSpeed:Int = 16;
 	static public var elevatorTravelDistance:Int = 320;
+	// Power Ups
+	static public var random:FlxRandom = new FlxRandom();
+	static public var numberOfPowerUps:Int = 6;
+	static public var healthPackPoints:Int = 25;
+	static public var ammoPackPoints:Int = 10;
+	static public var weaponInitialAmmo:Int = 5;
 }

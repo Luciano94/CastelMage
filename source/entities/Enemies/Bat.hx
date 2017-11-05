@@ -6,10 +6,6 @@ import entities.Player.States;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxObject;
 
-/**
- * ...
- * @author Amaka
- */
 enum BatState
 {
 	IDLE;

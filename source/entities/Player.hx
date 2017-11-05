@@ -47,6 +47,7 @@ class Player extends FlxSprite
 	public var isOnTopOfLadder(null, set):Bool;
 	private var hasJustBeenHit:Bool;
 	private var inmortalityTime:Float;
+	private var willDieFromFall:Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -54,7 +55,7 @@ class Player extends FlxSprite
 
 		// Attributes Inicialization
 		currentState = States.IDLE;
-		weaponCurrentState = WeaponStates.WEAPOTION;
+		weaponCurrentState = WeaponStates.WEASHURIKEN;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		stairsSpeed = Reg.playerStairsSpeed;
@@ -63,9 +64,10 @@ class Player extends FlxSprite
 		lives = Reg.playerMaxLives;
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
-		ammo = 10;
+		ammo = 1;
 		inmortalityTime = 0;
 		hasJustBeenHit = false;
+		willDieFromFall = false;
 
 		// Weapons Creation
 		weaponN = new WeaponNormal(x + width, y + height / 3);
@@ -102,7 +104,9 @@ class Player extends FlxSprite
 	{
 		stateMachine();
 		checkAmmo();
+		checkBoundaries();
 		checkInmortality(elapsed);
+		fallingDamage();
 		
 		super.update(elapsed);
 	}
@@ -112,6 +116,9 @@ class Player extends FlxSprite
 		super.reset(X, Y);
 		
 		hp = Reg.playerMaxHealth;
+		ammo = 0;
+		weaponCurrentState = WeaponStates.SINWEA;
+		willDieFromFall = false;
 	}
 	
 	private function stateMachine():Void
@@ -127,31 +134,32 @@ class Player extends FlxSprite
 				crouch();
 				climbLadders();
 				
-				if (velocity.x != 0)
-					currentState = States.MOVING;
+				if (hasJustBeenHit && inmortalityTime == 0)
+					currentState = States.BEING_HIT;
 				else
 				{
-					if (velocity.y != 0 && !weaponN.alive && acceleration.y != 0 && !isTouching(FlxObject.FLOOR))
-						currentState = States.JUMPING;
+					if (velocity.x != 0)
+						currentState = States.MOVING;
 					else
 					{
-						if (weaponN.alive)
-							currentState = States.ATTACKING;
+						if (velocity.y != 0 && !weaponN.alive && acceleration.y != 0 && !isTouching(FlxObject.FLOOR))
+							currentState = States.JUMPING;
 						else
 						{
-							if (height == 36)
-								currentState = States.CROUCHED;
+							if (weaponN.alive)
+								currentState = States.ATTACKING;
 							else
 							{
-								if (acceleration.y == 0)
-									currentState = States.CLIMBING_LADDERS;
+								if (height == 36)
+									currentState = States.CROUCHED;
 								else
-									if (hasJustBeenHit && inmortalityTime == 0)
-										currentState = States.BEING_HIT;
+									if (acceleration.y == 0)
+										currentState = States.CLIMBING_LADDERS;
 							}
-						}
-					}	
+						}	
+					}
 				}
+				
 
 			case States.MOVING:
 				animation.play("move");
@@ -159,45 +167,57 @@ class Player extends FlxSprite
 				moveHor();
 				jump();
 				attack();
-
-				if (velocity.x == 0)
-					currentState = States.IDLE;
+				
+				if (hasJustBeenHit && inmortalityTime == 0)
+					currentState = States.BEING_HIT;
 				else
 				{
-					if (velocity.y != 0 && !weaponN.alive  && !isTouching(FlxObject.FLOOR))
-						currentState = States.JUMPING;
+					if (velocity.x == 0)
+						currentState = States.IDLE;
 					else
 					{
-						if (weaponN.alive)
-							currentState = States.ATTACKING;
+						if (velocity.y != 0 && !weaponN.alive  && !isTouching(FlxObject.FLOOR))
+							currentState = States.JUMPING;
 						else
-							if (hasJustBeenHit && inmortalityTime == 0)
-								currentState = States.BEING_HIT;
+							if (weaponN.alive)
+								currentState = States.ATTACKING;
 					}
 				}
+				
 						
 			case States.JUMPING:
 				if (animation.name != "jump")
 					animation.play("jump");
 
 				attack();
-
-				if (velocity.y == 0 || velocity.y == Reg.elevatorSpeed || velocity.y == -Reg.elevatorSpeed)
-				{
-					if (velocity.x == 0)
-						currentState = States.IDLE;
-					else
-						currentState = States.MOVING;
-				}
+				
+				if (hasJustBeenHit && inmortalityTime == 0)
+					currentState = States.BEING_HIT;
 				else
 				{
-					if (weaponN.alive)
-						currentState = States.ATTACKING;
+					if (velocity.y == 0 || velocity.y == Reg.elevatorSpeed || velocity.y == -Reg.elevatorSpeed)
+					{
+						if (!willDieFromFall)
+						{
+							if (velocity.x == 0)
+								currentState = States.IDLE;
+							else
+								currentState = States.MOVING;
+						}
+						else
+						{
+							lives--;
+							if (lives > 0)
+								reset(320, 496);
+							else
+								kill();
+						}
+					}
 					else
-						if (hasJustBeenHit && inmortalityTime == 0)
-							currentState = States.BEING_HIT;
+						if (weaponN.alive)
+							currentState = States.ATTACKING;
 				}
-
+				
 			case States.ATTACKING:
 				if (height == 48)
 				{
@@ -224,20 +244,20 @@ class Player extends FlxSprite
 				if ((animation.name == "attack" || animation.name == "crouchAttack") && animation.finished)
 				{
 					weaponN.kill();
-					if (velocity.y != 0)
-						currentState = States.JUMPING;
+					if (hasJustBeenHit && inmortalityTime == 0)
+						currentState = States.BEING_HIT;
 					else
 					{
-						if (velocity.x != 0)
-							currentState = States.MOVING;
+						if (velocity.y != 0)
+							currentState = States.JUMPING;
 						else
 						{
-							if (height == 36)
-								currentState = States.CROUCHED;
+							if (velocity.x != 0)
+								currentState = States.MOVING;
 							else
 							{
-								if (hasJustBeenHit && inmortalityTime == 0)
-									currentState = States.BEING_HIT;
+								if (height == 36)
+									currentState = States.CROUCHED;
 								else
 									currentState = States.IDLE;
 							}
@@ -254,29 +274,38 @@ class Player extends FlxSprite
 				if (!isTouchingLadder || isTouching(FlxObject.FLOOR))
 				{
 					acceleration.y = Reg.gravity;
-					currentState = States.IDLE;
+					if (velocity.y != 0 && !isTouching(FlxObject.FLOOR))
+						currentState = States.JUMPING;
+					else
+					{
+						if (velocity.x != 0)
+							currentState = States.MOVING;
+						else
+							currentState = States.IDLE;
+					}
 				}
 				
 			case States.CROUCHED:
 				animation.play("crouch");
 				
 				attack();
-				if (!FlxG.keys.pressed.DOWN)
-				{
-					height = 48;
-					y -= 12;
-					updateHitbox();
-					currentState = States.IDLE;
-				}
+				
+				if (hasJustBeenHit && inmortalityTime == 0)
+					currentState = States.BEING_HIT;
 				else
 				{
-					if (weaponN.alive)
-						currentState = States.ATTACKING;
+					if (!FlxG.keys.pressed.DOWN)
+					{
+						height = 48;
+						y -= 12;
+						updateHitbox();
+						currentState = States.IDLE;
+					}
 					else
-						if (hasJustBeenHit && inmortalityTime == 0)
-							currentState = States.BEING_HIT;
+						if (weaponN.alive)
+							currentState = States.ATTACKING;
 				}
-
+				
 			case States.BEING_HIT:
 				if (animation.name != "beHit")
 					animation.play("beHit");
@@ -438,6 +467,89 @@ class Player extends FlxSprite
 			inmortalityTime += elapsed;
 		if (inmortalityTime >= 3)
 			hasJustBeenHit = false;
+	}
+	
+	private function checkBoundaries():Void 
+	{
+		if (!inWorldBounds())
+		{
+			lives--;
+			if (lives > 0)
+				reset(320, 496);
+			else
+				kill();
+		}
+	}
+	
+	private function fallingDamage():Void 
+	{
+		if (velocity.y > 800)
+			willDieFromFall = true;
+	}
+	
+	public function collectPowerUp(powerUp:PowerUp)
+	{
+		switch (powerUp.whichPowerUp)
+		{
+			case 0:
+				if (health <= Reg.playerMaxHealth - Reg.healthPackPoints)
+					health += Reg.healthPackPoints;
+			case 1:
+				if (lives < 3)
+					lives += 1;
+			case 2:
+				if (weaponCurrentState != WeaponStates.WEASPEAR)
+				{
+					weaponCurrentState = WeaponStates.WEASPEAR;
+					ammo = Reg.weaponInitialAmmo;
+				}
+				else
+				{
+					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+						ammo += Reg.weaponInitialAmmo;
+					else
+						ammo = Reg.playerMaxAmmo;
+				}
+			
+			case 3:
+				if (weaponCurrentState != WeaponStates.WEASHURIKEN)
+				{
+					weaponCurrentState = WeaponStates.WEASHURIKEN;
+					ammo = Reg.weaponInitialAmmo;
+				}
+				else
+				{
+					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+						ammo += Reg.weaponInitialAmmo;
+					else
+						ammo = Reg.playerMaxAmmo;
+				}
+					
+			case 4:
+				if (weaponCurrentState != WeaponStates.WEAPOTION)
+				{
+					weaponCurrentState = WeaponStates.WEAPOTION;
+					ammo = Reg.weaponInitialAmmo;
+				}
+				else
+				{
+					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+						ammo += Reg.weaponInitialAmmo;
+					else
+						ammo = Reg.playerMaxAmmo;
+				}
+			case 5:
+				if (weaponCurrentState != WeaponStates.SINWEA)
+				{
+					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+						ammo += Reg.ammoPackPoints;
+					else
+						ammo = Reg.playerMaxAmmo;
+				}
+				
+			case 6:
+				Reg.score += 5;
+		}
 	}
 	
 	function get_lives():Int 
