@@ -40,6 +40,9 @@ class Reg
 	static public var shamanAtkDamage:Int = 10;
 	static public var armoredEnemyAtkDamage:Int = 20;
 	static public var minionAtkDamage:Int = 10;
+	// Boss
+	static public var speedBoss:Int = 75;
+	static public var timeToMoveBoss:Int = 15;
 	//Obstacles
 	static public var movingPlatformSpeed:Int = 32;
 	static public var movingPlatformTravelDistance:Int = 320;

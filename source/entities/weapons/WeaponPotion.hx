@@ -35,7 +35,7 @@ class WeaponPotion extends WeaponBase
 		{
 			case States.FLYING:
 				
-				if (isItTouching)
+				if (isItTouching || !inWorldBounds())
 				{
 					velocity.y = 0;
 					velocity.x = 0;
