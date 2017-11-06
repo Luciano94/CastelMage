@@ -25,11 +25,11 @@ class Boss extends FlxSprite
 	private var yesYouCanAtk:Int;	// Timers
 	private var canIMove:Int;		//
 	private var yesYouCanMove:Int;	//
-	private var originialPosY:Int;	//
+	private var originialPosY:Float;//
 	private var r:FlxRandom;
 	private var p:FlxPoint;
-	private var posX:Int;
-	private var posY:Int;
+	private var posX:Float;
+	private var posY:Float;
 	private var speedX:Float;
 	private var speedY:Float;
 	
@@ -37,7 +37,7 @@ class Boss extends FlxSprite
 	{
 		super(X, Y);
 		//loadGraphic();
-		makeGraphic(50, 50, 0x12344657);
+		makeGraphic(25, 25);
 		//animation.add();
 		//animation.play();
 		setFacingFlip(FlxObject.RIGHT, false, false);
@@ -82,18 +82,15 @@ class Boss extends FlxSprite
 	{
 		velocity.set(0, 0);
 		//animation.play("idle");
-		if (canIAttack < yesYouCan) // Doesn't attack
+		if (canIAttack < yesYouCanAtk) // Doesn't attack
 		{
 			if (canIMove < yesYouCanMove) // Doesn't move
 				canIMove++;
 			else // Moves
 			{
 				canIAttack++;
-				do 
-				{
-					posX = r.int(0, camera.width - width);
-				} while (posX == player.x);
-				posY = r.int(originialPosY - 70, originialPosY + 50);
+				posX = r.float(0, camera.width - width);
+				posY = r.float(originialPosY - 70, originialPosY + 50);
 				p.set(posX, posY);
 				FlxVelocity.moveTowardsPoint(this, p, speedX);
 				if (velocity.x > 0)
@@ -131,7 +128,7 @@ class Boss extends FlxSprite
 		{
 			case false:
 				if(!FlxG.collide(this, player)) 
-					FlxVelocity.accelerateTowardsPoint(this, player, 50, 500);
+					FlxVelocity.accelerateTowardsPoint(this, player.getPosition(), 50, 500);
 				else
 				{
 					hit == true;

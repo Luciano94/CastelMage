@@ -65,6 +65,7 @@ class PlayState extends FlxState
 	private var minionGroup:FlxTypedGroup<Minion>;
 	private var arEnemyGroup:FlxTypedGroup<ArmoredEnemy>;
 	private var zombieGroup:FlxTypedGroup<Zombie>;
+	private var boss:Boss;
 
 	override public function create():Void
 	{
@@ -92,6 +93,7 @@ class PlayState extends FlxState
 		shamanGroup = new FlxTypedGroup<Chaman>();
 		arEnemyGroup = new FlxTypedGroup<ArmoredEnemy>();
 		minionGroup = new FlxTypedGroup<Minion>();
+		boss = new Boss(400, 500, player);
 		
 		backdrop = new FlxBackdrop(AssetPaths.backdrop__png, 0.5, 0.25, true, true, 0, 0);
 		add(backdrop);
@@ -112,6 +114,7 @@ class PlayState extends FlxState
 		add(shamanGroup);
 		add(arEnemyGroup);
 		add(minionGroup);
+		add(boss);
 		add(player);
 		add(secretWays);
 		
