@@ -49,6 +49,7 @@ class Player extends FlxSprite
 	private var inmortalityTime:Float;
 	private var willDieFromFall:Bool;
 	private var myX:Float;
+	@:isVar public var powerUpJustPicked(get, set):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -56,7 +57,7 @@ class Player extends FlxSprite
 
 		// Attributes Inicialization
 		currentState = States.IDLE;
-		weaponCurrentState = WeaponStates.WEASPEAR;
+		weaponCurrentState = WeaponStates.WEAPOTION;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		stairsSpeed = Reg.playerStairsSpeed;
@@ -65,10 +66,11 @@ class Player extends FlxSprite
 		lives = Reg.playerMaxLives;
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
-		ammo = 1;
+		ammo = 10;
 		inmortalityTime = 0;
 		hasJustBeenHit = false;
 		willDieFromFall = false;
+		powerUpJustPicked = false;
 
 		// Weapons Creation
 		weaponN = new WeaponNormal(x + width, y + height / 3);
@@ -343,10 +345,11 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.justPressed.A)
 		{			
-			if (!weaponSpear.alive && !weaponShuriken.alive)
+			if (!weaponSpear.alive && !weaponShuriken.alive && !weaponPotion.alive)
 				WeaponBase.pFacing = facing;
 			if (!FlxG.keys.pressed.UP)
 			{
+				FlxG.sound.play(AssetPaths.playerAttack__wav);
 				if (facing == FlxObject.RIGHT)
 					weaponN.reset(x + width, y + height / 3 - 4);
 				else
@@ -354,6 +357,8 @@ class Player extends FlxSprite
 			}
 			else
 			{
+				if (ammo > 0 && !weaponSpear.alive && !weaponShuriken.alive && !weaponPotion.alive)
+					FlxG.sound.play(AssetPaths.throwWeapon__wav);
 				switch (weaponCurrentState)
 				{
 					case WeaponStates.SINWEA:
@@ -443,8 +448,9 @@ class Player extends FlxSprite
 	{
 		if (!hasJustBeenHit)
 		{
+			FlxG.sound.play(AssetPaths.playerDamaged__wav);
 			hp -= damage;
-		
+			trace(hp);
 			if (hp <= 0)
 			{
 				lives--;
@@ -488,68 +494,99 @@ class Player extends FlxSprite
 			willDieFromFall = true;
 	}
 	
-	public function collectPowerUp(powerUp:PowerUp)
+	public function collectPowerUp(powerUp:PowerUp):Void
 	{
 		switch (powerUp.whichPowerUp)
 		{
 			case 0:
 				if (health <= Reg.playerMaxHealth - Reg.healthPackPoints)
-					health += Reg.healthPackPoints;
+				{
+					FlxG.sound.play(AssetPaths.pickUpLife__wav);
+					hp += Reg.healthPackPoints;
+					powerUpJustPicked = true;
+				}
+				else
+					if (health < Reg.playerMaxHealth)
+					{
+						FlxG.sound.play(AssetPaths.pickUpLife__wav);
+						health = Reg.playerMaxHealth;
+						powerUpJustPicked = true;
+					}
 			case 1:
 				if (lives < 3)
+				{
+					FlxG.sound.play(AssetPaths.pickUpLife__wav);
 					lives += 1;
+					powerUpJustPicked = true;
+				}
 			case 2:
 				if (weaponCurrentState != WeaponStates.WEASPEAR)
 				{
+					FlxG.sound.play(AssetPaths.weaponPickUp__wav);
 					weaponCurrentState = WeaponStates.WEASPEAR;
 					ammo = Reg.weaponInitialAmmo;
+					powerUpJustPicked = true;
 				}
 				else
 				{
+					FlxG.sound.play(AssetPaths.ammoPickUp__wav);
 					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
 						ammo += Reg.weaponInitialAmmo;
 					else
 						ammo = Reg.playerMaxAmmo;
+					powerUpJustPicked = true;
 				}
 			
 			case 3:
 				if (weaponCurrentState != WeaponStates.WEASHURIKEN)
 				{
+					FlxG.sound.play(AssetPaths.weaponPickUp__wav);
 					weaponCurrentState = WeaponStates.WEASHURIKEN;
 					ammo = Reg.weaponInitialAmmo;
+					powerUpJustPicked = true;
 				}
 				else
 				{
+					FlxG.sound.play(AssetPaths.ammoPickUp__wav);
 					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
 						ammo += Reg.weaponInitialAmmo;
 					else
 						ammo = Reg.playerMaxAmmo;
+					powerUpJustPicked = true;
 				}
 					
 			case 4:
 				if (weaponCurrentState != WeaponStates.WEAPOTION)
 				{
+					FlxG.sound.play(AssetPaths.weaponPickUp__wav);
 					weaponCurrentState = WeaponStates.WEAPOTION;
 					ammo = Reg.weaponInitialAmmo;
+					powerUpJustPicked = true;
 				}
 				else
 				{
-					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+					FlxG.sound.play(AssetPaths.ammoPickUp__wav);
+					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)				
 						ammo += Reg.weaponInitialAmmo;
 					else
 						ammo = Reg.playerMaxAmmo;
+					powerUpJustPicked = true;
 				}
 			case 5:
 				if (weaponCurrentState != WeaponStates.SINWEA)
 				{
-					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+					FlxG.sound.play(AssetPaths.ammoPickUp__wav);
+					if (ammo < Reg.playerMaxAmmo - Reg.ammoPackPoints)
 						ammo += Reg.ammoPackPoints;
 					else
 						ammo = Reg.playerMaxAmmo;
+					powerUpJustPicked = true;
 				}
 				
 			case 6:
+				FlxG.sound.play(AssetPaths.pickUpCoin__wav);
 				Reg.score += 5;
+				powerUpJustPicked = true;
 		}
 	}
 	
@@ -596,5 +633,15 @@ class Player extends FlxSprite
 	{
 		myX = x;
 		return myX;
+	}
+	
+	function get_powerUpJustPicked():Bool 
+	{
+		return powerUpJustPicked;
+	}
+	
+	function set_powerUpJustPicked(value:Bool):Bool 
+	{
+		return powerUpJustPicked = value;
 	}
 }

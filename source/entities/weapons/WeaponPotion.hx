@@ -34,7 +34,8 @@ class WeaponPotion extends WeaponBase
 		switch (currentState) 
 		{
 			case States.FLYING:
-				
+				checkTravel();
+
 				if (isItTouching || !inWorldBounds())
 				{
 					velocity.y = 0;
@@ -57,7 +58,10 @@ class WeaponPotion extends WeaponBase
 		animation.play("flying");
 		currentState = States.FLYING;
 		isItTouching = false;
-		
+	}
+	
+	private function checkTravel():Void 
+	{
 		if (facing == FlxObject.RIGHT)
 			velocity.x = speed;
 		else
@@ -67,5 +71,10 @@ class WeaponPotion extends WeaponBase
 	public function set_isItTouching(value:Bool):Bool 
 	{
 		return isItTouching = value;
+	}
+	
+	override public function getType():String
+	{
+		return "Poison";
 	}
 }

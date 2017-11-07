@@ -49,4 +49,9 @@ class WeaponSpear extends WeaponBase
 				kill();
 		}
 	}
+	
+	override public function getType():String
+	{
+		return "Spear";
+	}
 }

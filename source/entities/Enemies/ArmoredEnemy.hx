@@ -4,10 +4,6 @@ import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxObject;
 
-/**
- * ...
- * @author Amaka
- */
 enum State
 {
 	IDLE;
@@ -23,7 +19,9 @@ class ArmoredEnemy extends FlxSprite
 	private var speed: Int;
 	private var gravity: Int;
 	private var timeAttack: Int;
-	private var lifePoints: Int;
+	private var hp: Int;
+	private var hasJustBeenHit:Bool;
+	private var inmortalityTime:Float;
 
 	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
@@ -44,7 +42,9 @@ class ArmoredEnemy extends FlxSprite
 		speed = Reg.speedEnemy;
 		gravity = Reg.gravity;
 		acceleration.y = gravity;
-		lifePoints = Reg.armoredEnemyLifePoints;
+		hp = Reg.armoredEnemyLifePoints;
+		hasJustBeenHit = false;
+		inmortalityTime = 0;
 	}
 	
 	override public function update(elapsed:Float):Void 
@@ -68,13 +68,15 @@ class ArmoredEnemy extends FlxSprite
 			default:
 				
 		}
+		checkInmortality(elapsed);
 	}
 	
 	private function tracking():Void
 	{
 		if (gotcha)
 			currentState = State.MOVING;
-		else{
+		else
+		{
 			if ((x > player.x) && (x - player.x < Reg.trackDist))
 			{
 				gotcha = true;
@@ -92,7 +94,7 @@ class ArmoredEnemy extends FlxSprite
 	{
 		if (x > player.x)
 		{
-			if(x - player.x > Reg.atkDist)
+			if (x - player.x > Reg.atkDist)
 				velocity.x =  -speed;
 			if (x - player.x <= Reg.atkDist)
 			{
@@ -101,16 +103,16 @@ class ArmoredEnemy extends FlxSprite
 			}
 		}
 		else
-		if (x < player.x)
-		{
-			if(player.x - x > Reg.atkDist)
-				velocity.x =  speed;
-			if (player.x  - x <= Reg.atkDist)
+			if (x < player.x)
 			{
-				velocity.set(0, 0);
-				currentState = State.PREATTACKING;
+				if(player.x - x > Reg.atkDist)
+					velocity.x =  speed;
+				if (player.x  - x <= Reg.atkDist)
+				{
+					velocity.set(0, 0);
+					currentState = State.PREATTACKING;
+				}
 			}
-		}
 	}
 	
 	private function preatk():Void
@@ -141,12 +143,39 @@ class ArmoredEnemy extends FlxSprite
 			facing = FlxObject.RIGHT;
 	}
 	
-	public function getDamage()
+	//public function getDamage()
+	//{
+		//if (lifePoints > 0)
+			//lifePoints --;
+		//else
+			//kill();
+	//}
+	
+	public function getDamage(damage:Int):Void
 	{
-		if (lifePoints > 0)
-			lifePoints --;
-		else
-			kill();
+		if (!hasJustBeenHit)
+		{
+			hp -= damage;
+			if (hp <= 0)
+				kill();
+			else
+			{
+				hasJustBeenHit = true;
+				inmortalityTime = 0;
+				if (player.x < x)
+					x += 32;
+				else
+					x -= 32;
+			}
+		}
+	}
+	
+	private function checkInmortality(elapsed:Float):Void 
+	{
+		if (hasJustBeenHit)
+			inmortalityTime += elapsed;
+		if (inmortalityTime >= 1)
+			hasJustBeenHit = false;
 	}
 	
 	public function getState():State

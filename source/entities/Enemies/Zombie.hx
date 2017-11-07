@@ -7,9 +7,12 @@ import flixel.FlxObject;
 class Zombie extends FlxSprite 
 {
 	private var speed:Int;
+	private var hp:Int;
 	private var player:Player;
 	private var gravity:Int;
 	private var catche:Bool;
+	private var hasJustBeenHit:Bool;
+	private var inmortalityTime:Float;
 
 	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
@@ -20,10 +23,13 @@ class Zombie extends FlxSprite
 		player = _player;
 		catche = false;
 		speed = Reg.speedEnemy;
+		hp = Reg.zombieLifePoints;
 		gravity = Reg.gravity;
 		setFacingFlip(FlxObject.RIGHT, true, false);
 		setFacingFlip(FlxObject.LEFT, false, false);
 		acceleration.y = gravity;
+		hasJustBeenHit = false;
+		inmortalityTime = 0;
 	}
 	
 	override public function update(elapsed:Float):Void 
@@ -31,6 +37,7 @@ class Zombie extends FlxSprite
 		super.update(elapsed);
 		animControl();
 		taiCorro();
+		checkInmortality(elapsed);
 	}
 	
 	private function taiCorro():Void
@@ -67,5 +74,32 @@ class Zombie extends FlxSprite
 			facing = FlxObject.LEFT;
 		else
 			facing = FlxObject.RIGHT;
+	}
+	
+	public function getDamage(damage:Int):Void
+	{
+		if (!hasJustBeenHit)
+		{
+			hp -= damage;
+			if (hp <= 0)
+				kill();
+			else
+			{
+				hasJustBeenHit = true;
+				inmortalityTime = 0;
+				if (player.x < x)
+					x += 32;
+				else
+					x -= 32;
+			}
+		}
+	}
+	
+	private function checkInmortality(elapsed:Float):Void 
+	{
+		if (hasJustBeenHit)
+			inmortalityTime += elapsed;
+		if (inmortalityTime >= 1)
+			hasJustBeenHit = false;
 	}
 }

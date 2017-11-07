@@ -40,13 +40,18 @@ class WeaponShuriken extends WeaponBase
 		//angularVelocity = 720;
 		if (facing == FlxObject.RIGHT)
 		{
-			velocity.x = Reg.weaponShuNormalSpeed;
+			velocity.x = speed;
 			angularVelocity = 1540;
 		}
 		else
 		{
-			velocity.x = -Reg.weaponShuNormalSpeed;
+			velocity.x = -speed;
 			angularVelocity = -1540;
 		}
+	}
+	
+	override public function getType():String
+	{
+		return "Shuriken";
 	}
 }

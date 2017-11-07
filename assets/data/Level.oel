@@ -75,16 +75,13 @@
     <Elevator id="34" x="736" y="80" />
     <OneWayPlatform id="27" x="800" y="336" />
     <OneWayPlatform id="36" x="800" y="416" />
-    <OneWayPlatform id="37" x="768" y="416" />
     <PlatformLimit id="35" x="32" y="128" />
     <PlatformLimit id="39" x="448" y="112" />
     <PlatformLimit id="40" x="704" y="112" />
     <PlatformLimit id="41" x="752" y="48" />
     <PlatformLimit id="42" x="752" y="336" />
-    <Barrel id="43" x="416" y="512" />
     <PlatformLimit id="45" x="3488" y="336" />
     <PlatformLimit id="46" x="3872" y="336" />
-    <Barrel id="47" x="512" y="512" />
     <Barrel id="44" x="64" y="512" />
     <Barrel id="48" x="800" y="384" />
     <Barrel id="49" x="368" y="112" />
@@ -266,9 +263,11 @@
     <PowerUp id="108" x="4976" y="144" />
     <PowerUp id="109" x="4000" y="432" />
     <Player id="110" x="320" y="496" />
-    <Bat id="91" x="352" y="400" />
-    <Zombie id="111" x="464" y="496" />
-    <ArmoredEnemy id="112" x="592" y="512" />
-    <Shaman id="113" x="688" y="496" />
+    <Boss id="114" x="6272" y="336" />
+    <Barrel id="119" x="592" y="512" />
+    <Barrel id="120" x="640" y="512" />
+    <Zombie id="126" x="448" y="496" />
+    <OneWayPlatform id="37" x="768" y="416" />
+    <ArmoredEnemy id="43" x="720" y="496" />
   </Entities>
 </level>

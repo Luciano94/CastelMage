@@ -31,7 +31,7 @@ import entities.enemies.Bat;
 import entities.enemies.Chaman;
 import entities.enemies.Minion;
 import entities.enemies.Zombie;
-import entities.Boss;
+import entities.enemies.Boss;
 
 class PlayState extends FlxState
 {
@@ -65,7 +65,6 @@ class PlayState extends FlxState
 	private var minionGroup:FlxTypedGroup<Minion>;
 	private var arEnemyGroup:FlxTypedGroup<ArmoredEnemy>;
 	private var zombieGroup:FlxTypedGroup<Zombie>;
-	private var boss:Boss;
 
 	override public function create():Void
 	{
@@ -94,13 +93,11 @@ class PlayState extends FlxState
 		arEnemyGroup = new FlxTypedGroup<ArmoredEnemy>();
 		minionGroup = new FlxTypedGroup<Minion>();
 		
-		
 		backdrop = new FlxBackdrop(AssetPaths.backdrop__png, 0.5, 0.25, true, true, 0, 0);
 		add(backdrop);
 
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
-		boss = new Boss(400, 400, player);
 		
 		add(ladders);
 		add(oneWayPlatforms);
@@ -116,7 +113,6 @@ class PlayState extends FlxState
 		add(arEnemyGroup);
 		add(minionGroup);
 		add(player);
-		add(boss);
 		add(secretWays);
 		
 		cameraSetUp();
@@ -168,12 +164,12 @@ class PlayState extends FlxState
 		// Main Weapon - Obstacles
 		FlxG.overlap(player.weaponN, barrels, weaponBarrelCollision);
 		// Player - Power Ups
-		FlxG.collide(player, powerUps, playerPowerUpCollision);
+		FlxG.overlap(player, powerUps, playerPowerUpCollision);
 		
 		checkPause();
 		checkEscape();
 		
-		//cameraHandling();	Experimental Feature (not finished yet).
+		//cameraHandling();
 
 		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused);
 	}
@@ -235,6 +231,9 @@ class PlayState extends FlxState
 			case "ArmoredEnemy":
 				var armoredEnemy = new ArmoredEnemy(x, y, player);
 				arEnemyGroup.add(armoredEnemy);
+			case "Boss":
+				var boss = new Boss(x, y, player);
+				add(boss);
 		}
 	}
 
@@ -273,6 +272,7 @@ class PlayState extends FlxState
 		camera.followLerp = 2;
 		camera.targetOffset.set(0, -64);
 		camera.setScrollBounds(0, 6400, 0, 640);
+		//camera.setScrollBoundsRect(0, player.y - 128, 6400, player.y + 32);
 	}
 
 	private function hudSetUp():Void
@@ -283,10 +283,11 @@ class PlayState extends FlxState
 	
 	private function cameraHandling():Void 
 	{
-		if (player.velocity.y != 0 && player.acceleration.y != 0 && !player.isTouching(FlxObject.FLOOR))
-			camera.setScrollBoundsRect(0, camera.scroll.y, 6400, 640);
+		if (player.y > camera.scroll.y + FlxG.height)
+			camera.setScrollBoundsRect(0, camera.scroll.y + FlxG.height, 6400, camera.scroll.y + 2 * FlxG.height);
 		else
-			camera.setScrollBounds(0, 6400, 0, 640);
+			if (player.y < camera.scroll.y)
+				camera.setScrollBoundsRect(0, camera.scroll.y - FlxG.height, 6400, camera.scroll.y); 
 	}
 	
 	// COLLISION FUNCTIONS
@@ -368,18 +369,51 @@ class PlayState extends FlxState
 
 	private function colWeaponChaman(w:WeaponBase, c:Chaman):Void
 	{
-		c.kill();
+		switch (w.getType())
+		{
+			case "Normal":
+				c.getDamage(Reg.playerNormalDamage);
+			case "Spear":
+				c.getDamage(Reg.spearDamage);
+			case "Shuriken":
+				c.getDamage(Reg.shurikenDamage);
+			case "Poison":
+				c.getDamage(Reg.poisonDamage);
+			default:
+		}
 	}
 
 	private function colWeaponZombie(w:WeaponBase, z:Zombie):Void
 	{
-		z.kill();
+		switch (w.getType())
+		{
+			case "Normal":
+				z.getDamage(Reg.playerNormalDamage);
+			case "Spear":
+				z.getDamage(Reg.spearDamage);
+			case "Shuriken":
+				z.getDamage(Reg.shurikenDamage);
+			case "Poison":
+				z.getDamage(Reg.poisonDamage);
+			default:
+		}
 	}
 
 	private function colWeaponArEnemy(w:WeaponBase, a:ArmoredEnemy):Void
 	{
 		if (a.getState() == State.ATTACKING)
-			a.getDamage();
+			switch (w.getType())
+			{
+				case "Normal":
+					a.getDamage(Reg.playerNormalDamage);
+				case "Spear":
+					a.getDamage(Reg.spearDamage);
+				case "Shuriken":
+					a.getDamage(Reg.shurikenDamage);
+				case "Poison":
+					a.getDamage(Reg.poisonDamage);
+				default:
+			}
 	}
 
 	private function colWeaponMinion(w:WeaponBase, m:Minion):Void
@@ -423,6 +457,10 @@ class PlayState extends FlxState
 	private function playerPowerUpCollision(p:Player, pUp:PowerUp) 
 	{
 		p.collectPowerUp(pUp);	
-		powerUps.remove(pUp);
+		if (p.powerUpJustPicked)
+		{
+			powerUps.remove(pUp);
+			p.powerUpJustPicked = false;
+		}
 	}
 }

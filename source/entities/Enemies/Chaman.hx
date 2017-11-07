@@ -6,10 +6,6 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 import flixel.FlxObject;
 
-/**
- * ...
- * @author holis
- */
 class Chaman extends Zombie 
 {
 	
