@@ -57,6 +57,12 @@ class Bat extends FlxSprite
 		infinite();
 	}
 	
+	override public function kill():Void
+	{
+		super.kill();
+		Reg.score += 1;
+	}
+	
 	private function tracking():Void
 	{
 		if (timeAttack < Reg.atkTime) timeAttack ++;

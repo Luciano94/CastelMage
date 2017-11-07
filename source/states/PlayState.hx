@@ -171,7 +171,7 @@ class PlayState extends FlxState
 		
 		//cameraHandling();
 
-		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused);
+		hud.updateHUD(Player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused);
 	}
 	
 	function colWeaPotTile(w:WeaponPotion, b:Bat) 
@@ -247,8 +247,11 @@ class PlayState extends FlxState
 	{
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
-			FlxG.switchState(new MenuState());
+			player.setLives(Reg.playerMaxLives);
+			Reg.score = 0;
+			Reg.paused = false;
 			FlxG.mouse.visible = true;
+			FlxG.switchState(new MenuState());	
 		}
 	}
 
@@ -365,6 +368,7 @@ class PlayState extends FlxState
 	private function colWeaponBat(w:WeaponBase, b:Bat):Void
 	{
 		b.kill();
+		Reg.score += 1;
 	}
 
 	private function colWeaponChaman(w:WeaponBase, c:Chaman):Void
@@ -419,6 +423,7 @@ class PlayState extends FlxState
 	private function colWeaponMinion(w:WeaponBase, m:Minion):Void
 	{
 		m.kill();
+		Reg.score += 3;
 	}
 	
 	// Weapon - Obstacles
@@ -431,26 +436,76 @@ class PlayState extends FlxState
 	private function colPlayerBat(p:Player, b:Bat):Void
 	{
 		p.getDamage(Reg.batAtkDamage);
+		if (p.x > b.x)
+		{
+			p.x += 32;
+			b.x -= 32;
+		}
+		else
+		{
+			p.x -= 32;
+			b.x += 32;
+		}
 	}
 
 	private function colPlayerChaman(p:Player, c:Chaman):Void
 	{
 		p.getDamage(Reg.shamanAtkDamage);
+		if (p.x > c.x)
+		{
+			p.x += 32;
+			c.x -= 32;
+		}
+		else
+		{
+			p.x -= 32;
+			c.x += 32;
+		}
 	}
 
 	private function colPlayerZombie(p:Player, z:Zombie):Void
 	{
 		p.getDamage(Reg.zombieAtkDamage);
+		if (p.x > z.x)
+		{
+			p.x += 32;
+			z.x -= 32;
+		}
+		else
+		{
+			p.x -= 32;
+			z.x += 32;
+		}
 	}
 
 	private function colPayerArEnemy(p:Player, a:ArmoredEnemy):Void
 	{
 		p.getDamage(Reg.armoredEnemyAtkDamage);
+		if (p.x > a.x)
+		{
+			p.x += 32;
+			a.x -= 32;
+		}
+		else
+		{
+			p.x -= 32;
+			a.x += 32;
+		}
 	}
 
 	private function colPlayerMinion(p:Player, m:Minion): Void
 	{
 		p.getDamage(Reg.minionAtkDamage);
+		if (p.x > m.x)
+		{
+			p.x += 32;
+			m.x -= 32;
+		}
+		else
+		{
+			p.x -= 32;
+			m.x += 32;
+		}
 	}
 	
 	// Player - Power Ups

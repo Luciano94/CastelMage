@@ -10,6 +10,8 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.effects.FlxFlicker;
+import states.MenuState;
+import states.PlayState;
 
 enum States
 {
@@ -41,7 +43,7 @@ class Player extends FlxSprite
 	private var weaponShuriken:WeaponShuriken;
 	private var weaponPotion(get, null):WeaponPotion;
 	private var hp:Int;
-	public var lives(get, null):Int;
+	static public var lives(get, null):Int = 3;
 	public var ammo(get, null):Int;
 	public var isTouchingLadder(null, set):Bool;
 	public var isOnTopOfLadder(null, set):Bool;
@@ -63,7 +65,7 @@ class Player extends FlxSprite
 		stairsSpeed = Reg.playerStairsSpeed;
 		acceleration.y = Reg.gravity;
 		hp = Reg.playerMaxHealth;
-		lives = Reg.playerMaxLives;
+		//lives = Reg.playerMaxLives;
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
 		ammo = 0;
@@ -114,14 +116,17 @@ class Player extends FlxSprite
 		super.update(elapsed);
 	}
 	
-	override public function reset(X, Y)
+	override public function kill():Void
 	{
-		super.reset(X, Y);
-		
-		hp = Reg.playerMaxHealth;
-		weaponCurrentState = WeaponStates.SINWEA;
-		ammo = 0;
-		willDieFromFall = false;
+		Reg.score = 0;
+		if (lives > 0)
+		{
+			FlxG.switchState(new PlayState());
+		}
+		else
+		{
+			FlxG.switchState(new MenuState());
+		}
 	}
 	
 	private function stateMachine():Void
@@ -210,10 +215,7 @@ class Player extends FlxSprite
 						else
 						{
 							lives--;
-							if (lives > 0)
-								reset(320, 496);
-							else
-								kill();
+							kill();
 						}
 					}
 					else
@@ -274,17 +276,25 @@ class Player extends FlxSprite
 				
 				velocity.set(0, 0);
 				climbLadders();
-				if (!isTouchingLadder || isTouching(FlxObject.FLOOR))
+				if (hasJustBeenHit && inmortalityTime == 0)
 				{
 					acceleration.y = Reg.gravity;
-					if (velocity.y != 0 && !isTouching(FlxObject.FLOOR))
-						currentState = States.JUMPING;
-					else
+					currentState = States.BEING_HIT;
+				}
+				else
+				{
+					if (!isTouchingLadder || isTouching(FlxObject.FLOOR))
 					{
-						if (velocity.x != 0)
-							currentState = States.MOVING;
+						acceleration.y = Reg.gravity;
+						if (velocity.y != 0 && !isTouching(FlxObject.FLOOR))
+							currentState = States.JUMPING;
 						else
-							currentState = States.IDLE;
+						{
+							if (velocity.x != 0)
+								currentState = States.MOVING;
+							else
+								currentState = States.IDLE;
+						}
 					}
 				}
 				
@@ -312,9 +322,19 @@ class Player extends FlxSprite
 			case States.BEING_HIT:
 				if (animation.name != "beHit")
 					animation.play("beHit");
-					
-					if (animation.name == "beHit" && animation.finished)
-						currentState = States.IDLE;
+				
+				if (animation.name == "beHit" && animation.finished)
+				{
+					if (velocity.y != 0)
+						currentState = States.JUMPING;
+					else
+					{
+						if (velocity.x != 0)
+							currentState = States.MOVING;
+						else
+							currentState = States.IDLE;
+					}
+				}
 						
 			case States.DEAD:
 
@@ -450,14 +470,10 @@ class Player extends FlxSprite
 		{
 			FlxG.sound.play(AssetPaths.playerDamaged__wav);
 			hp -= damage;
-			trace(hp);
 			if (hp <= 0)
 			{
 				lives--;
-				if (lives > 0)
-					reset(320, 496);
-				else
-					kill();
+				kill();
 			}
 			else
 			{
@@ -481,10 +497,7 @@ class Player extends FlxSprite
 		if (!inWorldBounds())
 		{
 			lives--;
-			if (lives > 0)
-				reset(320, 496);
-			else
-				kill();
+			kill();
 		}
 	}
 	
@@ -590,7 +603,7 @@ class Player extends FlxSprite
 		}
 	}
 	
-	function get_lives():Int 
+	static function get_lives():Int 
 	{
 		return lives;
 	}
@@ -643,5 +656,10 @@ class Player extends FlxSprite
 	function set_powerUpJustPicked(value:Bool):Bool 
 	{
 		return powerUpJustPicked = value;
+	}
+	
+	public function setLives(value:Int)
+	{
+		lives = value;
 	}
 }

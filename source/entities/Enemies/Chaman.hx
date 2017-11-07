@@ -35,6 +35,12 @@ class Chaman extends Zombie
 		summon();
 	}
 	
+	override public function kill():Void
+	{
+		super.kill();
+		Reg.score += 10;
+	}
+	
 	override function taiCorro():Void 
 	{
 		if ((x > player.x) && (x - player.x < Reg.trackDist))

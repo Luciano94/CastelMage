@@ -141,8 +141,8 @@
     </EntityDefinition>
     <EntityDefinition Name="ArmoredEnemy" Limit="-1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
       <Size>
-        <Width>32</Width>
-        <Height>26</Height>
+        <Width>64</Width>
+        <Height>64</Height>
       </Size>
       <Origin>
         <X>0</X>

@@ -1,5 +1,6 @@
 package entities.enemies;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxObject;
@@ -27,8 +28,7 @@ class ArmoredEnemy extends FlxSprite
 	{
 		super(X, Y);
 		/*animations*/
-		loadGraphic(AssetPaths.armoredEnemy__png, true, 32, 26);
-		scale.set(2, 2);
+		loadGraphic(AssetPaths.armoredEnemy__png, true, 64, 64);
 		updateHitbox();
 		animation.add("idle", [0], false);
 		animation.add("move", [0, 1, 2, 3], 12, true);
@@ -55,6 +55,7 @@ class ArmoredEnemy extends FlxSprite
 		{
 			case State.IDLE:
 				animation.play("idle");
+				decreaseHitBox();
 				tracking();
 			case State.MOVING:
 				animation.play("move");
@@ -64,11 +65,20 @@ class ArmoredEnemy extends FlxSprite
 				preatk();
 			case State.ATTACKING:
 				animation.play("atk");
+				velocity.x = 0;
+				increaseHitBox();
 				atk();
+
 			default:
 				
 		}
 		checkInmortality(elapsed);
+	}
+	
+	override public function kill():Void
+	{
+		super.kill();
+		Reg.score += 15;
 	}
 	
 	private function tracking():Void
@@ -105,7 +115,7 @@ class ArmoredEnemy extends FlxSprite
 		else
 			if (x < player.x)
 			{
-				if(player.x - x > Reg.atkDist)
+				if (player.x - x > Reg.atkDist)
 					velocity.x =  speed;
 				if (player.x  - x <= Reg.atkDist)
 				{
@@ -117,7 +127,8 @@ class ArmoredEnemy extends FlxSprite
 	
 	private function preatk():Void
 	{
-		if (timeAttack < Reg.preAtkTime) timeAttack ++;
+		if (timeAttack < Reg.preAtkTime)
+			timeAttack++;
 		else
 		{
 			currentState = State.ATTACKING;
@@ -127,7 +138,8 @@ class ArmoredEnemy extends FlxSprite
 	
 	private function atk():Void
 	{
-		if (timeAttack < Reg.atkTime) timeAttack ++;
+		if (timeAttack < Reg.atkTime) 
+			timeAttack++;
 		else
 		{
 			currentState = State.IDLE;
@@ -143,18 +155,11 @@ class ArmoredEnemy extends FlxSprite
 			facing = FlxObject.RIGHT;
 	}
 	
-	//public function getDamage()
-	//{
-		//if (lifePoints > 0)
-			//lifePoints --;
-		//else
-			//kill();
-	//}
-	
 	public function getDamage(damage:Int):Void
 	{
 		if (!hasJustBeenHit)
 		{
+			FlxG.sound.play(AssetPaths.enemyDamaged__wav);
 			hp -= damage;
 			if (hp <= 0)
 				kill();
@@ -176,6 +181,31 @@ class ArmoredEnemy extends FlxSprite
 			inmortalityTime += elapsed;
 		if (inmortalityTime >= 1)
 			hasJustBeenHit = false;
+	}
+	
+	private function increaseHitBox():Void 
+	{
+		if (width == 32)
+		{
+			width = 64;
+			updateHitbox();
+			if (facing == FlxObject.LEFT)
+				x -= 32;
+			else
+				x += 32;
+		}
+	}
+	
+	private function decreaseHitBox():Void 
+	{
+		if (width == 64)
+		{
+			if (facing == FlxObject.LEFT)
+				offset.x = 32;
+			else
+				offset.x = -32;
+			width = 32;
+		}
 	}
 	
 	public function getState():State
