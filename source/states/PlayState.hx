@@ -93,13 +93,14 @@ class PlayState extends FlxState
 		shamanGroup = new FlxTypedGroup<Chaman>();
 		arEnemyGroup = new FlxTypedGroup<ArmoredEnemy>();
 		minionGroup = new FlxTypedGroup<Minion>();
-		boss = new Boss(400, 500, player);
+		
 		
 		backdrop = new FlxBackdrop(AssetPaths.backdrop__png, 0.5, 0.25, true, true, 0, 0);
 		add(backdrop);
 
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
+		boss = new Boss(400, 400, player);
 		
 		add(ladders);
 		add(oneWayPlatforms);
@@ -114,8 +115,8 @@ class PlayState extends FlxState
 		add(shamanGroup);
 		add(arEnemyGroup);
 		add(minionGroup);
-		add(boss);
 		add(player);
+		add(boss);
 		add(secretWays);
 		
 		cameraSetUp();

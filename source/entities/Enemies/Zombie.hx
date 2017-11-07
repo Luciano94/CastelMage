@@ -11,9 +11,9 @@ class Zombie extends FlxSprite
 	private var gravity:Int;
 	private var catche:Bool;
 
-	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset, _player:Player) 
+	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
-		super(X, Y, SimpleGraphic);
+		super(X, Y);
 		loadGraphic(AssetPaths.Zombie__png, true, 32, 51);
 		animation.add("idle", [0], false);
 		animation.add("move", [1, 2, 3, 4, 5, 6, 7], 12, true);

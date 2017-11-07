@@ -48,6 +48,7 @@ class Player extends FlxSprite
 	private var hasJustBeenHit:Bool;
 	private var inmortalityTime:Float;
 	private var willDieFromFall:Bool;
+	private var myX:Float;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -55,7 +56,7 @@ class Player extends FlxSprite
 
 		// Attributes Inicialization
 		currentState = States.IDLE;
-		weaponCurrentState = WeaponStates.WEASHURIKEN;
+		weaponCurrentState = WeaponStates.WEASPEAR;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		stairsSpeed = Reg.playerStairsSpeed;
@@ -590,5 +591,10 @@ class Player extends FlxSprite
 	public function get_weaponPotion():WeaponPotion 
 	{
 		return weaponPotion;
+	}
+	public function get_myX():Float 
+	{
+		myX = x;
+		return myX;
 	}
 }

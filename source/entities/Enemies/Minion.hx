@@ -9,9 +9,9 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 class Minion extends Zombie 
 {
 
-	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset, _player:Player) 
+	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
-		super(X, Y, SimpleGraphic, _player);
+		super(X, Y, _player);
 		loadGraphic(AssetPaths.Minion__png, true, 16, 46);
 		animation.add("idle", [0], false);
 		animation.add("move", [1, 2, 3, 4], 12, true);

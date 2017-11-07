@@ -25,9 +25,9 @@ class ArmoredEnemy extends FlxSprite
 	private var timeAttack: Int;
 	private var lifePoints: Int;
 
-	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset, _player:Player) 
+	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
-		super(X, Y, SimpleGraphic);
+		super(X, Y);
 		/*animations*/
 		loadGraphic(AssetPaths.armoredEnemy__png, true, 32, 26);
 		scale.set(2, 2);
