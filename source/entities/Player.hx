@@ -57,7 +57,7 @@ class Player extends FlxSprite
 
 		// Attributes Inicialization
 		currentState = States.IDLE;
-		weaponCurrentState = WeaponStates.WEAPOTION;
+		weaponCurrentState = WeaponStates.SINWEA;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		stairsSpeed = Reg.playerStairsSpeed;
@@ -66,7 +66,7 @@ class Player extends FlxSprite
 		lives = Reg.playerMaxLives;
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
-		ammo = 10;
+		ammo = 0;
 		inmortalityTime = 0;
 		hasJustBeenHit = false;
 		willDieFromFall = false;
@@ -119,8 +119,8 @@ class Player extends FlxSprite
 		super.reset(X, Y);
 		
 		hp = Reg.playerMaxHealth;
-		ammo = 0;
 		weaponCurrentState = WeaponStates.SINWEA;
+		ammo = 0;
 		willDieFromFall = false;
 	}
 	
@@ -434,7 +434,7 @@ class Player extends FlxSprite
 		switch (weaponCurrentState) 
 		{
 			case WeaponStates.SINWEA:
-				return null;
+				return weaponN;
 			case WeaponStates.WEAPOTION:
 				return weaponPotion;
 			case WeaponStates.WEASHURIKEN:
