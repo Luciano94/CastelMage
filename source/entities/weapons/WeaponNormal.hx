@@ -19,4 +19,9 @@ class WeaponNormal extends WeaponBase
 		
 		animation.play("normalAttack");
 	}
+	
+	override public function getType():String
+	{
+		return "Normal";
+	}
 }

@@ -31,7 +31,7 @@ import entities.enemies.Bat;
 import entities.enemies.Chaman;
 import entities.enemies.Minion;
 import entities.enemies.Zombie;
-import entities.Boss;
+import entities.enemies.Boss;
 
 class PlayState extends FlxState
 {
@@ -93,13 +93,14 @@ class PlayState extends FlxState
 		shamanGroup = new FlxTypedGroup<Chaman>();
 		arEnemyGroup = new FlxTypedGroup<ArmoredEnemy>();
 		minionGroup = new FlxTypedGroup<Minion>();
-		boss = new Boss(400, 500, player);
+		
 		
 		backdrop = new FlxBackdrop(AssetPaths.backdrop__png, 0.5, 0.25, true, true, 0, 0);
 		add(backdrop);
 
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
+		boss = new Boss(400, 400, player);
 		
 		add(ladders);
 		add(oneWayPlatforms);
@@ -114,9 +115,9 @@ class PlayState extends FlxState
 		add(shamanGroup);
 		add(arEnemyGroup);
 		add(minionGroup);
-		add(boss);
 		add(player);
 		add(secretWays);
+		add(boss);
 		
 		cameraSetUp();
 		hudSetUp();
@@ -167,14 +168,14 @@ class PlayState extends FlxState
 		// Main Weapon - Obstacles
 		FlxG.overlap(player.weaponN, barrels, weaponBarrelCollision);
 		// Player - Power Ups
-		FlxG.collide(player, powerUps, playerPowerUpCollision);
+		FlxG.overlap(player, powerUps, playerPowerUpCollision);
 		
 		checkPause();
 		checkEscape();
 		
-		//cameraHandling();	Experimental Feature (not finished yet).
+		//cameraHandling();
 
-		hud.updateHUD(player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused);
+		hud.updateHUD(Player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused);
 	}
 	
 	function colWeaPotTile(w:WeaponPotion, b:Bat) 
@@ -234,6 +235,9 @@ class PlayState extends FlxState
 			case "ArmoredEnemy":
 				var armoredEnemy = new ArmoredEnemy(x, y, player);
 				arEnemyGroup.add(armoredEnemy);
+			case "Boss":
+				var boss = new Boss(x, y, player);
+				add(boss);
 		}
 	}
 
@@ -247,8 +251,11 @@ class PlayState extends FlxState
 	{
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
-			FlxG.switchState(new MenuState());
+			player.setLives(Reg.playerMaxLives);
+			Reg.score = 0;
+			Reg.paused = false;
 			FlxG.mouse.visible = true;
+			FlxG.switchState(new MenuState());	
 		}
 	}
 
@@ -272,6 +279,7 @@ class PlayState extends FlxState
 		camera.followLerp = 2;
 		camera.targetOffset.set(0, -64);
 		camera.setScrollBounds(0, 6400, 0, 640);
+		//camera.setScrollBoundsRect(0, player.y - 128, 6400, player.y + 32);
 	}
 
 	private function hudSetUp():Void
@@ -282,10 +290,11 @@ class PlayState extends FlxState
 	
 	private function cameraHandling():Void 
 	{
-		if (player.velocity.y != 0 && player.acceleration.y != 0 && !player.isTouching(FlxObject.FLOOR))
-			camera.setScrollBoundsRect(0, camera.scroll.y, 6400, 640);
+		if (player.y > camera.scroll.y + FlxG.height)
+			camera.setScrollBoundsRect(0, camera.scroll.y + FlxG.height, 6400, camera.scroll.y + 2 * FlxG.height);
 		else
-			camera.setScrollBounds(0, 6400, 0, 640);
+			if (player.y < camera.scroll.y)
+				camera.setScrollBoundsRect(0, camera.scroll.y - FlxG.height, 6400, camera.scroll.y); 
 	}
 	
 	// COLLISION FUNCTIONS
@@ -363,27 +372,62 @@ class PlayState extends FlxState
 	private function colWeaponBat(w:WeaponBase, b:Bat):Void
 	{
 		b.kill();
+		Reg.score += 1;
 	}
 
 	private function colWeaponChaman(w:WeaponBase, c:Chaman):Void
 	{
-		c.kill();
+		switch (w.getType())
+		{
+			case "Normal":
+				c.getDamage(Reg.playerNormalDamage);
+			case "Spear":
+				c.getDamage(Reg.spearDamage);
+			case "Shuriken":
+				c.getDamage(Reg.shurikenDamage);
+			case "Poison":
+				c.getDamage(Reg.poisonDamage);
+			default:
+		}
 	}
 
 	private function colWeaponZombie(w:WeaponBase, z:Zombie):Void
 	{
-		z.kill();
+		switch (w.getType())
+		{
+			case "Normal":
+				z.getDamage(Reg.playerNormalDamage);
+			case "Spear":
+				z.getDamage(Reg.spearDamage);
+			case "Shuriken":
+				z.getDamage(Reg.shurikenDamage);
+			case "Poison":
+				z.getDamage(Reg.poisonDamage);
+			default:
+		}
 	}
 
 	private function colWeaponArEnemy(w:WeaponBase, a:ArmoredEnemy):Void
 	{
 		if (a.getState() == State.ATTACKING)
-			a.getDamage();
+			switch (w.getType())
+			{
+				case "Normal":
+					a.getDamage(Reg.playerNormalDamage);
+				case "Spear":
+					a.getDamage(Reg.spearDamage);
+				case "Shuriken":
+					a.getDamage(Reg.shurikenDamage);
+				case "Poison":
+					a.getDamage(Reg.poisonDamage);
+				default:
+			}
 	}
 
 	private function colWeaponMinion(w:WeaponBase, m:Minion):Void
 	{
 		m.kill();
+		Reg.score += 3;
 	}
 	
 	// Weapon - Obstacles
@@ -396,32 +440,86 @@ class PlayState extends FlxState
 	private function colPlayerBat(p:Player, b:Bat):Void
 	{
 		p.getDamage(Reg.batAtkDamage);
+		if (p.x > b.x)
+		{
+			p.x += 32;
+			b.x -= 32;
+		}
+		else
+		{
+			p.x -= 32;
+			b.x += 32;
+		}
 	}
 
 	private function colPlayerChaman(p:Player, c:Chaman):Void
 	{
 		p.getDamage(Reg.shamanAtkDamage);
+		if (p.x > c.x)
+		{
+			p.x += 32;
+			c.x -= 32;
+		}
+		else
+		{
+			p.x -= 32;
+			c.x += 32;
+		}
 	}
 
 	private function colPlayerZombie(p:Player, z:Zombie):Void
 	{
 		p.getDamage(Reg.zombieAtkDamage);
+		if (p.x > z.x)
+		{
+			p.x += 32;
+			z.x -= 32;
+		}
+		else
+		{
+			p.x -= 32;
+			z.x += 32;
+		}
 	}
 
 	private function colPayerArEnemy(p:Player, a:ArmoredEnemy):Void
 	{
 		p.getDamage(Reg.armoredEnemyAtkDamage);
+		if (p.x > a.x)
+		{
+			p.x += 32;
+			a.x -= 32;
+		}
+		else
+		{
+			p.x -= 32;
+			a.x += 32;
+		}
 	}
 
 	private function colPlayerMinion(p:Player, m:Minion): Void
 	{
 		p.getDamage(Reg.minionAtkDamage);
+		if (p.x > m.x)
+		{
+			p.x += 32;
+			m.x -= 32;
+		}
+		else
+		{
+			p.x -= 32;
+			m.x += 32;
+		}
 	}
 	
 	// Player - Power Ups
 	private function playerPowerUpCollision(p:Player, pUp:PowerUp) 
 	{
 		p.collectPowerUp(pUp);	
-		powerUps.remove(pUp);
+		if (p.powerUpJustPicked)
+		{
+			powerUps.remove(pUp);
+			p.powerUpJustPicked = false;
+		}
 	}
 }

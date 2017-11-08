@@ -21,7 +21,7 @@ class Bat extends FlxSprite
 	private var gotcha:Bool;
 	private var currentState:BatState;
 	
-	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset, _player:Player) 
+	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
 		super(X, Y);
 		loadGraphic(AssetPaths.bat__png, true, 16, 48);
@@ -55,6 +55,12 @@ class Bat extends FlxSprite
 		}
 		animControl();
 		infinite();
+	}
+	
+	override public function kill():Void
+	{
+		super.kill();
+		Reg.score += 1;
 	}
 	
 	private function tracking():Void

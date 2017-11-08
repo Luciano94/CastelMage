@@ -6,10 +6,6 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 import flixel.FlxObject;
 
-/**
- * ...
- * @author holis
- */
 class Chaman extends Zombie 
 {
 	
@@ -19,9 +15,9 @@ class Chaman extends Zombie
 	private var timer: Int;
 	private var minionX:Float;
 	
-	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset, _player:Player, _minions:FlxTypedGroup<Minion>) 
+	public function new(?X:Float=0, ?Y:Float=0, _player:Player, _minions:FlxTypedGroup<Minion>) 
 	{
-		super(X, Y, SimpleGraphic, _player);
+		super(X, Y, _player);
 		loadGraphic(AssetPaths.Shaman__png, true, 32, 48);
 		animation.add("idle", [0], false);
 		animation.add("move", [1, 2, 3, 4, 5, 6, 7], 12, true);
@@ -37,6 +33,12 @@ class Chaman extends Zombie
 	{
 		super.update(elapsed);
 		summon();
+	}
+	
+	override public function kill():Void
+	{
+		super.kill();
+		Reg.score += 10;
 	}
 	
 	override function taiCorro():Void 

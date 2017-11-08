@@ -1,13 +1,10 @@
 package entities.enemies;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxObject;
 
-/**
- * ...
- * @author Amaka
- */
 enum State
 {
 	IDLE;
@@ -23,14 +20,15 @@ class ArmoredEnemy extends FlxSprite
 	private var speed: Int;
 	private var gravity: Int;
 	private var timeAttack: Int;
-	private var lifePoints: Int;
+	private var hp: Int;
+	private var hasJustBeenHit:Bool;
+	private var inmortalityTime:Float;
 
-	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset, _player:Player) 
+	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
-		super(X, Y, SimpleGraphic);
+		super(X, Y);
 		/*animations*/
-		loadGraphic(AssetPaths.armoredEnemy__png, true, 32, 26);
-		scale.set(2, 2);
+		loadGraphic(AssetPaths.armoredEnemy__png, true, 64, 64);
 		updateHitbox();
 		animation.add("idle", [0], false);
 		animation.add("move", [0, 1, 2, 3], 12, true);
@@ -44,7 +42,9 @@ class ArmoredEnemy extends FlxSprite
 		speed = Reg.speedEnemy;
 		gravity = Reg.gravity;
 		acceleration.y = gravity;
-		lifePoints = Reg.armoredEnemyLifePoints;
+		hp = Reg.armoredEnemyLifePoints;
+		hasJustBeenHit = false;
+		inmortalityTime = 0;
 	}
 	
 	override public function update(elapsed:Float):Void 
@@ -56,6 +56,7 @@ class ArmoredEnemy extends FlxSprite
 		{
 			case State.IDLE:
 				animation.play("idle");
+				decreaseHitBox();
 				tracking();
 			case State.MOVING:
 				animation.play("move");
@@ -65,8 +66,11 @@ class ArmoredEnemy extends FlxSprite
 				preatk();
 			case State.ATTACKING:
 				animation.play("atk");
+				velocity.x = 0;
+				increaseHitBox();
 				atk();
 		}
+		checkInmortality(elapsed);
 	}
 	
 	private function hitboxControl():Void
@@ -87,7 +91,8 @@ class ArmoredEnemy extends FlxSprite
 	{
 		if (gotcha)
 			currentState = State.MOVING;
-		else{
+		else
+		{
 			if ((x > player.x) && (x - player.x < Reg.trackDist))
 			{
 				gotcha = true;
@@ -105,7 +110,7 @@ class ArmoredEnemy extends FlxSprite
 	{
 		if (x > player.x)
 		{
-			if(x - player.x > Reg.atkDist)
+			if (x - player.x > Reg.atkDist)
 				velocity.x =  -speed;
 			if (x - player.x <= Reg.atkDist)
 			{
@@ -114,21 +119,22 @@ class ArmoredEnemy extends FlxSprite
 			}
 		}
 		else
-		if (x < player.x)
-		{
-			if(player.x - x > Reg.atkDist)
-				velocity.x =  speed;
-			if (player.x  - x <= Reg.atkDist)
+			if (x < player.x)
 			{
-				velocity.set(0, 0);
-				currentState = State.PREATTACKING;
+				if (player.x - x > Reg.atkDist)
+					velocity.x =  speed;
+				if (player.x  - x <= Reg.atkDist)
+				{
+					velocity.set(0, 0);
+					currentState = State.PREATTACKING;
+				}
 			}
-		}
 	}
 	
 	private function preatk():Void
 	{
-		if (timeAttack < Reg.preAtkTime) timeAttack ++;
+		if (timeAttack < Reg.preAtkTime)
+			timeAttack++;
 		else
 		{
 			currentState = State.ATTACKING;
@@ -142,7 +148,8 @@ class ArmoredEnemy extends FlxSprite
 	
 	private function atk():Void
 	{
-		if (timeAttack < Reg.atkTime) timeAttack ++;
+		if (timeAttack < Reg.atkTime) 
+			timeAttack++;
 		else
 		{
 			currentState = State.IDLE;
@@ -162,12 +169,57 @@ class ArmoredEnemy extends FlxSprite
 			facing = FlxObject.RIGHT;
 	}
 	
-	public function getDamage()
+	public function getDamage(damage:Int):Void
 	{
-		if (lifePoints > 0)
-			lifePoints --;
-		else
-			kill();
+		if (!hasJustBeenHit)
+		{
+			FlxG.sound.play(AssetPaths.enemyDamaged__wav);
+			hp -= damage;
+			if (hp <= 0)
+				kill();
+			else
+			{
+				hasJustBeenHit = true;
+				inmortalityTime = 0;
+				if (player.x < x)
+					x += 32;
+				else
+					x -= 32;
+			}
+		}
+	}
+	
+	private function checkInmortality(elapsed:Float):Void 
+	{
+		if (hasJustBeenHit)
+			inmortalityTime += elapsed;
+		if (inmortalityTime >= 1)
+			hasJustBeenHit = false;
+	}
+	
+	private function increaseHitBox():Void 
+	{
+		if (width == 32)
+		{
+			width = 64;
+			updateHitbox();
+			if (facing == FlxObject.LEFT)
+				x -= 32;
+			else
+				x += 32;
+		}
+	}
+	
+	private function decreaseHitBox():Void 
+	{
+		if (width == 64)
+		{
+			if (facing == FlxObject.LEFT)
+				offset.x = 32;
+			else
+				offset.x = -32;
+			width = 32;
+		}
 	}
 	
 	public function getState():State

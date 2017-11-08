@@ -10,6 +10,8 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.effects.FlxFlicker;
+import states.MenuState;
+import states.PlayState;
 
 enum States
 {
@@ -41,13 +43,14 @@ class Player extends FlxSprite
 	private var weaponShuriken:WeaponShuriken;
 	private var weaponPotion(get, null):WeaponPotion;
 	private var hp:Int;
-	public var lives(get, null):Int;
+	static public var lives(get, null):Int = 3;
 	public var ammo(get, null):Int;
 	public var isTouchingLadder(null, set):Bool;
 	public var isOnTopOfLadder(null, set):Bool;
 	private var hasJustBeenHit:Bool;
 	private var inmortalityTime:Float;
 	private var willDieFromFall:Bool;
+	@:isVar public var powerUpJustPicked(get, set):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -55,19 +58,20 @@ class Player extends FlxSprite
 
 		// Attributes Inicialization
 		currentState = States.IDLE;
-		weaponCurrentState = WeaponStates.WEASHURIKEN;
+		weaponCurrentState = WeaponStates.SINWEA;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		stairsSpeed = Reg.playerStairsSpeed;
 		acceleration.y = Reg.gravity;
 		hp = Reg.playerMaxHealth;
-		lives = Reg.playerMaxLives;
+		//lives = Reg.playerMaxLives;
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
-		ammo = 1;
+		ammo = 0;
 		inmortalityTime = 0;
 		hasJustBeenHit = false;
 		willDieFromFall = false;
+		powerUpJustPicked = false;
 
 		// Weapons Creation
 		weaponN = new WeaponNormal(x + width, y + height / 3);
@@ -111,14 +115,17 @@ class Player extends FlxSprite
 		super.update(elapsed);
 	}
 	
-	override public function reset(X, Y)
+	override public function kill():Void
 	{
-		super.reset(X, Y);
-		
-		hp = Reg.playerMaxHealth;
-		ammo = 0;
-		weaponCurrentState = WeaponStates.SINWEA;
-		willDieFromFall = false;
+		Reg.score = 0;
+		if (lives > 0)
+		{
+			FlxG.switchState(new PlayState());
+		}
+		else
+		{
+			FlxG.switchState(new MenuState());
+		}
 	}
 	
 	private function stateMachine():Void
@@ -148,7 +155,7 @@ class Player extends FlxSprite
 						{
 							if (weaponN.alive)
 								currentState = States.ATTACKING;
-							else
+							else 
 							{
 								if (height == 36)
 									currentState = States.CROUCHED;
@@ -207,10 +214,7 @@ class Player extends FlxSprite
 						else
 						{
 							lives--;
-							if (lives > 0)
-								reset(320, 496);
-							else
-								kill();
+							kill();
 						}
 					}
 					else
@@ -271,17 +275,25 @@ class Player extends FlxSprite
 				
 				velocity.set(0, 0);
 				climbLadders();
-				if (!isTouchingLadder || isTouching(FlxObject.FLOOR))
+				if (hasJustBeenHit && inmortalityTime == 0)
 				{
 					acceleration.y = Reg.gravity;
-					if (velocity.y != 0 && !isTouching(FlxObject.FLOOR))
-						currentState = States.JUMPING;
-					else
+					currentState = States.BEING_HIT;
+				}
+				else
+				{
+					if (!isTouchingLadder || isTouching(FlxObject.FLOOR))
 					{
-						if (velocity.x != 0)
-							currentState = States.MOVING;
+						acceleration.y = Reg.gravity;
+						if (velocity.y != 0 && !isTouching(FlxObject.FLOOR))
+							currentState = States.JUMPING;
 						else
-							currentState = States.IDLE;
+						{
+							if (velocity.x != 0)
+								currentState = States.MOVING;
+							else
+								currentState = States.IDLE;
+						}
 					}
 				}
 				
@@ -309,9 +321,19 @@ class Player extends FlxSprite
 			case States.BEING_HIT:
 				if (animation.name != "beHit")
 					animation.play("beHit");
-					
-					if (animation.name == "beHit" && animation.finished)
-						currentState = States.IDLE;
+				
+				if (animation.name == "beHit" && animation.finished)
+				{
+					if (velocity.y != 0)
+						currentState = States.JUMPING;
+					else
+					{
+						if (velocity.x != 0)
+							currentState = States.MOVING;
+						else
+							currentState = States.IDLE;
+					}
+				}
 						
 			case States.DEAD:
 
@@ -342,10 +364,11 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.justPressed.A)
 		{			
-			if (!weaponSpear.alive && !weaponShuriken.alive)
+			if (!weaponSpear.alive && !weaponShuriken.alive && !weaponPotion.alive)
 				WeaponBase.pFacing = facing;
 			if (!FlxG.keys.pressed.UP)
 			{
+				FlxG.sound.play(AssetPaths.playerAttack__wav);
 				if (facing == FlxObject.RIGHT)
 					weaponN.reset(x + width, y + height / 3 - 4);
 				else
@@ -353,6 +376,8 @@ class Player extends FlxSprite
 			}
 			else
 			{
+				if (ammo > 0 && !weaponSpear.alive && !weaponShuriken.alive && !weaponPotion.alive)
+					FlxG.sound.play(AssetPaths.throwWeapon__wav);
 				switch (weaponCurrentState)
 				{
 					case WeaponStates.SINWEA:
@@ -364,7 +389,7 @@ class Player extends FlxSprite
 								weaponSpear.reset(x + width / 2, y + height / 3 - 4);
 							else
 								weaponSpear.reset(x - width / 2, y + height / 3 - 4);
-							
+							currentState = States.ATTACKING;
 							ammo--;
 						}
 					case WeaponStates.WEASHURIKEN:
@@ -373,8 +398,8 @@ class Player extends FlxSprite
 							if (facing == FlxObject.RIGHT)
 								weaponShuriken.reset(x + width * 4 / 5, y + height / 4);
 							else
-								weaponShuriken.reset(x - width * 4 / 5, y + height / 4);
-							
+								weaponShuriken.reset(x - width * 2 / 5, y + height / 4);
+							currentState = States.ATTACKING;
 							ammo--;
 						}
 					case WeaponStates.WEAPOTION:
@@ -384,7 +409,7 @@ class Player extends FlxSprite
 								weaponPotion.reset(x + width - weaponPotion.width / 2, y + height / 3);
 							else
 								weaponPotion.reset(x - weaponPotion.width / 2, y + height / 3);
-							
+							currentState = States.ATTACKING;
 							ammo--;
 						}
 				}
@@ -428,7 +453,7 @@ class Player extends FlxSprite
 		switch (weaponCurrentState) 
 		{
 			case WeaponStates.SINWEA:
-				return null;
+				return weaponN;
 			case WeaponStates.WEAPOTION:
 				return weaponPotion;
 			case WeaponStates.WEASHURIKEN:
@@ -442,15 +467,12 @@ class Player extends FlxSprite
 	{
 		if (!hasJustBeenHit)
 		{
+			FlxG.sound.play(AssetPaths.playerDamaged__wav);
 			hp -= damage;
-		
 			if (hp <= 0)
 			{
 				lives--;
-				if (lives > 0)
-					reset(320, 496);
-				else
-					kill();
+				kill();
 			}
 			else
 			{
@@ -474,10 +496,7 @@ class Player extends FlxSprite
 		if (!inWorldBounds())
 		{
 			lives--;
-			if (lives > 0)
-				reset(320, 496);
-			else
-				kill();
+			kill();
 		}
 	}
 	
@@ -487,72 +506,103 @@ class Player extends FlxSprite
 			willDieFromFall = true;
 	}
 	
-	public function collectPowerUp(powerUp:PowerUp)
+	public function collectPowerUp(powerUp:PowerUp):Void
 	{
 		switch (powerUp.whichPowerUp)
 		{
 			case 0:
 				if (health <= Reg.playerMaxHealth - Reg.healthPackPoints)
-					health += Reg.healthPackPoints;
+				{
+					FlxG.sound.play(AssetPaths.pickUpLife__wav);
+					hp += Reg.healthPackPoints;
+					powerUpJustPicked = true;
+				}
+				else
+					if (health < Reg.playerMaxHealth)
+					{
+						FlxG.sound.play(AssetPaths.pickUpLife__wav);
+						health = Reg.playerMaxHealth;
+						powerUpJustPicked = true;
+					}
 			case 1:
 				if (lives < 3)
+				{
+					FlxG.sound.play(AssetPaths.pickUpLife__wav);
 					lives += 1;
+					powerUpJustPicked = true;
+				}
 			case 2:
 				if (weaponCurrentState != WeaponStates.WEASPEAR)
 				{
+					FlxG.sound.play(AssetPaths.weaponPickUp__wav);
 					weaponCurrentState = WeaponStates.WEASPEAR;
 					ammo = Reg.weaponInitialAmmo;
+					powerUpJustPicked = true;
 				}
 				else
 				{
+					FlxG.sound.play(AssetPaths.ammoPickUp__wav);
 					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
 						ammo += Reg.weaponInitialAmmo;
 					else
 						ammo = Reg.playerMaxAmmo;
+					powerUpJustPicked = true;
 				}
 			
 			case 3:
 				if (weaponCurrentState != WeaponStates.WEASHURIKEN)
 				{
+					FlxG.sound.play(AssetPaths.weaponPickUp__wav);
 					weaponCurrentState = WeaponStates.WEASHURIKEN;
 					ammo = Reg.weaponInitialAmmo;
+					powerUpJustPicked = true;
 				}
 				else
 				{
+					FlxG.sound.play(AssetPaths.ammoPickUp__wav);
 					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
 						ammo += Reg.weaponInitialAmmo;
 					else
 						ammo = Reg.playerMaxAmmo;
+					powerUpJustPicked = true;
 				}
 					
 			case 4:
 				if (weaponCurrentState != WeaponStates.WEAPOTION)
 				{
+					FlxG.sound.play(AssetPaths.weaponPickUp__wav);
 					weaponCurrentState = WeaponStates.WEAPOTION;
 					ammo = Reg.weaponInitialAmmo;
+					powerUpJustPicked = true;
 				}
 				else
 				{
-					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+					FlxG.sound.play(AssetPaths.ammoPickUp__wav);
+					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)				
 						ammo += Reg.weaponInitialAmmo;
 					else
 						ammo = Reg.playerMaxAmmo;
+					powerUpJustPicked = true;
 				}
 			case 5:
 				if (weaponCurrentState != WeaponStates.SINWEA)
 				{
-					if (ammo < Reg.playerMaxAmmo - Reg.weaponInitialAmmo)
+					FlxG.sound.play(AssetPaths.ammoPickUp__wav);
+					if (ammo < Reg.playerMaxAmmo - Reg.ammoPackPoints)
 						ammo += Reg.ammoPackPoints;
 					else
 						ammo = Reg.playerMaxAmmo;
+					powerUpJustPicked = true;
 				}
 				
 			case 6:
+				FlxG.sound.play(AssetPaths.pickUpCoin__wav);
 				Reg.score += 5;
+				powerUpJustPicked = true;
 		}
 	}
 	
-	function get_lives():Int 
+	static function get_lives():Int 
 	{
 		return lives;
 	}
@@ -590,5 +640,19 @@ class Player extends FlxSprite
 	public function get_weaponPotion():WeaponPotion 
 	{
 		return weaponPotion;
+	}
+	function get_powerUpJustPicked():Bool 
+	{
+		return powerUpJustPicked;
+	}
+	
+	function set_powerUpJustPicked(value:Bool):Bool 
+	{
+		return powerUpJustPicked = value;
+	}
+	
+	public function setLives(value:Int)
+	{
+		lives = value;
 	}
 }

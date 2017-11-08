@@ -21,4 +21,9 @@ class WeaponBase extends FlxSprite
 		super.update(elapsed);
 		facing = pFacing;
 	}
+	
+	public function getType():String
+	{
+		return "Base";
+	}
 }
