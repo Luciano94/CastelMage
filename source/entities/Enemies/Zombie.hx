@@ -1,5 +1,6 @@
 package entities.enemies;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxObject;
@@ -38,6 +39,12 @@ class Zombie extends FlxSprite
 		animControl();
 		taiCorro();
 		checkInmortality(elapsed);
+	}
+	
+	override public function kill():Void
+	{
+		super.kill();
+		Reg.score += 5;
 	}
 	
 	private function taiCorro():Void
@@ -80,6 +87,7 @@ class Zombie extends FlxSprite
 	{
 		if (!hasJustBeenHit)
 		{
+			FlxG.sound.play(AssetPaths.enemyDamaged__wav);
 			hp -= damage;
 			if (hp <= 0)
 				kill();

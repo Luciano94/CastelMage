@@ -2,10 +2,6 @@ package entities.enemies;
 
 import flixel.system.FlxAssets.FlxGraphicAsset;
 
-/**
- * ...
- * @author holis
- */
 class Minion extends Zombie 
 {
 
@@ -20,5 +16,11 @@ class Minion extends Zombie
 	override public function reset(X:Float, Y:Float):Void 
 	{
 		super.reset(X, Y);
+	}
+	
+	override public function kill():Void
+	{
+		super.kill();
+		Reg.score += 3;
 	}
 }

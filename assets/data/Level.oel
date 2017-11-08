@@ -262,11 +262,11 @@
     <Barrel id="107" x="5008" y="128" />
     <PowerUp id="108" x="4976" y="144" />
     <PowerUp id="109" x="4000" y="432" />
-    <Player id="110" x="320" y="496" />
     <Barrel id="119" x="592" y="512" />
     <Barrel id="120" x="640" y="512" />
-    <Zombie id="126" x="448" y="496" />
     <OneWayPlatform id="37" x="768" y="416" />
-    <ArmoredEnemy id="43" x="720" y="496" />
+    <Player id="91" x="352" y="496" />
+    <ArmoredEnemy id="43" x="512" y="480" />
+    <Zombie id="47" x="448" y="496" />
   </Entities>
 </level>
