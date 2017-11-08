@@ -121,6 +121,8 @@ class PlayState extends FlxState
 		
 		cameraSetUp();
 		hudSetUp();
+		
+		FlxG.sound.playMusic(AssetPaths.theme__wav, 1, true);
 	}
 
 	override public function update(elapsed:Float):Void

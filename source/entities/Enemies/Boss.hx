@@ -16,6 +16,7 @@ enum BossStates
 	CHASE;
 	CHASEINVI;
 	GOINGBACK;
+	DYING;
 }
 class Boss extends FlxSprite 
 {
@@ -23,7 +24,6 @@ class Boss extends FlxSprite
 	private var player:Player;
 	private var speedB:Float;
 	private var healthBoss:Int;
-	private var maxHealthBoss:Int;
 	private var canIAttack:Int;
 	private var yesYouCanAtk:Int;	// Timers
 	private var canIMove:Int;		//
@@ -52,7 +52,7 @@ class Boss extends FlxSprite
 		speedB = Reg.speedBoss;
 		velocity.set(0, 0);
 		player = _player;
-		healthBoss = maxHealthBoss = Reg.playerMaxHealth;
+		healthBoss = Reg.playerMaxHealth;
 		canIAttack = 0;
 		yesYouCanAtk = 3;
 		canIMove = 0;
@@ -70,10 +70,14 @@ class Boss extends FlxSprite
 	override public function update(elapsed:Float):Void 
 	{
 		super.update(elapsed);
+		
 		stateMachine();
-		trace(healthBoss);
 		if (healthBoss <= 0)
-			kill();
+		{
+			currentState = BossStates.DYING;
+			animation.play("moving");
+			velocity.set(0, 0);
+		}
 	}
 	function stateMachine() // http://haxeflixel.com/documentation/enemies-and-basic-ai/
 	{
@@ -117,6 +121,9 @@ class Boss extends FlxSprite
 			case BossStates.GOINGBACK:
 				animation.play("moving");
 				goBack();
+			case BossStates.DYING:
+				if(!FlxFlicker.isFlickering(this))
+					kill();
 		}
 	}
 	function thinking() 
