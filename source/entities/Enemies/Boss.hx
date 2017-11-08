@@ -7,6 +7,7 @@ import flixel.FlxG;
 import flixel.math.FlxRandom;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVelocity;
+import flixel.effects.FlxFlicker;
 
 enum BossStates
 {
@@ -14,14 +15,15 @@ enum BossStates
 	MOVING;
 	CHASE;
 	CHASEINVI;
+	GOINGBACK;
 }
 class Boss extends FlxSprite 
 {
 	private var currentState:BossStates;
 	private var player:Player;
-	private var speedX:Float;
-	private var hit:Bool;
+	private var speedB:Float;
 	private var healthBoss:Int;
+	private var maxHealthBoss:Int;
 	private var canIAttack:Int;
 	private var yesYouCanAtk:Int;	// Timers
 	private var canIMove:Int;		//
@@ -29,27 +31,28 @@ class Boss extends FlxSprite
 	private var originalX:Float;
 	private var originalY:Float;
 	private var r:FlxRandom;
-	private var p:FlxPoint;
+	private var p:FlxObject;
 	private var posX:Float;
 	private var posY:Float;
-	private var timeChasing:Int;
 	
 	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
 		super(X, Y);
-		//loadGraphic();
-		makeGraphic(25, 25);
-		//animation.add();
-		//animation.play();
+		loadGraphic(AssetPaths.boss__png, true, 64, 64);
+		scale.set(0.75, 0.75);
+		updateHitbox();
+		animation.add("moving", [0, 1, 2, 3, 4, 5], 20);
+		animation.add("chasing", [5]);
+		animation.add("chasingInvi", [6]);
+		animation.play("moving");
 		setFacingFlip(FlxObject.RIGHT, false, false);
 		setFacingFlip(FlxObject.LEFT, true, false);
 		
 		currentState = BossStates.IDLE;
-		speedX = Reg.speedBoss;
+		speedB = Reg.speedBoss;
 		velocity.set(0, 0);
 		player = _player;
-		hit = false;
-		healthBoss = Reg.playerMaxHealth;
+		healthBoss = maxHealthBoss = Reg.playerMaxHealth;
 		canIAttack = 0;
 		yesYouCanAtk = 3;
 		canIMove = 0;
@@ -57,34 +60,68 @@ class Boss extends FlxSprite
 		originalX = X;
 		originalY = Y;
 		r = new FlxRandom();
-		p = new FlxPoint();
+		p = new FlxObject(1, 1, 1, 1);
+		p.velocity.set(0, 0);
+		FlxG.state.add(p);
 		posX = 0;
 		posY = 0;
-		timeChasing = 0;
+		facing = FlxObject.RIGHT;
 	}
 	override public function update(elapsed:Float):Void 
 	{
 		super.update(elapsed);
 		stateMachine();
+		trace(healthBoss);
+		if (healthBoss <= 0)
+			kill();
 	}
 	function stateMachine() // http://haxeflixel.com/documentation/enemies-and-basic-ai/
 	{
 		switch (currentState) 
 		{
 			case BossStates.IDLE:
+				animation.play("moving");
 				thinking();
+				if (FlxG.collide(this, player))
+				{
+					player.getDamage(10);
+					canIMove = 0;
+				}
+				else if (FlxG.overlap(player.weaponN, this) || FlxG.overlap(player.getSecondaryWeapon(), this))
+				{
+					if(!FlxFlicker.isFlickering(this))
+						healthBoss -= 10;
+					FlxFlicker.flicker(this, 3, 0.08, true, true);
+					canIMove = 0;
+				}
 			case BossStates.MOVING:
+				animation.play("moving");
 				takingAWalk();
+				if (FlxG.collide(this, player))
+				{
+					player.getDamage(10);
+					currentState = BossStates.IDLE;
+				}else if (FlxG.overlap(player.weaponN, this) || FlxG.overlap(player.getSecondaryWeapon(), this))
+				{
+					if(!FlxFlicker.isFlickering(this))
+						healthBoss -= 10;
+					FlxFlicker.flicker(this, 3, 0.08, true, true);
+					currentState = BossStates.IDLE;
+				}
 			case BossStates.CHASE:
+				animation.play("moving");
 				attacking();
 			case BossStates.CHASEINVI:
+				animation.play("chasingInvi");
 				attacking();
+			case BossStates.GOINGBACK:
+				animation.play("moving");
+				goBack();
 		}
 	}
 	function thinking() 
 	{
 		velocity.set(0, 0);
-		//animation.play("idle");
 		if (canIAttack < yesYouCanAtk) // Doesn't attack
 		{
 			if (canIMove < yesYouCanMove) // Doesn't move
@@ -93,10 +130,11 @@ class Boss extends FlxSprite
 			{
 				canIAttack++;
 				canIMove = 0;
-				posX = r.float(originalX - camera.width / 2, originalX + camera.width / 2 - width);
-				posY = r.float(originalY - 40, originalY + 20);
-				p.set(posX, posY);
 				
+				posX = r.float(originalX - camera.width / 2, originalX + width * 2);
+				posY = r.float(originalY - 10, originalY + 30);
+				p.set_x(posX);
+				p.set_y(posY);
 				if (x <= posX)
 					facing = FlxObject.RIGHT;
 				else
@@ -110,7 +148,9 @@ class Boss extends FlxSprite
 			canIAttack = 0;
 			posX = x;
 			posY = y;
-			if(health >= Reg.playerMaxHealth / 4)
+			p.set_x(posX);
+			p.set_y(posY);
+			if(healthBoss > 31)
 				currentState = BossStates.CHASE;
 			else
 				currentState = BossStates.CHASEINVI;
@@ -118,52 +158,40 @@ class Boss extends FlxSprite
 	}
 	function takingAWalk() 
 	{
-		//animation.play("moving");
-		FlxVelocity.moveTowardsPoint(this, p, speedX);
-		if (facing == FlxObject.RIGHT)
-			if (x >= posX)
-			{
-				currentState = BossStates.IDLE;
-			}
-		else
-			if (x <= posX)
-			{
-				currentState = BossStates.IDLE;
-			}
+		FlxVelocity.moveTowardsPoint(this, p.getPosition(), speedB);
+		if (FlxG.overlap(this, p))
+			currentState = BossStates.IDLE;
 	}
 	function attacking() 
 	{
-		timeChasing++;
-		switch (hit) 
+		if (!FlxG.overlap(this, player))
+			FlxVelocity.moveTowardsPoint(this, player.getPosition(), speedB);
+		else
 		{
-			case false:
-				if(!FlxG.collide(this, player)) 
-					FlxVelocity.accelerateTowardsPoint(this, player.getPosition(), 50, 300);
-				else
-					OMGICollide();
-					if (timeChasing >= 25)
-						player.health -= 20;
-					else
-						player.health -= 10;
-				if (FlxG.overlap(player.weaponN, this) || FlxG.overlap(player.getSecondaryWeapon(), this))
-				{
-					OMGICollide();
-					health -= 10;
-				}
-			case true:
-				FlxVelocity.moveTowardsPoint(this, p, speedX); // It moves to the point it was before the chase
-				if (facing == FlxObject.RIGHT)
-					if (x >= player.x)
-						currentState = BossStates.IDLE;
-				else
-					if (x <= player.x)
-						currentState = BossStates.IDLE;
+			currentState = BossStates.GOINGBACK;
+			player.getDamage(10);
+		}
+		if (FlxG.overlap(player.weaponN, this) || FlxG.overlap(player.getSecondaryWeapon(), this))
+		{
+			currentState = BossStates.GOINGBACK;
+			
+			if(!FlxFlicker.isFlickering(this))
+				healthBoss -= 10;
+			FlxFlicker.flicker(this, 3, 0.08, true, true);
 		}
 	}
-	function OMGICollide() 
+	function goBack() 
 	{
-		hit == true;
-		p.set(posX, posY);
-		timeChasing = 0;
+		FlxVelocity.moveTowardsPoint(this, p.getPosition(), speedB); // It moves to the point it was before the chase
+		if (velocity.x >= 0)
+		{
+			if (x >= p.x)
+				currentState = BossStates.IDLE;
+		}
+		else
+		{
+			if (x <= p.x)
+				currentState = BossStates.IDLE;
+		}
 	}
 }

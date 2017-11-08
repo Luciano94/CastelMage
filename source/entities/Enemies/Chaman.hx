@@ -62,17 +62,18 @@ class Chaman extends Zombie
 	
 	private function summon():Void
 	{
-		if (timer >= (60 * minionTime))
-		{
-			timer = 0;
-			if (x > player.x)
-				minionX = x - 10;
-			else
-				minionX = x + 10;
-			if (minions.length < maxMinions)
-				minions.add(new Minion(minionX, y, player));
-		}
-		else timer++;
+		if (isOnScreen())
+			if (timer >= (60 * minionTime))
+			{
+				timer = 0;
+				if (x > player.x)
+					minionX = x - 10;
+				else
+					minionX = x + 10;
+				if (minions.length < maxMinions)
+					minions.add(new Minion(minionX, y, player));
+			}
+			else timer++;
 	}
 	
 	override function animControl():Void 

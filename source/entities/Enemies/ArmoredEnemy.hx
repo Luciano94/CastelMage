@@ -51,6 +51,7 @@ class ArmoredEnemy extends FlxSprite
 	{
 		super.update(elapsed);
 		animControl();
+		hitboxControl();
 		switch (currentState) 
 		{
 			case State.IDLE:
@@ -68,17 +69,22 @@ class ArmoredEnemy extends FlxSprite
 				velocity.x = 0;
 				increaseHitBox();
 				atk();
-
-			default:
-				
 		}
 		checkInmortality(elapsed);
 	}
 	
-	override public function kill():Void
+	private function hitboxControl():Void
 	{
-		super.kill();
-		Reg.score += 15;
+		if (currentState == State.ATTACKING)
+			updateHitbox();
+		else
+		{
+			width = 32;
+			if(x >= player.x)
+				offset.x = 10;
+			else
+				offset.x = -10;
+		}
 	}
 	
 	private function tracking():Void
@@ -132,6 +138,10 @@ class ArmoredEnemy extends FlxSprite
 		else
 		{
 			currentState = State.ATTACKING;
+			if(x >= player.x)
+				x -= 10;
+			else
+				x += 10;
 			timeAttack = 0;
 		}
 	}
@@ -143,6 +153,10 @@ class ArmoredEnemy extends FlxSprite
 		else
 		{
 			currentState = State.IDLE;
+			if(x >= player.x)
+				x += 10;
+			else
+				x -= 10;
 			timeAttack = 0;
 		}
 	}

@@ -51,7 +51,6 @@ class Player extends FlxSprite
 	private var hasJustBeenHit:Bool;
 	private var inmortalityTime:Float;
 	private var willDieFromFall:Bool;
-	private var myX:Float;
 	@:isVar public var powerUpJustPicked(get, set):Bool;
 	public var hasLost(get, null):Bool;
 
@@ -154,7 +153,7 @@ class Player extends FlxSprite
 						{
 							if (weaponN.alive)
 								currentState = States.ATTACKING;
-							else
+							else 
 							{
 								if (height == 36)
 									currentState = States.CROUCHED;
@@ -388,7 +387,7 @@ class Player extends FlxSprite
 								weaponSpear.reset(x + width / 2, y + height / 3 - 4);
 							else
 								weaponSpear.reset(x - width / 2, y + height / 3 - 4);
-							
+							currentState = States.ATTACKING;
 							ammo--;
 						}
 					case WeaponStates.WEASHURIKEN:
@@ -397,8 +396,8 @@ class Player extends FlxSprite
 							if (facing == FlxObject.RIGHT)
 								weaponShuriken.reset(x + width * 4 / 5, y + height / 4);
 							else
-								weaponShuriken.reset(x - width * 4 / 5, y + height / 4);
-							
+								weaponShuriken.reset(x - width * 2 / 5, y + height / 4);
+							currentState = States.ATTACKING;
 							ammo--;
 						}
 					case WeaponStates.WEAPOTION:
@@ -408,7 +407,7 @@ class Player extends FlxSprite
 								weaponPotion.reset(x + width - weaponPotion.width / 2, y + height / 3);
 							else
 								weaponPotion.reset(x - weaponPotion.width / 2, y + height / 3);
-							
+							currentState = States.ATTACKING;
 							ammo--;
 						}
 				}
@@ -642,12 +641,6 @@ class Player extends FlxSprite
 	{
 		return weaponPotion;
 	}
-	public function get_myX():Float 
-	{
-		myX = x;
-		return myX;
-	}
-	
 	function get_powerUpJustPicked():Bool 
 	{
 		return powerUpJustPicked;
