@@ -19,7 +19,7 @@ class Chaman extends Zombie
 	{
 		super(X, Y, _player);
 		loadGraphic(AssetPaths.Shaman__png, true, 32, 48);
-		animation.add("idle", [0], false);
+		animation.add("idle", [0], 6, false);
 		animation.add("move", [1, 2, 3, 4, 5, 6, 7], 12, true);
 		maxMinions = Reg.maxMinions;
 		minionTime = Reg.minionTime;
