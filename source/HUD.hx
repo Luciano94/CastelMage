@@ -1,6 +1,7 @@
 package;
 
 import entities.Player;
+import entities.enemies.Boss;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -21,19 +22,20 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	private var score:FlxText;
 	private var pause:FlxText;
 	private var playerHealth:FlxBar;
+	private var bossHealth:FlxBar;
 	
-	public function new(player:Player)
+	public function new(player:Player, boss:Boss)
 	{
 		super();
 		
 		backgroundSetUp();
 		playerHealthBarSetUp(player);
+		bossHealthBarSetUp(boss);
 		livesSetUp();	
 		ammoSetUp();
 		scoreSetUp();
 		pauseSetUp();
 	}
-	
 	public function updateHUD(Lives:Int, Weapon:String, Ammo:Int, Score:Int, Paused:Bool):Void
 	{
 		lives.text = Std.string(Lives);
@@ -142,5 +144,11 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		playerHealth = new FlxBar(10, 10, FlxBarFillDirection.LEFT_TO_RIGHT, 68, 12, player, "hp", 0, 100, true);
 		playerHealth.scrollFactor.set(0, 0);
 		add(playerHealth);
+	}
+	private function bossHealthBarSetUp(boss:Boss):Void
+	{
+		bossHealth = new FlxBar(10, FlxG.height - 20, FlxBarFillDirection.HORIZONTAL_OUTSIDE_IN, FlxG.width - 20, 7, boss, "healthBoss", 0, 100, true);
+		bossHealth.scrollFactor.set(0, 0);
+		add(bossHealth);
 	}
 }

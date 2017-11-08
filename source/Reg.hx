@@ -47,7 +47,7 @@ class Reg
 	static public var armoredEnemyAtkDamage:Int = 20;
 	static public var minionAtkDamage:Int = 10;
 	// Boss
-	static public var speedBoss:Int = 75;
+	static public var speedBoss:Int = 90;
 	static public var timeToMoveBoss:Int = 20;
 	//Obstacles
 	static public var movingPlatformSpeed:Int = 32;

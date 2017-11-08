@@ -65,8 +65,10 @@ class PlayState extends FlxState
 	private var minionGroup:FlxTypedGroup<Minion>;
 	private var arEnemyGroup:FlxTypedGroup<ArmoredEnemy>;
 	private var zombieGroup:FlxTypedGroup<Zombie>;
+	// Boss
 	private var boss:Boss;
-
+	private var bossHealth:FlxBar;
+	
 	override public function create():Void
 	{
 		super.create();
@@ -100,7 +102,6 @@ class PlayState extends FlxState
 
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
-		boss = new Boss(400, 400, player);
 		
 		add(ladders);
 		add(oneWayPlatforms);
@@ -294,7 +295,7 @@ class PlayState extends FlxState
 
 	private function hudSetUp():Void
 	{
-		hud = new HUD(player);
+		hud = new HUD(player, boss);
 		add(hud);
 	}
 	
