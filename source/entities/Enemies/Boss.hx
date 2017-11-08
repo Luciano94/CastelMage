@@ -73,12 +73,33 @@ class Boss extends FlxSprite
 		{
 			case BossStates.IDLE:
 				thinking();
+				if (FlxG.overlap(player.weaponN, this) || FlxG.overlap(player.getSecondaryWeapon(), this))
+				{
+					health -= 10;
+					canIMove = 0;
+				}
 			case BossStates.MOVING:
 				takingAWalk();
+				if (FlxG.overlap(player.weaponN, this) || FlxG.overlap(player.getSecondaryWeapon(), this))
+				{
+					health -= 10;
+					currentState = BossStates.IDLE;
+				}
 			case BossStates.CHASE:
 				attacking();
+				if (FlxG.overlap(player.weaponN, this) || FlxG.overlap(player.getSecondaryWeapon(), this))
+				{
+					OMGICollide();
+					health -= 10;
+				}
 			case BossStates.CHASEINVI:
 				attacking();
+				if (FlxG.overlap(player.weaponN, this) || FlxG.overlap(player.getSecondaryWeapon(), this))
+				{
+					OMGICollide();
+					health -= 10;
+					//animation.play("moving");
+				}
 		}
 	}
 	function thinking() 
@@ -94,7 +115,7 @@ class Boss extends FlxSprite
 				canIAttack++;
 				canIMove = 0;
 				posX = r.float(originalX - camera.width / 2, originalX + camera.width / 2 - width);
-				posY = r.float(originalY - 40, originalY + 20);
+				posY = r.float(originalY - 20, originalY + 30);
 				p.set(posX, posY);
 				
 				if (x <= posX)
@@ -120,16 +141,13 @@ class Boss extends FlxSprite
 	{
 		//animation.play("moving");
 		FlxVelocity.moveTowardsPoint(this, p, speedX);
+		
 		if (facing == FlxObject.RIGHT)
-			if (x >= posX)
-			{
+			if (x >= p.x)
 				currentState = BossStates.IDLE;
-			}
 		else
-			if (x <= posX)
-			{
+			if (x <= p.x)
 				currentState = BossStates.IDLE;
-			}
 	}
 	function attacking() 
 	{
@@ -145,18 +163,13 @@ class Boss extends FlxSprite
 						player.health -= 20;
 					else
 						player.health -= 10;
-				if (FlxG.overlap(player.weaponN, this) || FlxG.overlap(player.getSecondaryWeapon(), this))
-				{
-					OMGICollide();
-					health -= 10;
-				}
 			case true:
 				FlxVelocity.moveTowardsPoint(this, p, speedX); // It moves to the point it was before the chase
 				if (facing == FlxObject.RIGHT)
-					if (x >= player.x)
+					if (x >= p.x)
 						currentState = BossStates.IDLE;
 				else
-					if (x <= player.x)
+					if (x <= p.x)
 						currentState = BossStates.IDLE;
 		}
 	}
