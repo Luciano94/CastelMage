@@ -66,6 +66,7 @@ class PlayState extends FlxState
 	private var arEnemyGroup:FlxTypedGroup<ArmoredEnemy>;
 	private var zombieGroup:FlxTypedGroup<Zombie>;
 	public var boss(get, null):Boss;
+	private var bossHealth:FlxBar;
 
 	override public function create():Void
 	{

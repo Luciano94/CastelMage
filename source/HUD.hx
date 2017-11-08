@@ -30,7 +30,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		
 		backgroundSetUp();
 		playerHealthBarSetUp(player);
-		bossHealthBarSetUp(boss);
+		//bossHealthBarSetUp(boss);
 		livesSetUp();	
 		ammoSetUp();
 		scoreSetUp();
@@ -147,7 +147,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	}
 	private function bossHealthBarSetUp(boss:Boss):Void
 	{
-		bossHealth = new FlxBar(10, FlxG.height - 20, FlxBarFillDirection.HORIZONTAL_OUTSIDE_IN, FlxG.width - 20, 7, boss, "healthBoss", 0, 100, true);
+		bossHealth = new FlxBar(10, FlxG.height - 20, FlxBarFillDirection.LEFT_TO_RIGHT, FlxG.width - 20, 7, boss, "healthBoss", 0, 100, true);
 		bossHealth.scrollFactor.set(0, 0);
 		add(bossHealth);
 	}

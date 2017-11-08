@@ -8,6 +8,7 @@ import flixel.math.FlxRandom;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVelocity;
 import flixel.effects.FlxFlicker;
+import flixel.ui.FlxBar;
 
 enum BossStates
 {
@@ -34,6 +35,7 @@ class Boss extends FlxSprite
 	private var p:FlxObject;
 	private var posX:Float;
 	private var posY:Float;
+	private var bossHealthBar:FlxBar;
 	
 	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
@@ -66,17 +68,25 @@ class Boss extends FlxSprite
 		posX = 0;
 		posY = 0;
 		facing = FlxObject.RIGHT;
+		
+		bossHealthBar = new FlxBar(10, FlxG.height - 20, FlxBarFillDirection.LEFT_TO_RIGHT, FlxG.width - 20, 7, this, "healthBoss", 0, 100, true);
+		bossHealthBar.scrollFactor.set(0, 0);
+		bossHealthBar.visible = false;
+		FlxG.state.add(bossHealthBar);
+		
 	}
 	override public function update(elapsed:Float):Void 
 	{
 		super.update(elapsed);
-		
-		stateMachine();
-		if (healthBoss <= 0)
-		{
-			currentState = BossStates.DYING;
-			animation.play("moving");
-			velocity.set(0, 0);
+		if(isOnScreen()){
+			stateMachine();
+			if (healthBoss <= 0)
+			{
+				currentState = BossStates.DYING;
+				animation.play("moving");
+				velocity.set(0, 0);
+			}
+			bossHealthBar.visible = true;
 		}
 	}
 	function stateMachine() // http://haxeflixel.com/documentation/enemies-and-basic-ai/
