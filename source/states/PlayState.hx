@@ -36,7 +36,7 @@ import entities.enemies.Boss;
 class PlayState extends FlxState
 {
 	// Player
-	public var player:Player;
+	public var player(get, null):Player;
 	private var hud:HUD;
 	private var playerHealth:FlxBar;
 	private var score:Int;
@@ -65,7 +65,8 @@ class PlayState extends FlxState
 	private var minionGroup:FlxTypedGroup<Minion>;
 	private var arEnemyGroup:FlxTypedGroup<ArmoredEnemy>;
 	private var zombieGroup:FlxTypedGroup<Zombie>;
-	private var boss:Boss;
+	public var boss(get, null):Boss;
+	private var bossHealth:FlxBar;
 
 	override public function create():Void
 	{
@@ -526,5 +527,15 @@ class PlayState extends FlxState
 			powerUps.remove(pUp);
 			p.powerUpJustPicked = false;
 		}
+	}
+	
+	function get_boss():Boss 
+	{
+		return boss;
+	}
+	
+	function get_player():Player 
+	{
+		return player;
 	}
 }

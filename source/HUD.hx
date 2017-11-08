@@ -30,13 +30,12 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		
 		backgroundSetUp();
 		playerHealthBarSetUp(player);
-		bossHealthBarSetUp(boss);
+		//bossHealthBarSetUp(boss);
 		livesSetUp();	
 		ammoSetUp();
 		scoreSetUp();
 		pauseSetUp();
 	}
-	
 	public function updateHUD(Lives:Int, Weapon:String, Ammo:Int, Score:Int, Paused:Bool):Void
 	{
 		lives.text = Std.string(Lives);
