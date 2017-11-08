@@ -265,8 +265,7 @@
     <Barrel id="119" x="592" y="512" />
     <Barrel id="120" x="640" y="512" />
     <OneWayPlatform id="37" x="768" y="416" />
-    <Player id="91" x="352" y="496" />
-    <ArmoredEnemy id="43" x="512" y="480" />
-    <Zombie id="47" x="448" y="496" />
+    <Player id="47" x="320" y="496" />
+    <Zombie id="43" x="448" y="496" />
   </Entities>
 </level>

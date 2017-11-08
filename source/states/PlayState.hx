@@ -172,6 +172,11 @@ class PlayState extends FlxState
 		//cameraHandling();
 
 		hud.updateHUD(Player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused);
+		
+		if (player.hasLost)
+		{
+			openSubState(new DeathState());
+		}
 	}
 	
 	function colWeaPotTile(w:WeaponPotion, b:Bat) 
@@ -240,14 +245,17 @@ class PlayState extends FlxState
 	private function checkPause():Void
 	{
 		if (FlxG.keys.justPressed.ENTER)
+		{
+			FlxG.sound.play(AssetPaths.menuSelection__wav);
 			Reg.paused = !Reg.paused;
+		}
 	}
 	
 	private function checkEscape():Void
 	{
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
-			player.setLives(Reg.playerMaxLives);
+			Player.setLives(Reg.playerMaxLives);
 			Reg.score = 0;
 			Reg.paused = false;
 			FlxG.mouse.visible = true;

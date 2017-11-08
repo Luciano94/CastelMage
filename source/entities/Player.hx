@@ -10,6 +10,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.effects.FlxFlicker;
+import flixel.util.FlxColor;
 import states.MenuState;
 import states.PlayState;
 
@@ -52,6 +53,7 @@ class Player extends FlxSprite
 	private var willDieFromFall:Bool;
 	private var myX:Float;
 	@:isVar public var powerUpJustPicked(get, set):Bool;
+	public var hasLost(get, null):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -73,6 +75,7 @@ class Player extends FlxSprite
 		hasJustBeenHit = false;
 		willDieFromFall = false;
 		powerUpJustPicked = false;
+		hasLost = false;
 
 		// Weapons Creation
 		weaponN = new WeaponNormal(x + width, y + height / 3);
@@ -118,15 +121,10 @@ class Player extends FlxSprite
 	
 	override public function kill():Void
 	{
-		Reg.score = 0;
-		if (lives > 0)
-		{
-			FlxG.switchState(new PlayState());
-		}
-		else
-		{
-			FlxG.switchState(new MenuState());
-		}
+		FlxG.sound.play(AssetPaths.playerDeath__wav);
+		FlxG.camera.flash(FlxColor.RED, 1);
+		FlxG.camera.shake(0.02, 1);
+		hasLost = true;
 	}
 	
 	private function stateMachine():Void
@@ -469,6 +467,8 @@ class Player extends FlxSprite
 		if (!hasJustBeenHit)
 		{
 			FlxG.sound.play(AssetPaths.playerDamaged__wav);
+			FlxG.camera.flash(FlxColor.RED, 0.5);
+			FlxG.camera.shake(0.01, 0.4);
 			hp -= damage;
 			if (hp <= 0)
 			{
@@ -658,8 +658,13 @@ class Player extends FlxSprite
 		return powerUpJustPicked = value;
 	}
 	
-	public function setLives(value:Int)
+	static public function setLives(value:Int)
 	{
 		lives = value;
+	}
+	
+	function get_hasLost():Bool 
+	{
+		return hasLost;
 	}
 }

@@ -30,6 +30,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		playerHealthBarSetUp(player);
 		livesSetUp();	
 		ammoSetUp();
+		scoreSetUp();
 		pauseSetUp();
 	}
 	
@@ -69,9 +70,13 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		}
 		
 		if (Paused)
+		{
 			pause.visible = true;
+		}
 		else
+		{
 			pause.visible = false;
+		}
 	}
 	
 	private function backgroundSetUp():Void 
@@ -114,14 +119,17 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		add(ammoSprite);
 	}
 	
-	private function pauseSetUp():Void 
+	private function scoreSetUp():Void 
 	{
 		score = new FlxText(FlxG.width - 80, 8, 0, "Score: 0", 11, true);
 		score.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
 		score.scrollFactor.set(0, 0);
 		add(score);
-		
-		pause = new FlxText(FlxG.width / 2 - 32, FlxG.height / 2, 0, "Paused", 12, true);
+	}
+	
+	private function pauseSetUp():Void 
+	{	
+		pause = new FlxText(0, FlxG.height / 2, FlxG.width, "Paused", 14, true);
 		pause.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
 		pause.alignment = FlxTextAlign.CENTER;
 		pause.scrollFactor.set(0, 0);
