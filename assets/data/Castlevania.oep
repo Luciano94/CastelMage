@@ -16,7 +16,7 @@
     <Width>10240</Width>
     <Height>640</Height>
   </LevelMaximumSize>
-  <Filename>C:\Users\Ignacio Mosconi\Documents\HaxeDevelop Projects\CastelMage\assets\data\Castlevania.oep</Filename>
+  <Filename>D:\Práctica Profesional I - Desarrollo de Videojuegos I\HaxeDevelop Projects\CastelMage\assets\data\Castlevania.oep</Filename>
   <AngleMode>Radians</AngleMode>
   <CameraEnabled>false</CameraEnabled>
   <CameraSize>
@@ -276,14 +276,14 @@
     </EntityDefinition>
     <EntityDefinition Name="Boss" Limit="-1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
       <Size>
-        <Width>32</Width>
-        <Height>32</Height>
+        <Width>64</Width>
+        <Height>64</Height>
       </Size>
       <Origin>
         <X>0</X>
         <Y>0</Y>
       </Origin>
-      <ImageDefinition DrawMode="Rectangle" ImagePath="" Tiled="false">
+      <ImageDefinition DrawMode="Image" ImagePath="..\images\boss.png" Tiled="true">
         <RectColor A="255" R="0" G="0" B="0" />
       </ImageDefinition>
       <ValueDefinitions />

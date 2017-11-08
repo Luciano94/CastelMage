@@ -19,7 +19,7 @@ class Zombie extends FlxSprite
 	{
 		super(X, Y);
 		loadGraphic(AssetPaths.Zombie__png, true, 32, 51);
-		animation.add("idle", [0], false);
+		animation.add("idle", [0], 6, false);
 		animation.add("move", [1, 2, 3, 4, 5, 6, 7], 12, true);
 		player = _player;
 		catche = false;

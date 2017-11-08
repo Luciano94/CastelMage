@@ -100,7 +100,7 @@ class Player extends FlxSprite
 		animation.add("move", [2, 3, 4], 6, true);
 		animation.add("jump", [5, 6], 9, false);
 		animation.add("attack", [7, 8, 0], 9, false);
-		animation.add("crouch", [9], false);
+		animation.add("crouch", [9], 6, false);
 		animation.add("crouchAttack", [10, 11], 9, false);
 		animation.add("climbLadders", [12, 13], 6, false);
 		animation.add("beHit", [14], 6, false);

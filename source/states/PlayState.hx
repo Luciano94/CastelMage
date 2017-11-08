@@ -36,7 +36,7 @@ import entities.enemies.Boss;
 class PlayState extends FlxState
 {
 	// Player
-	public var player:Player;
+	public var player(get, null):Player;
 	private var hud:HUD;
 	private var playerHealth:FlxBar;
 	private var score:Int;
@@ -65,10 +65,8 @@ class PlayState extends FlxState
 	private var minionGroup:FlxTypedGroup<Minion>;
 	private var arEnemyGroup:FlxTypedGroup<ArmoredEnemy>;
 	private var zombieGroup:FlxTypedGroup<Zombie>;
-	// Boss
-	private var boss:Boss;
-	private var bossHealth:FlxBar;
-	
+	public var boss(get, null):Boss;
+
 	override public function create():Void
 	{
 		super.create();
@@ -118,7 +116,6 @@ class PlayState extends FlxState
 		add(minionGroup);
 		add(player);
 		add(secretWays);
-		add(boss);
 		
 		cameraSetUp();
 		hudSetUp();
@@ -175,8 +172,6 @@ class PlayState extends FlxState
 		
 		checkPause();
 		checkEscape();
-		
-		//cameraHandling();
 
 		hud.updateHUD(Player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused);
 		
@@ -290,7 +285,6 @@ class PlayState extends FlxState
 		camera.followLerp = 2;
 		camera.targetOffset.set(0, -64);
 		camera.setScrollBounds(0, 6400, 0, 640);
-		//camera.setScrollBoundsRect(0, player.y - 128, 6400, player.y + 32);
 	}
 
 	private function hudSetUp():Void
@@ -532,5 +526,15 @@ class PlayState extends FlxState
 			powerUps.remove(pUp);
 			p.powerUpJustPicked = false;
 		}
+	}
+	
+	function get_boss():Boss 
+	{
+		return boss;
+	}
+	
+	function get_player():Player 
+	{
+		return player;
 	}
 }
