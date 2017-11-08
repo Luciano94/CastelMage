@@ -91,7 +91,6 @@
     <Barrel id="53" x="2944" y="256" />
     <Barrel id="54" x="2272" y="144" />
     <Barrel id="55" x="3856" y="352" />
-    <Barrel id="56" x="3616" y="192" />
     <PlatformLimit id="28" x="32" y="512" />
     <OneWayPlatform id="57" x="4400" y="480" />
     <OneWayPlatform id="58" x="4448" y="416" />
@@ -261,11 +260,43 @@
     <Barrel id="106" x="5552" y="64" />
     <Barrel id="107" x="5008" y="128" />
     <PowerUp id="108" x="4976" y="144" />
-    <PowerUp id="109" x="4000" y="432" />
     <Barrel id="119" x="592" y="512" />
     <Barrel id="120" x="640" y="512" />
     <OneWayPlatform id="37" x="768" y="416" />
-    <Player id="47" x="320" y="496" />
-    <Zombie id="43" x="448" y="496" />
+    <Barrel id="121" x="2304" y="144" />
+    <Barrel id="122" x="2336" y="144" />
+    <Barrel id="109" x="4320" y="592" />
+    <Barrel id="139" x="2288" y="512" />
+    <Barrel id="140" x="2864" y="256" />
+    <Barrel id="141" x="3504" y="512" />
+    <Barrel id="142" x="3840" y="176" />
+    <Barrel id="143" x="3488" y="192" />
+    <PowerUp id="56" x="176" y="128" />
+    <Player id="43" x="320" y="496" />
+    <Zombie id="47" x="704" y="496" />
+    <Bat id="91" x="1056" y="416" />
+    <Zombie id="110" x="1424" y="496" />
+    <Zombie id="111" x="1648" y="496" />
+    <Bat id="112" x="1536" y="352" />
+    <Shaman id="113" x="1888" y="496" />
+    <Zombie id="114" x="2208" y="496" />
+    <Zombie id="115" x="2496" y="496" />
+    <Bat id="116" x="2608" y="256" />
+    <Bat id="117" x="2576" y="48" />
+    <ArmoredEnemy id="118" x="2224" y="112" />
+    <Bat id="123" x="3008" y="144" />
+    <Zombie id="124" x="3312" y="496" />
+    <Shaman id="125" x="3616" y="496" />
+    <Zombie id="126" x="4048" y="576" />
+    <Zombie id="127" x="4128" y="496" />
+    <Zombie id="128" x="4320" y="496" />
+    <Bat id="129" x="4288" y="400" />
+    <Bat id="130" x="4464" y="224" />
+    <Bat id="131" x="3808" y="80" />
+    <Bat id="132" x="5568" y="240" />
+    <ArmoredEnemy id="133" x="5712" y="304" />
+    <Zombie id="134" x="5760" y="544" />
+    <ArmoredEnemy id="135" x="4992" y="96" />
+    <Boss id="137" x="480" y="432" />
   </Entities>
 </level>

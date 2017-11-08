@@ -52,7 +52,8 @@ class Boss extends FlxSprite
 		speedB = Reg.speedBoss;
 		velocity.set(0, 0);
 		player = _player;
-		healthBoss = maxHealthBoss = Reg.playerMaxHealth;
+		healthBoss = Reg.playerMaxHealth;
+		maxHealthBoss = Reg.playerMaxHealth;
 		canIAttack = 0;
 		yesYouCanAtk = 3;
 		canIMove = 0;
@@ -71,7 +72,6 @@ class Boss extends FlxSprite
 	{
 		super.update(elapsed);
 		stateMachine();
-		trace(healthBoss);
 		if (healthBoss <= 0)
 			kill();
 	}

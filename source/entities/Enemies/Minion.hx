@@ -9,7 +9,7 @@ class Minion extends Zombie
 	{
 		super(X, Y, _player);
 		loadGraphic(AssetPaths.Minion__png, true, 16, 46);
-		animation.add("idle", [0], false);
+		animation.add("idle", [0], 6, false);
 		animation.add("move", [1, 2, 3, 4], 12, true);
 	}
 	

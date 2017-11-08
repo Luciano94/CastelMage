@@ -66,7 +66,6 @@ class Player extends FlxSprite
 		stairsSpeed = Reg.playerStairsSpeed;
 		acceleration.y = Reg.gravity;
 		hp = Reg.playerMaxHealth;
-		//lives = Reg.playerMaxLives;
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
 		ammo = 0;
@@ -100,7 +99,7 @@ class Player extends FlxSprite
 		animation.add("move", [2, 3, 4], 6, true);
 		animation.add("jump", [5, 6], 9, false);
 		animation.add("attack", [7, 8, 0], 9, false);
-		animation.add("crouch", [9], false);
+		animation.add("crouch", [9], 6, false);
 		animation.add("crouchAttack", [10, 11], 9, false);
 		animation.add("climbLadders", [12, 13], 6, false);
 		animation.add("beHit", [14], 6, false);
@@ -124,6 +123,7 @@ class Player extends FlxSprite
 		FlxG.camera.flash(FlxColor.RED, 1);
 		FlxG.camera.shake(0.02, 1);
 		hasLost = true;
+		super.kill();
 	}
 	
 	private function stateMachine():Void
@@ -478,7 +478,7 @@ class Player extends FlxSprite
 			{
 				hasJustBeenHit = true;
 				inmortalityTime = 0;
-				FlxFlicker.flicker(this, 3, 0.08, true, true);
+				FlxFlicker.flicker(this, 2, 0.08, true, true);
 			}
 		}
 	}
@@ -487,7 +487,7 @@ class Player extends FlxSprite
 	{
 		if (hasJustBeenHit)
 			inmortalityTime += elapsed;
-		if (inmortalityTime >= 3)
+		if (inmortalityTime >= 2)
 			hasJustBeenHit = false;
 	}
 	
@@ -511,14 +511,14 @@ class Player extends FlxSprite
 		switch (powerUp.whichPowerUp)
 		{
 			case 0:
-				if (health <= Reg.playerMaxHealth - Reg.healthPackPoints)
+				if (hp <= Reg.playerMaxHealth - Reg.healthPackPoints)
 				{
 					FlxG.sound.play(AssetPaths.pickUpLife__wav);
 					hp += Reg.healthPackPoints;
 					powerUpJustPicked = true;
 				}
 				else
-					if (health < Reg.playerMaxHealth)
+					if (hp < Reg.playerMaxHealth)
 					{
 						FlxG.sound.play(AssetPaths.pickUpLife__wav);
 						health = Reg.playerMaxHealth;

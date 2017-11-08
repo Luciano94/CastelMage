@@ -30,9 +30,9 @@ class ArmoredEnemy extends FlxSprite
 		/*animations*/
 		loadGraphic(AssetPaths.armoredEnemy__png, true, 64, 64);
 		updateHitbox();
-		animation.add("idle", [0], false);
+		animation.add("idle", [0], 6, false);
 		animation.add("move", [0, 1, 2, 3], 12, true);
-		animation.add("atk", [4], false);
+		animation.add("atk", [4], 6, false);
 		setFacingFlip(FlxObject.RIGHT, true, false);
 		setFacingFlip(FlxObject.LEFT, false, false);
 		/*set var*/
@@ -193,7 +193,7 @@ class ArmoredEnemy extends FlxSprite
 	{
 		if (hasJustBeenHit)
 			inmortalityTime += elapsed;
-		if (inmortalityTime >= 1)
+		if (inmortalityTime >= 0.5)
 			hasJustBeenHit = false;
 	}
 	

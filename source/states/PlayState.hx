@@ -97,10 +97,9 @@ class PlayState extends FlxState
 		
 		backdrop = new FlxBackdrop(AssetPaths.backdrop__png, 0.5, 0.25, true, true, 0, 0);
 		add(backdrop);
-
+		
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
-		boss = new Boss(400, 400, player);
 		
 		add(ladders);
 		add(oneWayPlatforms);
@@ -117,7 +116,6 @@ class PlayState extends FlxState
 		add(minionGroup);
 		add(player);
 		add(secretWays);
-		add(boss);
 		
 		cameraSetUp();
 		hudSetUp();
@@ -173,8 +171,6 @@ class PlayState extends FlxState
 		checkPause();
 		checkEscape();
 		
-		//cameraHandling();
-
 		hud.updateHUD(Player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused);
 		
 		if (player.hasLost)
@@ -287,12 +283,11 @@ class PlayState extends FlxState
 		camera.followLerp = 2;
 		camera.targetOffset.set(0, -64);
 		camera.setScrollBounds(0, 6400, 0, 640);
-		//camera.setScrollBoundsRect(0, player.y - 128, 6400, player.y + 32);
 	}
 
 	private function hudSetUp():Void
 	{
-		hud = new HUD(player);
+		hud = new HUD(player, boss);
 		add(hud);
 	}
 	
