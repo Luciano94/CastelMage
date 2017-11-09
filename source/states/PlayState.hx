@@ -112,7 +112,7 @@ class PlayState extends FlxState
 		//add(batGroup);
 		add(zombieGroup);
 		//add(shamanGroup);
-		//add(arEnemyGroup);
+		add(arEnemyGroup);
 		//add(minionGroup);
 		add(player);
 		//add(boss);
@@ -382,51 +382,18 @@ class PlayState extends FlxState
 
 	private function colWeaponChaman(w:WeaponBase, c:Chaman):Void
 	{
-		switch (w.getType())
-		{
-			case "Normal":
-				c.getDamage(Reg.playerNormalDamage);
-			case "Spear":
-				c.getDamage(Reg.spearDamage);
-			case "Shuriken":
-				c.getDamage(Reg.shurikenDamage);
-			case "Poison":
-				c.getDamage(Reg.poisonDamage);
-			default:
-		}
+		weaponEnemyDamage(w, c);
 	}
 
 	private function colWeaponZombie(w:WeaponBase, z:Zombie):Void
 	{
-		switch (w.getType())
-		{
-			case "Normal":
-				z.getDamage(Reg.playerNormalDamage);
-			case "Spear":
-				z.getDamage(Reg.spearDamage);
-			case "Shuriken":
-				z.getDamage(Reg.shurikenDamage);
-			case "Poison":
-				z.getDamage(Reg.poisonDamage);
-			default:
-		}
+		weaponEnemyDamage(w, z);
 	}
 
 	private function colWeaponArEnemy(w:WeaponBase, a:ArmoredEnemy):Void
 	{
 		if (a.getState() == State.ATTACKING)
-			switch (w.getType())
-			{
-				case "Normal":
-					a.getDamage(Reg.playerNormalDamage);
-				case "Spear":
-					a.getDamage(Reg.spearDamage);
-				case "Shuriken":
-					a.getDamage(Reg.shurikenDamage);
-				case "Poison":
-					a.getDamage(Reg.poisonDamage);
-				default:
-			}
+			weaponEnemyDamage(w, a);
 	}
 
 	private function colWeaponMinion(w:WeaponBase, m:Minion):Void
@@ -445,82 +412,39 @@ class PlayState extends FlxState
 	{
 		w.set_isItTouching(true);
 	}
-
 	
 	// Player - Enemies
 	private function colPlayerBat(p:Player, b:Bat):Void
 	{
 		p.getDamage(Reg.batAtkDamage);
-		if (p.x > b.x)
-		{
-			p.velocity.x += 200;
-			b.velocity.x -= 200;
-		}
-		else
-		{
-			p.velocity.x -= 200;
-			b.velocity.x += 200;
-		}
+		playerEnemyImpact(p, b);
 	}
 
 	private function colPlayerChaman(p:Player, c:Chaman):Void
 	{
 		p.getDamage(Reg.shamanAtkDamage);
-		if (p.x > c.x)
-		{
-			p.velocity.x += 200;
-			c.velocity.x -= 200;
-		}
-		else
-		{
-			p.velocity.x -= 200;
-			c.velocity.x += 200;
-		}
+		playerEnemyImpact(p, c);
 	}
 
 	private function colPlayerZombie(p:Player, z:Zombie):Void
 	{
 		p.getDamage(Reg.zombieAtkDamage);
-		if (p.x > z.x)
-		{
-			p.velocity.x += 200;
-			z.velocity.x -= 200;
-		}
-		else
-		{
-			p.velocity.x -= 200;
-			z.velocity.x += 200;
-		}
+		playerEnemyImpact(p, z);
+		z.hasJustAttacked = true;
+		z.recoveryTime = 0;
+		z.velocity.set(0, 0);
 	}
 
 	private function colPayerArEnemy(p:Player, a:ArmoredEnemy):Void
 	{
 		p.getDamage(Reg.armoredEnemyAtkDamage);
-		if (p.x > a.x)
-		{
-			p.velocity.x += 200;
-			a.velocity.x -= 200;
-		}
-		else
-		{
-			p.velocity.x -= 200;
-			a.velocity.x += 200;
-		}
+		playerEnemyImpact(p, a);
 	}
 
 	private function colPlayerMinion(p:Player, m:Minion): Void
 	{
 		p.getDamage(Reg.minionAtkDamage);
-		if (p.x > m.x)
-		{
-			p.velocity.x += 200;
-			m.velocity.x -= 200;
-		}
-		else
-		{
-			p.velocity.x -= 200;
-			m.velocity.x += 200;
-		}
+		playerEnemyImpact(p, m);
 	}
 	
 	// Player - Power Ups
@@ -531,6 +455,30 @@ class PlayState extends FlxState
 		{
 			powerUps.remove(pUp);
 			p.powerUpJustPicked = false;
+		}
+	}
+	
+	private function playerEnemyImpact(p:Player, e):Void
+	{
+		if (p.x > e.x)
+			p.velocity.x += 50;
+		else
+			p.velocity.x -= 50;
+	}
+	
+	private function weaponEnemyDamage(w:WeaponBase, e):Void 
+	{
+		switch (w.getType())
+		{
+			case "Normal":
+				e.getDamage(Reg.playerNormalDamage);
+			case "Spear":
+				e.getDamage(Reg.spearDamage);
+			case "Shuriken":
+				e.getDamage(Reg.shurikenDamage);
+			case "Poison":
+				e.getDamage(Reg.poisonDamage);
+			default:
 		}
 	}
 }

@@ -181,10 +181,6 @@ class ArmoredEnemy extends FlxSprite
 			{
 				hasJustBeenHit = true;
 				inmortalityTime = 0;
-				if (player.x < x)
-					x += 32;
-				else
-					x -= 32;
 			}
 		}
 	}

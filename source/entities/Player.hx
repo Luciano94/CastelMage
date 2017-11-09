@@ -214,7 +214,10 @@ class Player extends FlxSprite
 								currentState = States.MOVING;
 						}
 						else
+						{
 							hp = 0;
+							currentState = States.DEAD;
+						}
 					}
 					else
 						if (weaponN.alive)

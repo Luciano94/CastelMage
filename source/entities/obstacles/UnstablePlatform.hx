@@ -39,7 +39,7 @@ class UnstablePlatform extends OneWayPlatform
 	
 	private function checkBoundaries():Void 
 	{
-		if (!isOnScreen())
+		if (!isOnScreen() && acceleration.y != 0)
 			kill();
 	}
 	

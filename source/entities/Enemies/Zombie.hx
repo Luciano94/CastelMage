@@ -14,6 +14,8 @@ class Zombie extends FlxSprite
 	private var catche:Bool;
 	private var hasJustBeenHit:Bool;
 	private var inmortalityTime:Float;
+	public var hasJustAttacked(null, set):Bool;
+	public var recoveryTime(null, set):Float;
 
 	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
@@ -31,14 +33,18 @@ class Zombie extends FlxSprite
 		acceleration.y = gravity;
 		hasJustBeenHit = false;
 		inmortalityTime = 0;
+		hasJustAttacked = false;
+		recoveryTime = 0;
 	}
 	
 	override public function update(elapsed:Float):Void 
 	{
 		super.update(elapsed);
 		animControl();
-		taiCorro();
+		if (!hasJustBeenHit && !hasJustAttacked)
+			taiCorro();
 		checkInmortality(elapsed);
+		checkRecovery(elapsed);
 	}
 	
 	override public function kill():Void
@@ -95,10 +101,8 @@ class Zombie extends FlxSprite
 			{
 				hasJustBeenHit = true;
 				inmortalityTime = 0;
-				if (player.x < x)
-					x += 32;
-				else
-					x -= 32;
+				velocity.set(0, 0);
+				animation.play("idle");
 			}
 		}
 	}
@@ -109,5 +113,26 @@ class Zombie extends FlxSprite
 			inmortalityTime += elapsed;
 		if (inmortalityTime >= 0.5)
 			hasJustBeenHit = false;
+	}
+	
+	private function checkRecovery(elapsed:Float):Void
+	{
+		if (hasJustAttacked)
+		{
+			animation.play("idle");
+			recoveryTime += elapsed;
+		}
+		if (recoveryTime >= 2)
+			hasJustAttacked = false;
+	}
+	
+	function set_hasJustAttacked(value:Bool):Bool 
+	{
+		return hasJustAttacked = value;
+	}
+	
+	function set_recoveryTime(value:Float):Float 
+	{
+		return recoveryTime = value;
 	}
 }
