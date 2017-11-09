@@ -93,14 +93,16 @@ class PlayState extends FlxState
 		arEnemyGroup = new FlxTypedGroup<ArmoredEnemy>();
 		minionGroup = new FlxTypedGroup<Minion>();
 		
-		
+		//Backdrop Instantiation
 		backdrop = new FlxBackdrop(AssetPaths.backdrop__png, 0.5, 0.25, true, true, 0, 0);
 		add(backdrop);
 		
+		// Tilemap, Player & Entities
 		tilemapSetUp();
-		trace("Here's the problem!");
+		player = new Player();
 		loader.loadEntities(entityCreator, "Entities");
 		
+		// Adds
 		add(ladders);
 		add(oneWayPlatforms);
 		add(movingPlatforms);
@@ -109,11 +111,11 @@ class PlayState extends FlxState
 		add(barrels);
 		add(unstablePlatforms);
 		add(powerUps);
-		//add(batGroup);
+		add(batGroup);
 		add(zombieGroup);
-		//add(shamanGroup);
+		add(shamanGroup);
 		add(arEnemyGroup);
-		//add(minionGroup);
+		add(minionGroup);
 		add(player);
 		//add(boss);
 		add(secretWays);
@@ -191,7 +193,7 @@ class PlayState extends FlxState
 		{
 			// Player
 			case "Player":
-				player = new Player(x, y);
+				player.setPosition(x, y);	// It's not the prettiest thing, but it does the trick.
 			// Obstacles
 			case "Ladder":
 				var ladder = new Ladder(x, y);
@@ -445,6 +447,9 @@ class PlayState extends FlxState
 	{
 		p.getDamage(Reg.minionAtkDamage);
 		playerEnemyImpact(p, m);
+		m.hasJustAttacked = true;
+		m.recoveryTime = 0;
+		m.velocity.set(0, 0);
 	}
 	
 	// Player - Power Ups

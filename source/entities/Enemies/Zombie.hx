@@ -122,7 +122,7 @@ class Zombie extends FlxSprite
 			animation.play("idle");
 			recoveryTime += elapsed;
 		}
-		if (recoveryTime >= 2)
+		if (recoveryTime >= 1)
 			hasJustAttacked = false;
 	}
 	

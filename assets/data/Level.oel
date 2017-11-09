@@ -274,6 +274,9 @@
     <PowerUp id="56" x="176" y="128" />
     <Zombie id="43" x="2320" y="496" />
     <ArmoredEnemy id="91" x="1984" y="480" />
-    <Player id="110" x="4784" y="496" />
+    <Bat id="47" x="4736" y="384" />
+    <Shaman id="110" x="4720" y="496" />
+    <Player id="111" x="4080" y="496" />
+    <Shaman id="112" x="4160" y="496" />
   </Entities>
 </level>
