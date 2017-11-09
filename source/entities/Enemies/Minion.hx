@@ -11,6 +11,7 @@ class Minion extends Zombie
 		loadGraphic(AssetPaths.Minion__png, true, 16, 46);
 		animation.add("idle", [0], 6, false);
 		animation.add("move", [1, 2, 3, 4], 12, true);
+		hp = Reg.minionLifePoints;
 	}
 	
 	override public function reset(X:Float, Y:Float):Void 

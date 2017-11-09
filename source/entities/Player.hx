@@ -105,7 +105,7 @@ class Player extends FlxSprite
 		animation.add("crouchAttack", [10, 11], 9, false);
 		animation.add("climbLadders", [12, 13], 6, false);
 		animation.add("beHit", [14], 6, false);
-		animation.add("die", [7, 8], 3, false);
+		animation.add("die", [14, 15], 3, false);
 	}
 	
 	override public function update(elapsed:Float):Void

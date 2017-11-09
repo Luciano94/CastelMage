@@ -400,8 +400,7 @@ class PlayState extends FlxState
 
 	private function colWeaponMinion(w:WeaponBase, m:Minion):Void
 	{
-		m.kill();
-		Reg.score += 3;
+		weaponEnemyDamage(w, m);
 	}
 	
 	// Weapon - Obstacles
@@ -466,9 +465,9 @@ class PlayState extends FlxState
 	private function playerEnemyImpact(p:Player, e):Void
 	{
 		if (p.x > e.x)
-			p.velocity.x += 50;
+			p.velocity.x += 20;
 		else
-			p.velocity.x -= 50;
+			p.velocity.x -= 20;
 	}
 	
 	private function weaponEnemyDamage(w:WeaponBase, e):Void 

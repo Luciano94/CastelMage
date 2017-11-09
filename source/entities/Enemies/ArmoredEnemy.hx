@@ -29,7 +29,6 @@ class ArmoredEnemy extends FlxSprite
 		super(X, Y);
 		/*animations*/
 		loadGraphic(AssetPaths.armoredEnemy__png, true, 64, 64);
-		updateHitbox();
 		animation.add("idle", [0], 6, false);
 		animation.add("move", [0, 1, 2, 3], 12, true);
 		animation.add("atk", [4], 6, false);
@@ -51,7 +50,7 @@ class ArmoredEnemy extends FlxSprite
 	{
 		super.update(elapsed);
 		animControl();
-		hitboxControl();
+		//hitboxControl();
 		switch (currentState) 
 		{
 			case State.IDLE:
@@ -73,19 +72,18 @@ class ArmoredEnemy extends FlxSprite
 		checkInmortality(elapsed);
 	}
 	
-	private function hitboxControl():Void
-	{
-		if (currentState == State.ATTACKING)
-			updateHitbox();
-		else
-		{
-			width = 32;
-			if(x >= player.x)
-				offset.x = 10;
-			else
-				offset.x = -10;
-		}
-	}
+	//private function hitboxControl():Void
+	//{
+		//if (currentState == State.ATTACKING)
+		//{
+//
+			////width = 32;
+			////if (x >= player.x)
+				////offset.x = 10;
+			////else
+				////offset.x = -10;
+		//}
+	//}
 	
 	private function tracking():Void
 	{
@@ -138,7 +136,7 @@ class ArmoredEnemy extends FlxSprite
 		else
 		{
 			currentState = State.ATTACKING;
-			if(x >= player.x)
+			if (x >= player.x)
 				x -= 10;
 			else
 				x += 10;
@@ -153,7 +151,7 @@ class ArmoredEnemy extends FlxSprite
 		else
 		{
 			currentState = State.IDLE;
-			if(x >= player.x)
+			if (x >= player.x)
 				x += 10;
 			else
 				x -= 10;
@@ -197,12 +195,18 @@ class ArmoredEnemy extends FlxSprite
 	{
 		if (width == 32)
 		{
-			width = 64;
-			updateHitbox();
-			if (facing == FlxObject.LEFT)
+			if (facing == FlxObject.RIGHT)
+			{
 				x -= 32;
+				width = 64;
+				updateHitbox();
+			}
 			else
-				x += 32;
+			{
+				width = 64;
+				updateHitbox();
+				x -= 32;
+			}
 		}
 	}
 	
@@ -212,8 +216,6 @@ class ArmoredEnemy extends FlxSprite
 		{
 			if (facing == FlxObject.LEFT)
 				offset.x = 32;
-			else
-				offset.x = -32;
 			width = 32;
 		}
 	}

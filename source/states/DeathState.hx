@@ -68,8 +68,8 @@ class DeathState extends FlxSubState
 	private function gameOverSetUp():Void
 	{
 		gameOver = new FlxText(0, FlxG.height / 2, FlxG.width, "Game Over", 14, true);
-		gameOver.color = 0xFF880000;
-		gameOver.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
+		gameOver.color = FlxColor.RED;
+		gameOver.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.WHITE, 1, 1);
 		gameOver.alignment = FlxTextAlign.CENTER;
 		gameOver.scrollFactor.set(0, 0);
 		add(gameOver);
