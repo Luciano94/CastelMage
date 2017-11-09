@@ -48,6 +48,7 @@ class Player extends FlxSprite
 	public var ammo(get, null):Int;
 	public var isTouchingLadder(null, set):Bool;
 	public var isOnTopOfLadder(null, set):Bool;
+	public var isUnderLadder(null, set):Bool;
 	private var hasJustBeenHit:Bool;
 	private var inmortalityTime:Float;
 	private var willDieFromFall:Bool;
@@ -102,8 +103,7 @@ class Player extends FlxSprite
 		animation.add("crouch", [9], 6, false);
 		animation.add("crouchAttack", [10, 11], 9, false);
 		animation.add("climbLadders", [12, 13], 6, false);
-		animation.add("beHit", [14], 6, false);
-		
+		animation.add("beHit", [14], 6, false);		
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -113,6 +113,7 @@ class Player extends FlxSprite
 		checkBoundaries();
 		checkInmortality(elapsed);
 		fallingDamage();
+		trace(currentState.getName());
 		
 		super.update(elapsed);
 	}
@@ -432,7 +433,7 @@ class Player extends FlxSprite
 				acceleration.y = 0;
 				velocity.y = -stairsSpeed;
 			}
-			if (FlxG.keys.pressed.DOWN)
+			if (FlxG.keys.pressed.DOWN && !isUnderLadder)
 			{
 				acceleration.y = 0;
 				velocity.y = stairsSpeed;
@@ -502,7 +503,7 @@ class Player extends FlxSprite
 	
 	private function fallingDamage():Void 
 	{
-		if (velocity.y > 800)
+		if (velocity.y > 900)
 			willDieFromFall = true;
 	}
 	
@@ -630,6 +631,11 @@ class Player extends FlxSprite
 	function set_isOnTopOfLadder(value:Bool):Bool 
 	{
 		return isOnTopOfLadder = value;
+	}
+	
+	function set_isUnderLadder(value:Bool):Bool 
+	{
+		return isUnderLadder = value;
 	}
 	
 	function get_weaponN():WeaponNormal 

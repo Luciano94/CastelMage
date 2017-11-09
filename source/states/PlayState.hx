@@ -36,10 +36,9 @@ import entities.enemies.Boss;
 class PlayState extends FlxState
 {
 	// Player
-	public var player(get, null):Player;
+	private var player:Player;
 	private var hud:HUD;
 	private var playerHealth:FlxBar;
-	private var score:Int;
 	
 	// Tilemap
 	private var loader:FlxOgmoLoader;
@@ -65,8 +64,7 @@ class PlayState extends FlxState
 	private var minionGroup:FlxTypedGroup<Minion>;
 	private var arEnemyGroup:FlxTypedGroup<ArmoredEnemy>;
 	private var zombieGroup:FlxTypedGroup<Zombie>;
-	public var boss(get, null):Boss;
-	private var bossHealth:FlxBar;
+	private var boss:Boss;
 
 	override public function create():Void
 	{
@@ -100,6 +98,7 @@ class PlayState extends FlxState
 		add(backdrop);
 		
 		tilemapSetUp();
+		trace("Here's the problem!");
 		loader.loadEntities(entityCreator, "Entities");
 		
 		add(ladders);
@@ -110,12 +109,13 @@ class PlayState extends FlxState
 		add(barrels);
 		add(unstablePlatforms);
 		add(powerUps);
-		add(batGroup);
-		add(zombieGroup);
-		add(shamanGroup);
-		add(arEnemyGroup);
-		add(minionGroup);
+		//add(batGroup);
+		//add(zombieGroup);
+		//add(shamanGroup);
+		//add(arEnemyGroup);
+		//add(minionGroup);
 		add(player);
+		//add(boss);
 		add(secretWays);
 		
 		cameraSetUp();
@@ -182,11 +182,6 @@ class PlayState extends FlxState
 		}
 	}
 	
-	function colWeaPotTile(w:WeaponPotion, b:Bat) 
-	{
-		w.set_isItTouching(true);
-	}
-
 	private function entityCreator(entityName:String, entityData:Xml):Void
 	{
 		var x:Int = Std.parseInt(entityData.get("x"));
@@ -241,7 +236,6 @@ class PlayState extends FlxState
 				arEnemyGroup.add(armoredEnemy);
 			case "Boss":
 				var boss = new Boss(x, y, player);
-				add(boss);
 		}
 	}
 
@@ -325,12 +319,17 @@ class PlayState extends FlxState
 			p.isOnTopOfLadder = true;
 			FlxG.collide(p, l);
 		}
-		else 
+		else
 			if (p.currentState.getName() == "CLIMBING_LADDERS")
 			{
 				p.isOnTopOfLadder = false;
 				p.x = l.x;
 			}
+
+		if (p.y > l.y && p.currentState.getName() != "CLIMBING_LADDERS")
+			p.isUnderLadder = true;
+		else
+			p.isUnderLadder = false;
 	}
 	
 	// Elevator - Boundaries
@@ -442,19 +441,25 @@ class PlayState extends FlxState
 		b.preKill(powerUps);
 	}
 	
+	private function colWeaPotTile(w:WeaponPotion, b:Bat):Void
+	{
+		w.set_isItTouching(true);
+	}
+
+	
 	// Player - Enemies
 	private function colPlayerBat(p:Player, b:Bat):Void
 	{
 		p.getDamage(Reg.batAtkDamage);
 		if (p.x > b.x)
 		{
-			p.x += 32;
-			b.x -= 32;
+			p.velocity.x += 200;
+			b.velocity.x -= 200;
 		}
 		else
 		{
-			p.x -= 32;
-			b.x += 32;
+			p.velocity.x -= 200;
+			b.velocity.x += 200;
 		}
 	}
 
@@ -463,13 +468,13 @@ class PlayState extends FlxState
 		p.getDamage(Reg.shamanAtkDamage);
 		if (p.x > c.x)
 		{
-			p.x += 32;
-			c.x -= 32;
+			p.velocity.x += 200;
+			c.velocity.x -= 200;
 		}
 		else
 		{
-			p.x -= 32;
-			c.x += 32;
+			p.velocity.x -= 200;
+			c.velocity.x += 200;
 		}
 	}
 
@@ -478,13 +483,13 @@ class PlayState extends FlxState
 		p.getDamage(Reg.zombieAtkDamage);
 		if (p.x > z.x)
 		{
-			p.x += 32;
-			z.x -= 32;
+			p.velocity.x += 200;
+			z.velocity.x -= 200;
 		}
 		else
 		{
-			p.x -= 32;
-			z.x += 32;
+			p.velocity.x -= 200;
+			z.velocity.x += 200;
 		}
 	}
 
@@ -493,13 +498,13 @@ class PlayState extends FlxState
 		p.getDamage(Reg.armoredEnemyAtkDamage);
 		if (p.x > a.x)
 		{
-			p.x += 32;
-			a.x -= 32;
+			p.velocity.x += 200;
+			a.velocity.x -= 200;
 		}
 		else
 		{
-			p.x -= 32;
-			a.x += 32;
+			p.velocity.x -= 200;
+			a.velocity.x += 200;
 		}
 	}
 
@@ -508,13 +513,13 @@ class PlayState extends FlxState
 		p.getDamage(Reg.minionAtkDamage);
 		if (p.x > m.x)
 		{
-			p.x += 32;
-			m.x -= 32;
+			p.velocity.x += 200;
+			m.velocity.x -= 200;
 		}
 		else
 		{
-			p.x -= 32;
-			m.x += 32;
+			p.velocity.x -= 200;
+			m.velocity.x += 200;
 		}
 	}
 	
@@ -527,15 +532,5 @@ class PlayState extends FlxState
 			powerUps.remove(pUp);
 			p.powerUpJustPicked = false;
 		}
-	}
-	
-	function get_boss():Boss 
-	{
-		return boss;
-	}
-	
-	function get_player():Player 
-	{
-		return player;
 	}
 }

@@ -54,7 +54,7 @@ class Boss extends FlxSprite
 		speedB = Reg.speedBoss;
 		velocity.set(0, 0);
 		player = _player;
-		healthBoss = maxHealthBoss = Reg.playerMaxHealth;
+		healthBoss = Reg.playerMaxHealth;
 		canIAttack = 0;
 		yesYouCanAtk = 3;
 		canIMove = 0;
@@ -67,26 +67,18 @@ class Boss extends FlxSprite
 		FlxG.state.add(p);
 		posX = 0;
 		posY = 0;
-		facing = FlxObject.RIGHT;
-		
-		bossHealthBar = new FlxBar(10, FlxG.height - 20, FlxBarFillDirection.LEFT_TO_RIGHT, FlxG.width - 20, 7, this, "healthBoss", 0, 100, true);
-		bossHealthBar.scrollFactor.set(0, 0);
-		bossHealthBar.visible = false;
-		FlxG.state.add(bossHealthBar);
-		
+		facing = FlxObject.RIGHT;		
 	}
 	override public function update(elapsed:Float):Void 
 	{
 		super.update(elapsed);
-		if(isOnScreen()){
-			stateMachine();
-			if (healthBoss <= 0)
-			{
-				currentState = BossStates.DYING;
-				animation.play("moving");
-				velocity.set(0, 0);
-			}
-			bossHealthBar.visible = true;
+		
+		stateMachine();
+		if (healthBoss <= 0)
+		{
+			currentState = BossStates.DYING;
+			animation.play("moving");
+			velocity.set(0, 0);
 		}
 	}
 	function stateMachine() // http://haxeflixel.com/documentation/enemies-and-basic-ai/
