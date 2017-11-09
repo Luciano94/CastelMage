@@ -110,7 +110,7 @@ class PlayState extends FlxState
 		add(unstablePlatforms);
 		add(powerUps);
 		//add(batGroup);
-		//add(zombieGroup);
+		add(zombieGroup);
 		//add(shamanGroup);
 		//add(arEnemyGroup);
 		//add(minionGroup);

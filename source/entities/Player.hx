@@ -69,6 +69,7 @@ class Player extends FlxSprite
 		hp = Reg.playerMaxHealth;
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
+		isUnderLadder = false;
 		ammo = 0;
 		inmortalityTime = 0;
 		hasJustBeenHit = false;
@@ -103,7 +104,8 @@ class Player extends FlxSprite
 		animation.add("crouch", [9], 6, false);
 		animation.add("crouchAttack", [10, 11], 9, false);
 		animation.add("climbLadders", [12, 13], 6, false);
-		animation.add("beHit", [14], 6, false);		
+		animation.add("beHit", [14], 6, false);
+		animation.add("die", [7, 8], 3, false);
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -123,6 +125,7 @@ class Player extends FlxSprite
 		FlxG.sound.play(AssetPaths.playerDeath__wav);
 		FlxG.camera.flash(FlxColor.RED, 1);
 		FlxG.camera.shake(0.02, 1);
+		lives--;
 		hasLost = true;
 		super.kill();
 	}
@@ -211,10 +214,7 @@ class Player extends FlxSprite
 								currentState = States.MOVING;
 						}
 						else
-						{
-							lives--;
-							kill();
-						}
+							hp = 0;
 					}
 					else
 						if (weaponN.alive)
@@ -277,7 +277,7 @@ class Player extends FlxSprite
 				if (hasJustBeenHit && inmortalityTime == 0)
 				{
 					acceleration.y = Reg.gravity;
-					currentState = States.BEING_HIT;
+					currentState = States.BEING_HIT;	
 				}
 				else
 				{
@@ -335,6 +335,11 @@ class Player extends FlxSprite
 				}
 						
 			case States.DEAD:
+				if (animation.name != "die")
+					animation.play("die");
+				
+				if (animation.name == "die" && animation.finished)
+					kill();
 
 		}
 	}
@@ -470,17 +475,14 @@ class Player extends FlxSprite
 			FlxG.camera.flash(FlxColor.RED, 0.5);
 			FlxG.camera.shake(0.01, 0.4);
 			hp -= damage;
-			if (hp <= 0)
-			{
-				lives--;
-				kill();
-			}
-			else
+			if (hp > 0)
 			{
 				hasJustBeenHit = true;
 				inmortalityTime = 0;
 				FlxFlicker.flicker(this, 2, 0.08, true, true);
 			}
+			else
+				currentState = States.DEAD;
 		}
 	}
 	
@@ -495,10 +497,7 @@ class Player extends FlxSprite
 	private function checkBoundaries():Void 
 	{
 		if (!inWorldBounds())
-		{
-			lives--;
 			kill();
-		}
 	}
 	
 	private function fallingDamage():Void 

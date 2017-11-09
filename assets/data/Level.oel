@@ -273,5 +273,6 @@
     <Barrel id="143" x="3488" y="192" />
     <PowerUp id="56" x="176" y="128" />
     <Player id="47" x="2240" y="496" />
+    <Zombie id="43" x="2320" y="496" />
   </Entities>
 </level>
