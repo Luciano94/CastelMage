@@ -68,6 +68,8 @@ class PlayState extends FlxState
 
 	override public function create():Void
 	{
+		FlxG.camera.fade(FlxColor.BLACK, 0.5, true);
+		
 		super.create();
 		
 		FlxG.worldBounds.set(0, 0, 6400, 640);

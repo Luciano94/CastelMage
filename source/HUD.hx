@@ -151,6 +151,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	{
 		bossHealth = new FlxBar(10, FlxG.height - 22, FlxBarFillDirection.HORIZONTAL_INSIDE_OUT, FlxG.width - 20, 12, boss, "healthBoss", 0, 100, true);
 		bossHealth.scrollFactor.set(0, 0);
+		bossHealth.
 		bossHealth.visible = false;
 		add(bossHealth);
 	}
