@@ -67,7 +67,7 @@ class Player extends FlxSprite
 		jumpSpeed = Reg.playerJumpSpeed;
 		stairsSpeed = Reg.playerStairsSpeed;
 		acceleration.y = Reg.gravity;
-		hp = 50;//Reg.playerMaxHealth;
+		hp = Reg.playerMaxHealth;
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
 		isUnderLadder = false;
