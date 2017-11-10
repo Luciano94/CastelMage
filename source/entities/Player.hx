@@ -67,7 +67,7 @@ class Player extends FlxSprite
 		jumpSpeed = Reg.playerJumpSpeed;
 		stairsSpeed = Reg.playerStairsSpeed;
 		acceleration.y = Reg.gravity;
-		hp = Reg.playerMaxHealth;
+		hp = 50;//Reg.playerMaxHealth;
 		isTouchingLadder = false;
 		isOnTopOfLadder = false;
 		isUnderLadder = false;
@@ -117,7 +117,6 @@ class Player extends FlxSprite
 		checkBoundaries();
 		checkInmortality(elapsed);
 		fallingDamage();
-		trace(currentState.getName());
 		
 		super.update(elapsed);
 	}
@@ -526,7 +525,7 @@ class Player extends FlxSprite
 					if (hp < Reg.playerMaxHealth)
 					{
 						FlxG.sound.play(AssetPaths.pickUpLife__wav);
-						health = Reg.playerMaxHealth;
+						hp = Reg.playerMaxHealth;
 						powerUpJustPicked = true;
 					}
 			case 1:
@@ -602,7 +601,7 @@ class Player extends FlxSprite
 				
 			case 6:
 				FlxG.sound.play(AssetPaths.pickUpCoin__wav);
-				Reg.score += 5;
+				Reg.score += Reg.random.int(2, 10);
 				powerUpJustPicked = true;
 		}
 	}
