@@ -117,7 +117,7 @@ class PlayState extends FlxState
 		add(arEnemyGroup);
 		add(minionGroup);
 		add(player);
-		//add(boss);
+		add(boss);
 		add(secretWays);
 		
 		cameraSetUp();
@@ -176,12 +176,13 @@ class PlayState extends FlxState
 		checkPause();
 		checkEscape();
 		
-		hud.updateHUD(Player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused);
+		hud.updateHUD(Player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused, boss.hasAppeared);
 		
 		if (player.hasLost)
-		{
 			openSubState(new DeathState());
-		}
+		else
+			if (player.hasWon)
+				openSubState(new 
 	}
 	
 	private function entityCreator(entityName:String, entityData:Xml):Void
@@ -237,7 +238,7 @@ class PlayState extends FlxState
 				var armoredEnemy = new ArmoredEnemy(x, y, player);
 				arEnemyGroup.add(armoredEnemy);
 			case "Boss":
-				var boss = new Boss(x, y, player);
+				boss = new Boss(x, y, player);
 		}
 	}
 

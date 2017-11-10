@@ -35,7 +35,7 @@ class Boss extends FlxSprite
 	private var p:FlxObject;
 	private var posX:Float;
 	private var posY:Float;
-	private var bossHealthBar:FlxBar;
+	public var hasAppeared(get, null):Bool;
 	
 	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
@@ -67,18 +67,24 @@ class Boss extends FlxSprite
 		FlxG.state.add(p);
 		posX = 0;
 		posY = 0;
-		facing = FlxObject.RIGHT;		
+		facing = FlxObject.RIGHT;
+		hasAppeared = false;
 	}
 	override public function update(elapsed:Float):Void 
 	{
 		super.update(elapsed);
 		
-		stateMachine();
-		if (healthBoss <= 0)
+		if (isOnScreen() && !hasAppeared)
+			hasAppeared = true;
+		if (hasAppeared)
 		{
-			currentState = BossStates.DYING;
-			animation.play("moving");
-			velocity.set(0, 0);
+			stateMachine();
+			if (healthBoss <= 0)
+			{
+				currentState = BossStates.DYING;
+				animation.play("moving");
+				velocity.set(0, 0);
+			}
 		}
 	}
 	function stateMachine() // http://haxeflixel.com/documentation/enemies-and-basic-ai/
@@ -202,5 +208,16 @@ class Boss extends FlxSprite
 			if (x <= p.x)
 				currentState = BossStates.IDLE;
 		}
+	}
+	
+	override public function kill(player:Player)
+	{
+		super.kill();
+		player.hasWon = true;
+	}
+	
+	function get_hasAppeared():Bool 
+	{
+		return hasAppeared;
 	}
 }

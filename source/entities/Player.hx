@@ -54,6 +54,7 @@ class Player extends FlxSprite
 	private var willDieFromFall:Bool;
 	@:isVar public var powerUpJustPicked(get, set):Bool;
 	public var hasLost(get, null):Bool;
+	@:isVar public var hasWon(get, set):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -76,6 +77,7 @@ class Player extends FlxSprite
 		willDieFromFall = false;
 		powerUpJustPicked = false;
 		hasLost = false;
+		hasWon = false;;
 
 		// Weapons Creation
 		weaponN = new WeaponNormal(x + width, y + height / 3);

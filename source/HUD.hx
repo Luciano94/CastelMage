@@ -36,7 +36,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		scoreSetUp();
 		pauseSetUp();
 	}
-	public function updateHUD(Lives:Int, Weapon:String, Ammo:Int, Score:Int, Paused:Bool):Void
+	public function updateHUD(Lives:Int, Weapon:String, Ammo:Int, Score:Int, Paused:Bool, BossFight:Bool):Void
 	{
 		lives.text = Std.string(Lives);
 		if (Lives <= 1)
@@ -76,10 +76,10 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		else
 			pause.visible = false;
 		
-		//if (Reg.bossFight)
-			//bossHealth.visible = true;
-		//else
-			//bossHealth.visible = false;
+		if (BossFight)
+			bossHealth.visible = true;
+		else
+			bossHealth.visible = false;
 	}
 	
 	private function backgroundSetUp():Void 
@@ -151,7 +151,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	{
 		bossHealth = new FlxBar(10, FlxG.height - 22, FlxBarFillDirection.HORIZONTAL_INSIDE_OUT, FlxG.width - 20, 12, boss, "healthBoss", 0, 100, true);
 		bossHealth.scrollFactor.set(0, 0);
-		//bossHealth.visible = false;
+		bossHealth.visible = false;
 		add(bossHealth);
 	}
 }
