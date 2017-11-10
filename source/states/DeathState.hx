@@ -58,7 +58,7 @@ class DeathState extends FlxSubState
 
 	private function deathSetUp():Void
 	{
-		death = new FlxText(0, FlxG.height / 2, FlxG.width, "You Have Died", 14, true);
+		death = new FlxText(0, FlxG.height / 2 - 32, FlxG.width, "You Have Died", 14, true);
 		death.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
 		death.alignment = FlxTextAlign.CENTER;
 		death.scrollFactor.set(0, 0);
@@ -78,9 +78,9 @@ class DeathState extends FlxSubState
 	private function instructionsSetUp(instr:String):Void
 	{
 		if (instr == "Death")
-			instructions = new FlxText(0, FlxG.height / 2 + 32, FlxG.width, "Press R to restart", 8, true);
+			instructions = new FlxText(0, FlxG.height / 2 + 48, FlxG.width, "Press R to restart", 8, true);
 		else
-			instructions = new FlxText(0, FlxG.height / 2 + 32, FlxG.width, "Press ESC to go to the main menu", 8, true);
+			instructions = new FlxText(0, FlxG.height / 2 + 48, FlxG.width, "Press ESC to go to the main menu", 8, true);
 
 		instructions.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
 		instructions.alignment = FlxTextAlign.CENTER;

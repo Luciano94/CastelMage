@@ -77,7 +77,7 @@ class Player extends FlxSprite
 		willDieFromFall = false;
 		powerUpJustPicked = false;
 		hasLost = false;
-		hasWon = false;;
+		hasWon = false;
 
 		// Weapons Creation
 		weaponN = new WeaponNormal(x + width, y + height / 3);
@@ -669,5 +669,15 @@ class Player extends FlxSprite
 	function get_hasLost():Bool 
 	{
 		return hasLost;
+	}
+	
+	function get_hasWon():Bool 
+	{
+		return hasWon;
+	}
+	
+	function set_hasWon(value:Bool):Bool 
+	{
+		return hasWon = value;
 	}
 }

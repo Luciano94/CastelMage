@@ -101,8 +101,11 @@ class Boss extends FlxSprite
 				}
 				else if (FlxG.overlap(player.weaponN, this) || FlxG.overlap(player.getSecondaryWeapon(), this))
 				{
-					if(!FlxFlicker.isFlickering(this))
+					if (!FlxFlicker.isFlickering(this))
+					{
+						FlxG.sound.play(AssetPaths.enemyDamaged__wav);
 						healthBoss -= 10;
+					}
 					FlxFlicker.flicker(this, 3, 0.08, true, true);
 					canIMove = 0;
 				}
@@ -130,8 +133,12 @@ class Boss extends FlxSprite
 				animation.play("moving");
 				goBack();
 			case BossStates.DYING:
-				if(!FlxFlicker.isFlickering(this))
+				if (!FlxFlicker.isFlickering(this))
+				{
+					FlxG.sound.play(AssetPaths.bossDeath__wav);
 					kill();
+					player.hasWon = true;
+				}
 		}
 	}
 	function thinking() 
@@ -210,10 +217,10 @@ class Boss extends FlxSprite
 		}
 	}
 	
-	override public function kill(player:Player)
+	override public function kill()
 	{
 		super.kill();
-		player.hasWon = true;
+		Reg.score += 50;
 	}
 	
 	function get_hasAppeared():Bool 

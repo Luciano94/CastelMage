@@ -182,7 +182,11 @@ class PlayState extends FlxState
 			openSubState(new DeathState());
 		else
 			if (player.hasWon)
-				openSubState(new 
+			{
+				hud.visible = false;
+				Reg.highestScore = Reg.score;
+				openSubState(new WinState());
+			}
 	}
 	
 	private function entityCreator(entityName:String, entityData:Xml):Void
@@ -380,7 +384,6 @@ class PlayState extends FlxState
 	private function colWeaponBat(w:WeaponBase, b:Bat):Void
 	{
 		b.kill();
-		Reg.score += 1;
 	}
 
 	private function colWeaponChaman(w:WeaponBase, c:Chaman):Void

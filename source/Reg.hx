@@ -27,6 +27,7 @@ class Reg
 	static public var paused:Bool = false;
 	static public var gravity:Int = 1600;
 	static public var score:Int = 0;
+	static public var highestScore:Int = 0;
 	// Enemies
 	static public var speedEnemy:Int = 50;
 	static public var pathSpeed:Int = 50;
