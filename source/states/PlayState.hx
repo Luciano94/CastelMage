@@ -181,7 +181,10 @@ class PlayState extends FlxState
 		hud.updateHUD(Player.lives, player.weaponCurrentState.getName(), player.ammo, Reg.score, Reg.paused, boss.hasAppeared);
 		
 		if (player.hasLost)
+		{
+			hud.visible = false;
 			openSubState(new DeathState());
+		}
 		else
 			if (player.hasWon)
 			{
