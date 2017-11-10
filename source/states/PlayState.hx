@@ -265,6 +265,7 @@ class PlayState extends FlxState
 			Reg.score = 0;
 			Reg.paused = false;
 			FlxG.mouse.visible = true;
+			FlxG.sound.destroy(true);
 			FlxG.switchState(new MenuState());	
 		}
 	}
