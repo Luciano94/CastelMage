@@ -464,11 +464,14 @@ class PlayState extends FlxState
 	// Player - Power Ups
 	private function playerPowerUpCollision(p:Player, pUp:PowerUp) 
 	{
-		p.collectPowerUp(pUp);	
-		if (p.powerUpJustPicked)
+		if (!p.powerUpJustPicked)
 		{
-			powerUps.remove(pUp);
-			p.powerUpJustPicked = false;
+			p.collectPowerUp(pUp);	
+			if (p.powerUpJustPicked)
+			{
+				powerUps.remove(pUp);
+				p.powerUpJustPicked = false;
+			}
 		}
 	}
 	

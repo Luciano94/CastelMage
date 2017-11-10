@@ -39,9 +39,9 @@ class Reg
 	static public var atkTime:Int = 120;
 	static public var timeToTrk:Int = 360;
 	static public var preAtkTime:Int = 60;
-	static public var zombieLifePoints:Int = 40;
-	static private var shamanLifePoints:Int = 50;
-	static public var armoredEnemyLifePoints:Int = 60;
+	static public var zombieLifePoints:Int = 50;
+	static private var shamanLifePoints:Int = 60;
+	static public var armoredEnemyLifePoints:Int = 80;
 	static public var minionLifePoints:Int = 30;
 	static public var zombieAtkDamage:Int = 15;
 	static public var batAtkDamage:Int = 5;

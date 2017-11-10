@@ -13,13 +13,14 @@ enum BatState
 	MOVING;
 	HIDING;
 }
-class Bat extends FlxSprite 
+class Bat extends FlxSprite
 {
 	private var speed:Int;
 	private var player: Player;
 	private var timeAttack:Int;
 	private var gotcha:Bool;
 	private var currentState:BatState;
+	private var hasAppeared:Bool;
 	
 	public function new(?X:Float=0, ?Y:Float=0, _player:Player) 
 	{
@@ -32,29 +33,35 @@ class Bat extends FlxSprite
 		height = 16;
 		offset.y += 20;
 		speed = Reg.speedEnemy;
-		velocity.set(speed, speed);
 		gotcha = false;
 		player = _player;
 		timeAttack = 0;
 		currentState = BatState.IDLE;
+		hasAppeared = false;
 	}
 	
 	override public function update(elapsed:Float):Void 
 	{
 		super.update(elapsed);
-		switch (currentState) 
+		
+		if (x < camera.scroll.x + FlxG.width && !hasAppeared)
+			hasAppeared = true;
+		if (hasAppeared)
 		{
-			case BatState.IDLE:
-				tracking();
-			case BatState.MOVING:
-				mov();
-			case BatState.ATTACKING:
-				atk();
-			case BatState.HIDING:
-				hid();
+			switch (currentState) 
+			{
+				case BatState.IDLE:
+					tracking();
+				case BatState.MOVING:
+					mov();
+				case BatState.ATTACKING:
+					atk();
+				case BatState.HIDING:
+					hid();
+			}
+			animControl();
+			infinite();
 		}
-		animControl();
-		infinite();
 	}
 	
 	override public function kill():Void
