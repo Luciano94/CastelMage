@@ -13,6 +13,7 @@ class Elevator extends OneWayPlatform
 		super(X, Y);
 		
 		loadGraphic(AssetPaths.movingPlatform__png, true, 48, 16);
+		pixelPerfectPosition = false;
 		speed = Reg.elevatorSpeed;
 		hasJustChangedDirection = false;
 		timeSinceChange = 0;

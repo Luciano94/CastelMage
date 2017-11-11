@@ -99,6 +99,7 @@ class Player extends FlxSprite
 
 		// Animations
 		loadGraphic(AssetPaths.player__png, true, 32, 48);
+		pixelPerfectPosition = false;
 		animation.add("idle", [0, 1], 6, true);
 		animation.add("move", [2, 3, 4], 6, true);
 		animation.add("jump", [5, 6], 9, false);

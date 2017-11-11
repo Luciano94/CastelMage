@@ -293,6 +293,7 @@ class PlayState extends FlxState
 		camera.followLerp = 2;
 		camera.targetOffset.set(0, -64);
 		camera.setScrollBounds(0, 6400, 0, 640);
+		camera.pixelPerfectRender = false;
 	}
 
 	private function hudSetUp():Void

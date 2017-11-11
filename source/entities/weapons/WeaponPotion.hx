@@ -21,6 +21,7 @@ class WeaponPotion extends WeaponBase
 		
 		acceleration.y = Reg.gravity;
 		loadGraphic(AssetPaths.weaponPotion__png, true, 33, 10);
+		pixelPerfectPosition = false;
 		animation.add("flying", [0]);
 		animation.add("dying", [1, 2, 3, 4], 8, false);
 		currentState = States.FLYING;

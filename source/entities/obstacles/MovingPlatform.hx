@@ -16,6 +16,7 @@ class MovingPlatform extends OneWayPlatform
 		super(X, Y);
 		
 		loadGraphic(AssetPaths.movingPlatform__png, true, 48, 16);
+		pixelPerfectPosition = false;
 		speed = Reg.movingPlatformSpeed;
 		hasJustChangedDirection = false;
 		timeSinceChange = 0;
